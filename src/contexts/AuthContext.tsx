@@ -1,19 +1,14 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { loginUser, addUser, User } from "@/services/localDatabase";
 
 type UserRole = "patient" | "doctor" | null;
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: UserRole;
-}
 
 interface AuthContextType {
   user: User | null;
   login: (email: string, password: string, role: UserRole) => Promise<void>;
   logout: () => void;
+  register: (name: string, email: string, password: string, role: UserRole) => Promise<void>;
   isLoading: boolean;
 }
 
@@ -43,31 +38,40 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (email: string, password: string, role: UserRole): Promise<void> => {
     setIsLoading(true);
     
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Mock users for demo purpose
-    const mockPatients = [
-      { id: "p1", name: "John Doe", email: "patient@example.com", role: "patient" as const, password: "password" },
-    ];
-    
-    const mockDoctors = [
-      { id: "d1", name: "Dr. Sarah Smith", email: "doctor@example.com", role: "doctor" as const, password: "password" },
-    ];
-    
-    const users = role === "patient" ? mockPatients : mockDoctors;
-    const foundUser = users.find(u => u.email === email && u.password === password);
-    
-    if (!foundUser) {
+    try {
+      const loggedInUser = await loginUser(email, password);
+      
+      // Verify the role matches if one was specified
+      if (role && loggedInUser.role !== role) {
+        setIsLoading(false);
+        throw new Error(`Invalid credentials for ${role} account`);
+      }
+      
+      setUser(loggedInUser);
+      localStorage.setItem("user", JSON.stringify(loggedInUser));
+    } catch (error) {
+      console.error("Login error:", error);
+      throw error;
+    } finally {
       setIsLoading(false);
-      throw new Error("Invalid email or password");
     }
+  };
+
+  const register = async (name: string, email: string, password: string, role: UserRole): Promise<void> => {
+    if (!role) throw new Error("Role is required");
     
-    // Remove password before storing user
-    const { password: _, ...userWithoutPassword } = foundUser;
-    setUser(userWithoutPassword);
-    localStorage.setItem("user", JSON.stringify(userWithoutPassword));
-    setIsLoading(false);
+    setIsLoading(true);
+    
+    try {
+      const newUser = await addUser({ name, email, password, role });
+      setUser(newUser);
+      localStorage.setItem("user", JSON.stringify(newUser));
+    } catch (error) {
+      console.error("Registration error:", error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const logout = () => {
@@ -76,7 +80,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isLoading }}>
+    <AuthContext.Provider value={{ user, login, logout, register, isLoading }}>
       {children}
     </AuthContext.Provider>
   );

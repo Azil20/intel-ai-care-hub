@@ -97,6 +97,10 @@
 
 @layer components {
   .header-gradient {
-    @apply bg-gradient-to-r from-hospital-600 to-teal-500;
+    @apply bg-gradient-to-r from-hospital-600 to-teal-500 dark:from-hospital-700 dark:to-teal-600;
   }
+}
+
+#root {
+  @apply w-full min-h-screen;
 }
