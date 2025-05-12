@@ -16,6 +16,10 @@ const Header: React.FC = () => {
     navigate("/");
   };
 
+  const handleSignIn = () => {
+    navigate("/");
+  };
+
   return (
     <header className="header-gradient text-white shadow-md">
       <div className="container mx-auto p-4 flex items-center justify-between">
@@ -49,7 +53,7 @@ const Header: React.FC = () => {
               </Button>
             </div>
           ) : (
-            <Button variant="outline" className="border-white text-white hover:text-primary hover:bg-white" onClick={() => navigate("/")}>
+            <Button variant="outline" className="border-white text-white hover:text-primary hover:bg-white" onClick={handleSignIn}>
               Sign In
             </Button>
           )}

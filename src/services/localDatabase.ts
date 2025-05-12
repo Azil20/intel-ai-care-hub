@@ -57,14 +57,18 @@ export const initializeLocalDatabase = (): Promise<void> => {
         messagesStore.createIndex("userId", "userId", { unique: false });
         messagesStore.createIndex("timestamp", "timestamp", { unique: false });
       }
-      
-      // Add initial data (sample doctor and patient)
-      initializeDefaultUsers(db);
     };
 
-    request.onsuccess = () => {
+    request.onsuccess = (event) => {
       console.log("Database initialized successfully");
-      resolve();
+      const db = (event.target as IDBOpenDBRequest).result;
+      // Now we can safely add default users after the database is initialized
+      addDefaultUsers(db)
+        .then(() => resolve())
+        .catch((error) => {
+          console.error("Error adding default users:", error);
+          resolve(); // Still resolve to allow app to function
+        });
     };
 
     request.onerror = (event) => {
@@ -74,41 +78,61 @@ export const initializeLocalDatabase = (): Promise<void> => {
   });
 };
 
-// Add default users
-const initializeDefaultUsers = (db: IDBDatabase) => {
-  const transaction = db.transaction("users", "readwrite");
-  const usersStore = transaction.objectStore("users");
-  
-  // Check if default users exist
-  const doctorRequest = usersStore.index("email").get("doctor@example.com");
-  
-  doctorRequest.onsuccess = () => {
-    if (!doctorRequest.result) {
-      // Add default doctor
-      usersStore.add({
-        id: "d1",
-        name: "Dr. Sarah Smith",
-        email: "doctor@example.com",
-        password: "password", // In a real app, this should be hashed
-        role: "doctor"
-      });
+// Add default users in a separate function that returns a promise
+const addDefaultUsers = (db: IDBDatabase): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    try {
+      const transaction = db.transaction("users", "readwrite");
+      const usersStore = transaction.objectStore("users");
+      
+      // Use a counter to track when both user checks are complete
+      let checksDone = 0;
+      const totalChecks = 2;
+      
+      // Check if default doctor exists
+      const doctorRequest = usersStore.index("email").get("doctor@example.com");
+      doctorRequest.onsuccess = () => {
+        if (!doctorRequest.result) {
+          // Add default doctor
+          usersStore.add({
+            id: "d1",
+            name: "Dr. Sarah Smith",
+            email: "doctor@example.com",
+            password: "password", // In a real app, this should be hashed
+            role: "doctor"
+          });
+        }
+        checksDone++;
+        if (checksDone === totalChecks) {
+          transaction.oncomplete = () => resolve();
+          transaction.onerror = (e) => reject(e);
+        }
+      };
+      
+      // Check if default patient exists
+      const patientRequest = usersStore.index("email").get("patient@example.com");
+      patientRequest.onsuccess = () => {
+        if (!patientRequest.result) {
+          // Add default patient
+          usersStore.add({
+            id: "p1",
+            name: "John Doe",
+            email: "patient@example.com",
+            password: "password", // In a real app, this should be hashed
+            role: "patient"
+          });
+        }
+        checksDone++;
+        if (checksDone === totalChecks) {
+          transaction.oncomplete = () => resolve();
+          transaction.onerror = (e) => reject(e);
+        }
+      };
+    } catch (error) {
+      console.error("Error in addDefaultUsers:", error);
+      reject(error);
     }
-  };
-  
-  const patientRequest = usersStore.index("email").get("patient@example.com");
-  
-  patientRequest.onsuccess = () => {
-    if (!patientRequest.result) {
-      // Add default patient
-      usersStore.add({
-        id: "p1",
-        name: "John Doe",
-        email: "patient@example.com",
-        password: "password", // In a real app, this should be hashed
-        role: "patient"
-      });
-    }
-  };
+  });
 };
 
 // User operations
