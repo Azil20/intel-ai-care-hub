@@ -1,61 +1,65 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
 import { Badge } from "@/components/ui/badge";
-import { format, isSameDay } from "date-fns";
+import { format, isSameDay, parseISO } from "date-fns";
+import { useAuth } from "@/contexts/AuthContext";
+import { getAllAppointments } from "@/services/localDatabase";
 
 interface Appointment {
   id: string;
-  patientName: string;
+  patientId: string;
+  doctorId: string;
+  patientName?: string;
+  date: string;
   time: string;
   reason: string;
-  date: Date;
+  status: string;
 }
 
 const AppointmentCalendar: React.FC = () => {
   const today = new Date();
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(today);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const { user } = useAuth();
   
-  // Mock appointment data
-  const appointments: Appointment[] = [
-    { id: "a1", patientName: "John Doe", time: "9:00 AM", reason: "Regular Checkup", date: today },
-    { id: "a2", patientName: "Sarah Johnson", time: "10:00 AM", reason: "Follow-up", date: today },
-    { id: "a3", patientName: "Robert Brown", time: "11:00 AM", reason: "Initial Consultation", date: today },
-    { id: "a4", patientName: "Michael Wilson", time: "2:00 PM", reason: "Vaccination", date: today },
-    { id: "a5", patientName: "Emily Davis", time: "3:00 PM", reason: "Test Results", date: today },
-    { id: "a6", patientName: "James Taylor", time: "4:00 PM", reason: "Prescription Renewal", date: today },
-    {
-      id: "a7",
-      patientName: "Patricia Moore",
-      time: "9:30 AM",
-      reason: "Blood Test",
-      date: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1),
-    },
-    {
-      id: "a8",
-      patientName: "Richard Miller",
-      time: "11:30 AM",
-      reason: "Annual Physical",
-      date: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1),
-    },
-    {
-      id: "a9",
-      patientName: "Jennifer Anderson",
-      time: "2:30 PM",
-      reason: "Skin Condition",
-      date: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1),
-    },
-  ];
+  // Load appointments from database
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      if (!user?.id) return;
+      
+      try {
+        const allAppointments = await getAllAppointments();
+        
+        // Filter appointments for this doctor
+        const doctorAppointments = allAppointments.filter(
+          (app) => app.doctorId === user.id
+        );
+        
+        setAppointments(doctorAppointments);
+      } catch (error) {
+        console.error("Error fetching appointments:", error);
+      }
+    };
+
+    fetchAppointments();
+  }, [user]);
+  
+  // Convert string dates to Date objects for comparison
+  const appointmentsWithDates = appointments.map(appointment => ({
+    ...appointment,
+    dateObj: parseISO(`${appointment.date}T${appointment.time}:00`)
+  }));
   
   // Get appointments for selected date
-  const selectedDateAppointments = appointments.filter(appointment => 
-    selectedDate && isSameDay(appointment.date, selectedDate)
+  const selectedDateAppointments = appointmentsWithDates.filter(appointment => 
+    selectedDate && isSameDay(appointment.dateObj, selectedDate)
   );
   
   // Create a map of dates with appointments
-  const appointmentDates = appointments.reduce((acc, appointment) => {
-    const dateKey = format(appointment.date, "yyyy-MM-dd");
+  const appointmentDates = appointmentsWithDates.reduce((acc, appointment) => {
+    const dateKey = format(appointment.dateObj, "yyyy-MM-dd");
     if (!acc[dateKey]) {
       acc[dateKey] = 0;
     }
@@ -121,8 +125,9 @@ const AppointmentCalendar: React.FC = () => {
                     </Badge>
                   </div>
                   <div className="ml-4">
-                    <h3 className="font-medium">{appointment.patientName}</h3>
+                    <h3 className="font-medium">{appointment.patientName || `Patient ID: ${appointment.patientId.slice(0, 6)}`}</h3>
                     <p className="text-sm text-muted-foreground">{appointment.reason}</p>
+                    <p className="text-xs mt-1 text-muted-foreground">Status: {appointment.status}</p>
                   </div>
                 </div>
               ))}

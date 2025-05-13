@@ -1,5 +1,5 @@
 
-# Welcome to your Lovable project
+# Welcome to Intelej Hosp
 
 ## Project info
 
@@ -37,6 +37,61 @@ npm i
 npm run dev
 ```
 
+## Setting up Ollama with Phi Model
+
+Intelej Hosp uses [Ollama](https://ollama.com/) for local AI inference with Microsoft's Phi model. This allows the AI chat assistant to work completely locally without sending data to external services.
+
+### 1. Install Ollama
+
+#### Windows
+1. Download and install Ollama from [the official website](https://ollama.com/download/windows)
+2. Follow the installation instructions
+
+#### macOS
+1. Download and install Ollama from [the official website](https://ollama.com/download/mac)
+2. Or use Homebrew: `brew install ollama`
+
+#### Linux
+1. Run the following command:
+```sh
+curl -fsSL https://ollama.com/install.sh | sh
+```
+
+### 2. Pull the Phi Model
+
+After installing Ollama:
+
+1. Open a terminal/command prompt
+2. Run the following command to download Microsoft's Phi model:
+```sh
+ollama pull phi
+```
+3. Wait for the download to complete (approx. 1.8GB)
+
+### 3. Start the Ollama Service
+
+Make sure Ollama is running in the background:
+
+- **Windows**: It should start automatically after installation
+- **macOS/Linux**: Run `ollama serve` in a terminal window
+
+### 4. Test the Connection
+
+Once Ollama is running with the Phi model:
+
+1. Start the Intelej Hosp application
+2. Navigate to the Patient Dashboard
+3. Use the AI Chat Assistant to send a test message
+4. You should receive a response generated locally by the Phi model
+
+### 5. Troubleshooting
+
+If you experience issues:
+- Ensure Ollama is running (look for the Ollama icon in your system tray)
+- Verify the Phi model was downloaded successfully with `ollama list`
+- Check that Ollama is listening on the default port: http://localhost:11434
+- Look at the browser's console logs for any connection errors
+
 ## Setting up MySQL Database Locally
 
 To use MySQL locally with this application, follow these steps:
@@ -61,7 +116,7 @@ sudo apt install mysql-server
 sudo mysql_secure_installation
 ```
 
-### 2. Create Database for IntelEJ Hospital
+### 2. Create Database for Intelej Hosp
 
 1. Log in to MySQL:
 ```sh
@@ -127,14 +182,6 @@ Currently, the application uses IndexedDB for local storage. To switch to MySQL,
 
 Note: In a production environment, you should never store passwords as plain text. Always use proper password hashing algorithms.
 
-**Edit your preferred IDE**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
 ## What technologies are used for this project?
 
 This project is built with:
@@ -144,6 +191,7 @@ This project is built with:
 - React
 - shadcn-ui
 - Tailwind CSS
+- Ollama (for local AI inference)
 
 ## How can I deploy this project?
 
