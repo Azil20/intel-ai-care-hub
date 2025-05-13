@@ -1,3 +1,4 @@
+
 // Local database service using IndexedDB
 import { v4 as uuidv4 } from 'uuid';
 
@@ -16,6 +17,7 @@ export interface Appointment {
   date: string;
   time: string;
   reason: string;
+  phoneNumber?: string; // Added phone number field
   status: "scheduled" | "completed" | "cancelled";
 }
 

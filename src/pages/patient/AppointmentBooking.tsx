@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, PhoneIcon } from "lucide-react";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -23,6 +23,7 @@ interface AppointmentFormValues {
   date: Date;
   time: string;
   reason: string;
+  phoneNumber: string; // Added phone number field
 }
 
 const AppointmentBooking: React.FC = () => {
@@ -39,6 +40,7 @@ const AppointmentBooking: React.FC = () => {
       date: new Date(),
       time: "",
       reason: "",
+      phoneNumber: "", // Default empty phone number
     },
   });
 
@@ -80,6 +82,7 @@ const AppointmentBooking: React.FC = () => {
         date: formattedDate,
         time: values.time,
         reason: values.reason,
+        phoneNumber: values.phoneNumber, // Include phone number in appointment
         status: "scheduled"
       });
       
@@ -87,8 +90,8 @@ const AppointmentBooking: React.FC = () => {
       toast({
         title: language === "ar" ? "تم الحجز" : "Appointment Booked",
         description: language === "ar"
-          ? "تم حجز موعدك بنجاح"
-          : "Your appointment has been scheduled successfully",
+          ? "تم حجز موعدك بنجاح. سيتم إرسال إشعار لك على رقم هاتفك."
+          : "Your appointment has been scheduled successfully. You will be notified on your phone number.",
       });
       
       // Reset form
@@ -112,15 +115,15 @@ const AppointmentBooking: React.FC = () => {
 
   return (
     <Card className={rtlClass}>
-      <CardHeader>
+      <CardHeader className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white">
         <CardTitle>{language === "ar" ? "حجز موعد" : "Book Appointment"}</CardTitle>
-        <CardDescription>
+        <CardDescription className="text-emerald-50">
           {language === "ar" 
             ? "حدد طبيبًا وتاريخًا ووقتًا لموعدك"
             : "Select a doctor, date, and time for your appointment"}
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="mt-4">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             {/* Doctor Selection */}
@@ -136,7 +139,7 @@ const AppointmentBooking: React.FC = () => {
                     dir={language === "ar" ? "rtl" : "ltr"}
                   >
                     <FormControl>
-                      <SelectTrigger>
+                      <SelectTrigger className="border-emerald-200">
                         <SelectValue placeholder={
                           language === "ar" ? "اختر طبيبًا" : "Select a doctor"
                         } />
@@ -174,7 +177,7 @@ const AppointmentBooking: React.FC = () => {
                         <Button
                           variant={"outline"}
                           className={cn(
-                            "w-full pl-3 text-left font-normal",
+                            "w-full pl-3 text-left font-normal border-emerald-200",
                             !field.value && "text-muted-foreground"
                           )}
                         >
@@ -193,6 +196,7 @@ const AppointmentBooking: React.FC = () => {
                         selected={field.value}
                         onSelect={field.onChange}
                         disabled={(date) => date < new Date()}
+                        className="rounded-md border-emerald-200"
                       />
                     </PopoverContent>
                   </Popover>
@@ -214,7 +218,7 @@ const AppointmentBooking: React.FC = () => {
                     dir={language === "ar" ? "rtl" : "ltr"}
                   >
                     <FormControl>
-                      <SelectTrigger>
+                      <SelectTrigger className="border-emerald-200">
                         <SelectValue placeholder={
                           language === "ar" ? "اختر وقتًا" : "Select a time"
                         } />
@@ -230,6 +234,39 @@ const AppointmentBooking: React.FC = () => {
                       <SelectItem value="16:00">04:00 PM</SelectItem>
                     </SelectContent>
                   </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Phone Number Field */}
+            <FormField
+              control={form.control}
+              name="phoneNumber"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    {language === "ar" ? "رقم الهاتف" : "Phone Number"}
+                  </FormLabel>
+                  <FormControl>
+                    <div className="flex">
+                      <PhoneIcon className="mr-2 h-5 w-5 text-emerald-500 self-center" />
+                      <Input 
+                        placeholder={
+                          language === "ar" 
+                            ? "أدخل رقم هاتفك للإشعارات"
+                            : "Enter your phone number for notifications"
+                        }
+                        {...field}
+                        className={`${rtlClass} border-emerald-200`}
+                      />
+                    </div>
+                  </FormControl>
+                  <FormDescription>
+                    {language === "ar"
+                      ? "سيتم إرسال إشعار لك عندما يحين دورك"
+                      : "You will be notified when it's your turn"}
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -252,7 +289,7 @@ const AppointmentBooking: React.FC = () => {
                           : "Please describe the reason for your visit or symptoms you're experiencing"
                       }
                       {...field}
-                      className={rtlClass}
+                      className={`${rtlClass} border-emerald-200`}
                     />
                   </FormControl>
                   <FormDescription>
@@ -267,8 +304,8 @@ const AppointmentBooking: React.FC = () => {
             
             <Button 
               type="submit" 
-              disabled={isSubmitting} 
-              className="w-full bg-hospital-600 hover:bg-hospital-700"
+              disabled={isSubmitting}
+              className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-semibold"
             >
               {isSubmitting ? (
                 language === "ar" ? "جارٍ الحجز..." : "Booking..."
