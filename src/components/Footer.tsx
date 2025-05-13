@@ -21,10 +21,12 @@ const Footer: React.FC = () => {
             <p className="text-gray-400">Terms of Service</p>
           </div>
         </div>
-        <div className="border-t border-gray-700 mt-8 pt-6 text-center text-gray-400 text-sm">
+        <div className="border-t border-gray-700 mt-8 pt-6 text-center">
           <p>© {new Date().getFullYear()} Intelej Hosp. All rights reserved.</p>
-          <p className="mt-2">Made by Mounir Khaoulaf and Mohamed Azri</p>
-          <p className="mt-1">This application runs completely locally for your privacy and security.</p>
+          <div className="bg-gradient-to-r from-blue-500 to-teal-400 bg-clip-text text-transparent text-lg font-bold mt-2 inline-block animate-pulse-slow">
+            Made by Mounir Khaoulaf and Mohamed Azri
+          </div>
+          <p className="mt-1 text-gray-400">This application runs completely locally for your privacy and security.</p>
         </div>
       </div>
     </footer>

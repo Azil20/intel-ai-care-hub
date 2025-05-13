@@ -11,6 +11,27 @@ const LandingPage: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
+      {/* Logo and Verse Section */}
+      <div className="bg-white dark:bg-gray-900 py-12 px-4">
+        <div className="container mx-auto max-w-5xl flex flex-col md:flex-row items-center justify-center gap-6">
+          <div className="flex-shrink-0">
+            <div className="w-32 h-32 rounded-full bg-gradient-to-br from-blue-500 to-teal-400 flex items-center justify-center shadow-lg">
+              <span className="text-4xl font-bold text-white">IH</span>
+            </div>
+          </div>
+          <div className="text-center md:text-right">
+            <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-lg shadow-md border-r-4 border-teal-500">
+              <p className="text-3xl md:text-4xl font-serif text-gray-800 dark:text-gray-200 leading-relaxed rtl">
+                "وَإِذا مَرِضتُ فَهُوَ يَشفينِ"
+              </p>
+              <p className="text-gray-600 dark:text-gray-400 mt-3 italic">
+                "And when I am ill, it is He Who cures me" - Quran [26:80]
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Hero Section */}
       <div className="hospital-gradient text-white py-20 px-4 text-center relative">
         <div className="absolute inset-0 bg-gradient-to-r from-teal-500 to-blue-600 opacity-90"></div>

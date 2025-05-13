@@ -105,9 +105,21 @@ body {
 /* RTL Support */
 .rtl {
   direction: rtl;
+  font-family: 'Amiri', serif;
+  text-align: right;
 }
 
 /* Arabic Font */
 html[lang="ar"] body {
-  font-family: 'Noto Sans Arabic', 'Montserrat', sans-serif;
+  font-family: 'Noto Sans Arabic', 'Amiri', 'Montserrat', sans-serif;
+}
+
+/* Animation for credits */
+@keyframes pulse-slow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 3s ease-in-out infinite;
 }
