@@ -1,4 +1,3 @@
-
 // Local database service using IndexedDB
 import { v4 as uuidv4 } from 'uuid';
 
@@ -259,6 +258,33 @@ export const addAppointment = (appointment: Omit<Appointment, "id">): Promise<Ap
       
       request.onsuccess = () => {
         resolve(newAppointment);
+      };
+      
+      request.onerror = (event) => {
+        reject((event.target as IDBRequest).error);
+      };
+    };
+    
+    dbRequest.onerror = (event) => {
+      reject((event.target as IDBOpenDBRequest).error);
+    };
+  });
+};
+
+// Get all appointments
+export const getAllAppointments = (): Promise<Appointment[]> => {
+  return new Promise((resolve, reject) => {
+    const dbRequest = indexedDB.open("IntelEJHospitalDB", 1);
+    
+    dbRequest.onsuccess = (event) => {
+      const db = (event.target as IDBOpenDBRequest).result;
+      const transaction = db.transaction("appointments", "readonly");
+      const appointmentsStore = transaction.objectStore("appointments");
+      
+      const request = appointmentsStore.getAll();
+      
+      request.onsuccess = () => {
+        resolve(request.result);
       };
       
       request.onerror = (event) => {
