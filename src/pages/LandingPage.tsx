@@ -15,9 +15,11 @@ const LandingPage: React.FC = () => {
       <div className="bg-white dark:bg-gray-900 py-12 px-4">
         <div className="container mx-auto max-w-5xl flex flex-col md:flex-row items-center justify-center gap-6">
           <div className="flex-shrink-0">
-            <div className="w-32 h-32 rounded-full bg-gradient-to-br from-blue-500 to-teal-400 flex items-center justify-center shadow-lg">
-              <span className="text-4xl font-bold text-white">IH</span>
-            </div>
+            <img 
+              src="/lovable-uploads/43612f72-7738-4bf9-9695-426ddabfecaf.png"
+              alt="Intelej Hosp Logo"
+              className="w-32 h-32 object-contain"
+            />
           </div>
           <div className="text-center md:text-right">
             <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-lg shadow-md border-r-4 border-teal-500">
@@ -65,7 +67,11 @@ const LandingPage: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
           <Card className="p-6 shadow-xl hover:shadow-2xl transition-shadow border-t-4 border-blue-500">
             <div className="mb-4 bg-blue-50 p-3 rounded-full w-16 h-16 flex items-center justify-center">
-              <img src="/placeholder.svg" alt="Patient" className="w-8 h-8" />
+              <img 
+                src="/lovable-uploads/43612f72-7738-4bf9-9695-426ddabfecaf.png" 
+                alt="Patient Portal" 
+                className="w-10 h-10 object-contain" 
+              />
             </div>
             <h3 className="text-2xl font-semibold text-blue-700 mb-4">Patient Portal</h3>
             <p className="text-gray-600 mb-6">
@@ -81,7 +87,11 @@ const LandingPage: React.FC = () => {
 
           <Card className="p-6 shadow-xl hover:shadow-2xl transition-shadow border-t-4 border-teal-500">
             <div className="mb-4 bg-teal-50 p-3 rounded-full w-16 h-16 flex items-center justify-center">
-              <img src="/placeholder.svg" alt="Doctor" className="w-8 h-8" />
+              <img 
+                src="/lovable-uploads/43612f72-7738-4bf9-9695-426ddabfecaf.png" 
+                alt="Doctor Portal" 
+                className="w-10 h-10 object-contain" 
+              />
             </div>
             <h3 className="text-2xl font-semibold text-teal-600 mb-4">Doctor Portal</h3>
             <p className="text-gray-600 mb-6">

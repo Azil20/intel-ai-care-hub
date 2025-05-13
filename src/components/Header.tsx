@@ -91,6 +91,11 @@ const Header: React.FC = () => {
     <header className={`bg-white dark:bg-gray-900 shadow-md ${dirClass}`}>
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         <Link to="/" className="flex items-center space-x-2">
+          <img 
+            src="/lovable-uploads/43612f72-7738-4bf9-9695-426ddabfecaf.png" 
+            alt="Intelej Hosp Logo" 
+            className="h-12 w-auto" 
+          />
           <span className="font-bold text-2xl text-hospital-700 dark:text-hospital-300">
             {language === "ar" ? "مستشفى إنتيلEJ" : "IntelEJ Hospital"}
           </span>
