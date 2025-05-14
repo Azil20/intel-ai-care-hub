@@ -1,142 +1,312 @@
-
-import React, { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import React, { useEffect, useState } from "react";
+import { getAppointments } from "@/services/localDatabase";
 import { Calendar } from "@/components/ui/calendar";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { format, isSameDay, parseISO } from "date-fns";
 import { useAuth } from "@/contexts/AuthContext";
-import { getAllAppointments } from "@/services/localDatabase";
+import { format, parseISO, isToday, isThisWeek, isThisMonth, isSameDay } from "date-fns";
 
 interface Appointment {
   id: string;
   patientId: string;
+  patientName: string;
+  patientPhoneNumber?: string;
   doctorId: string;
-  patientName?: string;
+  doctorName: string;
   date: string;
   time: string;
-  reason: string;
-  status: string;
+  reason?: string;
+  status: 'scheduled' | 'completed' | 'cancelled';
 }
 
-const AppointmentCalendar: React.FC = () => {
-  const today = new Date();
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(today);
-  const [appointments, setAppointments] = useState<Appointment[]>([]);
-  const { user } = useAuth();
+interface DayViewProps {
+  appointments: Appointment[];
+  date: Date;
+}
+
+interface WeekViewProps {
+  appointments: Appointment[];
+  date: Date;
+}
+
+interface MonthViewProps {
+  appointments: Appointment[];
+  date: Date;
+  onDateSelect: (date: Date) => void;
+}
+
+const DayView: React.FC<DayViewProps> = ({ appointments, date }) => {
+  // Filter appointments for the selected day
+  const dayAppointments = appointments.filter(appointment => 
+    isSameDay(parseISO(appointment.date), date)
+  );
+
+  // Sort appointments by time
+  const sortedAppointments = [...dayAppointments].sort((a, b) => 
+    a.time.localeCompare(b.time)
+  );
+
+  return (
+    <div className="space-y-4">
+      <h3 className="text-lg font-medium">
+        Appointments for {format(date, "MMMM d, yyyy")}
+      </h3>
+      
+      {sortedAppointments.length === 0 ? (
+        <p className="text-muted-foreground">No appointments scheduled for this day.</p>
+      ) : (
+        <div className="space-y-3">
+          {sortedAppointments.map((appointment) => (
+            <Card key={appointment.id} className="overflow-hidden">
+              <CardContent className="p-4">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h4 className="font-medium">{appointment.patientName}</h4>
+                    <p className="text-sm text-muted-foreground">
+                      {appointment.time} • {appointment.reason || "No reason provided"}
+                    </p>
+                    {appointment.patientPhoneNumber && (
+                      <p className="text-sm mt-1">📞 {appointment.patientPhoneNumber}</p>
+                    )}
+                  </div>
+                  <Badge 
+                    variant={
+                      appointment.status === "completed" ? "outline" : 
+                      appointment.status === "cancelled" ? "destructive" : 
+                      "default"
+                    }
+                  >
+                    {appointment.status}
+                  </Badge>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+const WeekView: React.FC<WeekViewProps> = ({ appointments, date }) => {
+  // Filter appointments for the current week
+  const weekAppointments = appointments.filter(appointment => 
+    isThisWeek(parseISO(appointment.date), { weekStartsOn: 1 })
+  );
+
+  // Group appointments by date
+  const appointmentsByDate: Record<string, Appointment[]> = {};
   
-  // Load appointments from database
+  weekAppointments.forEach(appointment => {
+    const dateKey = appointment.date;
+    if (!appointmentsByDate[dateKey]) {
+      appointmentsByDate[dateKey] = [];
+    }
+    appointmentsByDate[dateKey].push(appointment);
+  });
+
+  // Sort dates
+  const sortedDates = Object.keys(appointmentsByDate).sort();
+
+  return (
+    <div className="space-y-6">
+      <h3 className="text-lg font-medium">This Week's Appointments</h3>
+      
+      {sortedDates.length === 0 ? (
+        <p className="text-muted-foreground">No appointments scheduled for this week.</p>
+      ) : (
+        sortedDates.map(dateKey => (
+          <div key={dateKey} className="space-y-3">
+            <h4 className="font-medium">
+              {format(parseISO(dateKey), "EEEE, MMMM d")}
+              {isToday(parseISO(dateKey)) && " (Today)"}
+            </h4>
+            
+            <div className="space-y-2">
+              {appointmentsByDate[dateKey]
+                .sort((a, b) => a.time.localeCompare(b.time))
+                .map(appointment => (
+                  <Card key={appointment.id} className="overflow-hidden">
+                    <CardContent className="p-3">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h5 className="font-medium">{appointment.patientName}</h5>
+                          <p className="text-sm text-muted-foreground">
+                            {appointment.time} • {appointment.reason || "No reason provided"}
+                          </p>
+                        </div>
+                        <Badge 
+                          variant={
+                            appointment.status === "completed" ? "outline" : 
+                            appointment.status === "cancelled" ? "destructive" : 
+                            "default"
+                          }
+                        >
+                          {appointment.status}
+                        </Badge>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+            </div>
+          </div>
+        ))
+      )}
+    </div>
+  );
+};
+
+const MonthView: React.FC<MonthViewProps> = ({ appointments, date, onDateSelect }) => {
+  // Filter appointments for the current month
+  const monthAppointments = appointments.filter(appointment => 
+    isThisMonth(parseISO(appointment.date))
+  );
+
+  // Get unique dates with appointments
+  const datesWithAppointments = new Set(
+    monthAppointments.map(appointment => appointment.date)
+  );
+
+  // Function to render appointment count for a day
+  const renderAppointmentCount = (day: Date) => {
+    const dateString = format(day, "yyyy-MM-dd");
+    if (datesWithAppointments.has(dateString)) {
+      const count = monthAppointments.filter(
+        appointment => appointment.date === dateString
+      ).length;
+      
+      return (
+        <div className="absolute bottom-0 right-0 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] text-primary-foreground">
+          {count}
+        </div>
+      );
+    }
+    return null;
+  };
+
+  return (
+    <div className="space-y-4">
+      <h3 className="text-lg font-medium">
+        {format(date, "MMMM yyyy")}
+      </h3>
+      
+      <Calendar
+        mode="single"
+        selected={date}
+        onSelect={(newDate) => newDate && onDateSelect(newDate)}
+        className="rounded-md border"
+        components={{
+          DayContent: (props) => (
+            <div className="relative h-9 w-9 p-0 flex items-center justify-center">
+              <span>{props.day.day}</span>
+              {renderAppointmentCount(props.day.date)}
+            </div>
+          ),
+        }}
+      />
+      
+      <div className="space-y-3">
+        <h4 className="font-medium">Upcoming Appointments</h4>
+        
+        {monthAppointments.length === 0 ? (
+          <p className="text-muted-foreground">No appointments scheduled for this month.</p>
+        ) : (
+          monthAppointments
+            .sort((a, b) => {
+              // Sort by date first, then by time
+              const dateComparison = a.date.localeCompare(b.date);
+              if (dateComparison !== 0) return dateComparison;
+              return a.time.localeCompare(b.time);
+            })
+            .slice(0, 5) // Show only the first 5 appointments
+            .map(appointment => (
+              <Card key={appointment.id} className="overflow-hidden">
+                <CardContent className="p-3">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h5 className="font-medium">{appointment.patientName}</h5>
+                      <p className="text-sm text-muted-foreground">
+                        {format(parseISO(appointment.date), "MMM d")} at {appointment.time}
+                      </p>
+                    </div>
+                    <Badge 
+                      variant={
+                        appointment.status === "completed" ? "outline" : 
+                        appointment.status === "cancelled" ? "destructive" : 
+                        "default"
+                      }
+                    >
+                      {appointment.status}
+                    </Badge>
+                  </div>
+                </CardContent>
+              </Card>
+            ))
+        )}
+      </div>
+    </div>
+  );
+};
+
+const AppointmentCalendar = () => {
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [view, setView] = useState<"day" | "week" | "month">("day");
+  const { user } = useAuth();
+
   useEffect(() => {
     const fetchAppointments = async () => {
-      if (!user?.id) return;
-      
       try {
-        const allAppointments = await getAllAppointments();
+        const appointments = getAppointments();
         
-        // Filter appointments for this doctor
-        const doctorAppointments = allAppointments.filter(
-          (app) => app.doctorId === user.id
-        );
-        
-        setAppointments(doctorAppointments);
+        // Filter appointments for the current doctor
+        if (user && user.role === "doctor") {
+          const doctorAppointments = appointments.filter(
+            appointment => appointment.doctorId === user.id
+          );
+          setAppointments(doctorAppointments);
+        } else {
+          setAppointments(appointments);
+        }
       } catch (error) {
         console.error("Error fetching appointments:", error);
       }
     };
-
+    
     fetchAppointments();
   }, [user]);
-  
-  // Convert string dates to Date objects for comparison
-  const appointmentsWithDates = appointments.map(appointment => ({
-    ...appointment,
-    dateObj: parseISO(`${appointment.date}T${appointment.time}:00`)
-  }));
-  
-  // Get appointments for selected date
-  const selectedDateAppointments = appointmentsWithDates.filter(appointment => 
-    selectedDate && isSameDay(appointment.dateObj, selectedDate)
-  );
-  
-  // Create a map of dates with appointments
-  const appointmentDates = appointmentsWithDates.reduce((acc, appointment) => {
-    const dateKey = format(appointment.dateObj, "yyyy-MM-dd");
-    if (!acc[dateKey]) {
-      acc[dateKey] = 0;
-    }
-    acc[dateKey]++;
-    return acc;
-  }, {} as Record<string, number>);
-  
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="container mx-auto py-6">
       <Card>
         <CardHeader>
-          <CardTitle>Calendar</CardTitle>
-          <CardDescription>View and manage your appointments</CardDescription>
+          <CardTitle>Appointment Calendar</CardTitle>
         </CardHeader>
         <CardContent>
-          <Calendar
-            mode="single"
-            selected={selectedDate}
-            onSelect={setSelectedDate}
-            className="p-3 pointer-events-auto"
-            modifiersClassNames={{
-              today: "bg-muted",
-            }}
-            modifiers={{
-              appointment: (date) => {
-                const dateKey = format(date, "yyyy-MM-dd");
-                return !!appointmentDates[dateKey];
-              },
-            }}
-            modifiersStyles={{
-              appointment: {
-                fontWeight: "bold",
-                textDecoration: "underline",
-                textDecorationColor: "hsl(var(--primary))",
-                textDecorationThickness: "2px",
-              },
-            }}
-          />
-        </CardContent>
-      </Card>
-      
-      <Card>
-        <CardHeader>
-          <CardTitle>
-            {selectedDate ? (
-              format(selectedDate, "PPPP")
-            ) : (
-              "No Date Selected"
-            )}
-          </CardTitle>
-          <CardDescription>
-            {selectedDateAppointments.length} appointment{selectedDateAppointments.length !== 1 ? "s" : ""}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {selectedDateAppointments.length > 0 ? (
-            <div className="space-y-4">
-              {selectedDateAppointments.map((appointment) => (
-                <div key={appointment.id} className="flex p-3 border rounded-md hover:bg-muted/50">
-                  <div className="w-20 flex-shrink-0 text-center">
-                    <Badge variant="outline" className="font-mono">
-                      {appointment.time}
-                    </Badge>
-                  </div>
-                  <div className="ml-4">
-                    <h3 className="font-medium">{appointment.patientName || `Patient ID: ${appointment.patientId.slice(0, 6)}`}</h3>
-                    <p className="text-sm text-muted-foreground">{appointment.reason}</p>
-                    <p className="text-xs mt-1 text-muted-foreground">Status: {appointment.status}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-8 text-muted-foreground">
-              No appointments scheduled for this date
-            </div>
-          )}
+          <Tabs value={view} onValueChange={(v) => setView(v as "day" | "week" | "month")}>
+            <TabsList className="mb-4">
+              <TabsTrigger value="day">Day</TabsTrigger>
+              <TabsTrigger value="week">Week</TabsTrigger>
+              <TabsTrigger value="month">Month</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="day">
+              <DayView appointments={appointments} date={selectedDate} />
+            </TabsContent>
+            
+            <TabsContent value="week">
+              <WeekView appointments={appointments} date={selectedDate} />
+            </TabsContent>
+            
+            <TabsContent value="month">
+              <MonthView 
+                appointments={appointments} 
+                date={selectedDate} 
+                onDateSelect={setSelectedDate} 
+              />
+            </TabsContent>
+          </Tabs>
         </CardContent>
       </Card>
     </div>

@@ -1,238 +1,184 @@
-
-import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { Calendar } from "@/components/ui/calendar";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { createAppointment, getUsers } from "@/services/localDatabase";
+import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
-import { CalendarIcon, Clock, Phone, User } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { toast } from "sonner";
+import { cn } from "@/lib/utils";
+import { CalendarIcon } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
-const AppointmentBooking: React.FC = () => {
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: 'patient' | 'doctor';
+  phoneNumber?: string;
+  avatar?: string;
+}
+
+const AppointmentBooking = () => {
+  const [doctors, setDoctors] = useState<User[]>([]);
+  const [selectedDoctor, setSelectedDoctor] = useState<string | undefined>(undefined);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [selectedTime, setSelectedTime] = useState<string | undefined>(undefined);
+  const [reason, setReason] = useState<string>("");
+  const [availableTimes, setAvailableTimes] = useState<string[]>([
+    "09:00", "10:00", "11:00", "14:00", "15:00", "16:00"
+  ]);
   const { user } = useAuth();
   const { toast } = useToast();
-  const [date, setDate] = useState<Date>();
-  const [selectedTime, setSelectedTime] = useState<string>("");
-  const [selectedDoctor, setSelectedDoctor] = useState<string>("");
-  const [reason, setReason] = useState<string>("");
-  const [phoneNumber, setPhoneNumber] = useState<string>(user?.phoneNumber || "");
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const { language, t } = useLanguage();
-  const isArabic = language === "ar";
-  
-  // Get doctors from the database
-  const doctors = getUsers().filter(user => user.role === "doctor");
 
-  // Available time slots
-  const timeSlots = [
-    "9:00", "9:30", "10:00", "10:30", "11:00", "11:30",
-    "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00"
-  ];
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        const allUsers = getUsers();
+        const doctorUsers = allUsers.filter((user) => user.role === "doctor");
+        setDoctors(doctorUsers);
+      } catch (error) {
+        console.error("Error fetching doctors:", error);
+      }
+    };
 
-  const handleSubmit = (e: React.FormEvent) => {
+    fetchDoctors();
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!date || !selectedTime || !selectedDoctor || !phoneNumber) {
+
+    if (!user) return;
+
+    if (!selectedDoctor || !selectedDate || !selectedTime || !reason) {
       toast({
-        title: isArabic ? "خطأ" : "Error",
-        description: isArabic ? "يرجى ملء جميع الحقول المطلوبة" : "Please fill in all required fields",
+        title: "Error",
+        description: "Please fill all required fields",
         variant: "destructive",
       });
       return;
     }
 
-    setIsSubmitting(true);
-
     try {
-      // Format date as YYYY-MM-DD
-      const formattedDate = format(date, "yyyy-MM-dd");
-      
-      // Create appointment
-      createAppointment({
-        patientId: user?.id || "",
-        patientPhoneNumber: phoneNumber,
+      const appointment = createAppointment({
+        patientId: user.id,
         doctorId: selectedDoctor,
-        date: formattedDate,
+        date: format(selectedDate, "yyyy-MM-dd"),
         time: selectedTime,
-        reason: reason,
+        reason,
         status: "scheduled",
       });
 
-      // Show success message
       toast({
-        title: isArabic ? "تم الحجز بنجاح" : "Appointment Booked",
-        description: isArabic 
-          ? `تم تأكيد موعدك. سنرسل لك إشعارًا على ${phoneNumber} عندما يحين دورك.` 
-          : `Your appointment has been confirmed. We'll notify you at ${phoneNumber} when it's your turn.`,
-        variant: "default",
+        title: "Success",
+        description: "Appointment booked successfully",
       });
-
-      // Also use the popup toast for extra visibility
-      toast.success(isArabic 
-        ? `تم تأكيد موعدك. سنرسل لك إشعارًا على ${phoneNumber} عندما يحين دورك.` 
-        : `Your appointment has been confirmed. We'll notify you at ${phoneNumber} when it's your turn.`
-      );
 
       // Reset form
-      setDate(undefined);
-      setSelectedTime("");
-      setSelectedDoctor("");
+      setSelectedDoctor(undefined);
+      setSelectedDate(undefined);
+      setSelectedTime(undefined);
       setReason("");
     } catch (error) {
+      console.error("Error booking appointment:", error);
       toast({
-        title: isArabic ? "خطأ" : "Error",
-        description: isArabic ? "حدث خطأ أثناء حجز موعدك" : "An error occurred while booking your appointment",
+        title: "Error",
+        description: "Failed to book appointment",
         variant: "destructive",
       });
-      console.error("Error booking appointment:", error);
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="container mx-auto max-w-3xl">
-      <Card>
-        <CardHeader>
-          <CardTitle className={isArabic ? "text-right font-arabic" : ""}>
-            {t("bookAppointment")}
-          </CardTitle>
-          <CardDescription className={isArabic ? "text-right font-arabic" : ""}>
-            {isArabic 
-              ? "املأ التفاصيل أدناه لحجز موعد مع أحد أطبائنا" 
-              : "Fill in the details below to book an appointment with one of our doctors"}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Doctor Selection */}
-            <div className="space-y-2">
-              <Label htmlFor="doctor" className={isArabic ? "text-right block font-arabic" : ""}>
-                {t("selectDoctor")} *
-              </Label>
-              <Select value={selectedDoctor} onValueChange={setSelectedDoctor}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder={isArabic ? "اختر طبيبًا" : "Select a doctor"} />
-                </SelectTrigger>
-                <SelectContent>
-                  {doctors.map(doctor => (
-                    <SelectItem key={doctor.id} value={doctor.id}>
-                      <div className="flex items-center gap-2">
-                        <User className="h-4 w-4" />
-                        <span>{doctor.name}</span>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+    <div className="min-h-[calc(100vh-64px)] flex items-center justify-center p-4">
+      <Card className="w-full max-w-md p-6 shadow-xl">
+        <div className="text-center mb-8">
+          <h1 className="text-2xl font-bold">Book an Appointment</h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-2">
+            Schedule your appointment with ease
+          </p>
+        </div>
 
-            {/* Phone Number */}
-            <div className="space-y-2">
-              <Label htmlFor="phone" className={isArabic ? "text-right block font-arabic" : ""}>
-                {t("phoneNumber")} *
-              </Label>
-              <div className="flex gap-2">
-                <Phone className="text-muted-foreground mt-2" />
-                <Input
-                  id="phone"
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                  placeholder={isArabic ? "رقم الهاتف للإشعارات" : "Phone number for notifications"}
-                  required
-                  className={isArabic ? "text-right" : ""}
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-2">
+            <Label htmlFor="doctor">Select Doctor</Label>
+            <Select onValueChange={setSelectedDoctor}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select a doctor" />
+              </SelectTrigger>
+              <SelectContent>
+                {doctors.map((doctor) => (
+                  <SelectItem key={doctor.id} value={doctor.id}>{doctor.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Select Date</Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={"outline"}
+                  className={cn(
+                    "w-full justify-start text-left font-normal",
+                    !selectedDate && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {selectedDate ? (
+                    format(selectedDate, "PPP")
+                  ) : (
+                    <span>Pick a date</span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="center" side="bottom">
+                <Calendar
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={setSelectedDate}
+                  disabled={(date) =>
+                    date < new Date()
+                  }
+                  initialFocus
                 />
-              </div>
-              <p className="text-sm text-muted-foreground">
-                {isArabic 
-                  ? "سيتم استخدام رقم الهاتف لإرسال إشعار عندما يحين دورك"
-                  : "Phone number will be used to send a notification when it's your turn"}
-              </p>
-            </div>
+              </PopoverContent>
+            </Popover>
+          </div>
 
-            {/* Date Picker */}
-            <div className="space-y-2">
-              <Label htmlFor="date" className={isArabic ? "text-right block font-arabic" : ""}>
-                {t("selectDate")} *
-              </Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={`w-full justify-start text-left font-normal ${date ? "" : "text-muted-foreground"} ${isArabic ? "flex-row-reverse" : ""}`}
-                  >
-                    <CalendarIcon className="h-4 w-4 mr-2" />
-                    {date ? format(date, "PPP") : (isArabic ? "اختر تاريخًا" : "Select a date")}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={date}
-                    onSelect={setDate}
-                    initialFocus
-                    disabled={(date) => date < new Date() || date > new Date(new Date().setMonth(new Date().getMonth() + 3))}
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="time">Select Time</Label>
+            <Select onValueChange={setSelectedTime}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select a time" />
+              </SelectTrigger>
+              <SelectContent>
+                {availableTimes.map((time) => (
+                  <SelectItem key={time} value={time}>{time}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
-            {/* Time Selection */}
-            <div className="space-y-2">
-              <Label htmlFor="time" className={isArabic ? "text-right block font-arabic" : ""}>
-                {t("selectTime")} *
-              </Label>
-              <Select value={selectedTime} onValueChange={setSelectedTime}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder={isArabic ? "اختر وقتًا" : "Select a time"} />
-                </SelectTrigger>
-                <SelectContent>
-                  {timeSlots.map(time => (
-                    <SelectItem key={time} value={time}>
-                      <div className="flex items-center gap-2">
-                        <Clock className="h-4 w-4" />
-                        <span>{time}</span>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="reason">Reason for Appointment</Label>
+            <Textarea
+              id="reason"
+              placeholder="Enter reason for appointment"
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+            />
+          </div>
 
-            {/* Reason */}
-            <div className="space-y-2">
-              <Label htmlFor="reason" className={isArabic ? "text-right block font-arabic" : ""}>
-                {t("reason")}
-              </Label>
-              <Textarea
-                id="reason"
-                value={reason}
-                onChange={(e) => setReason(e.target.value)}
-                placeholder={isArabic ? "سبب الزيارة (اختياري)" : "Reason for visit (optional)"}
-                className={isArabic ? "text-right" : ""}
-              />
-            </div>
-
-            {/* Submit Button */}
-            <div className="flex justify-end">
-              <Button 
-                type="submit" 
-                disabled={isSubmitting}
-                className="bg-hospital-500 hover:bg-hospital-600"
-              >
-                {isArabic ? "تأكيد الموعد" : "Confirm Appointment"}
-              </Button>
-            </div>
-          </form>
-        </CardContent>
+          <Button type="submit" className="w-full bg-hospital-500 hover:bg-hospital-600">
+            Book Appointment
+          </Button>
+        </form>
       </Card>
     </div>
   );

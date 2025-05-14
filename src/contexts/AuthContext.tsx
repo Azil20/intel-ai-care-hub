@@ -1,6 +1,16 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { loginUser, addUser, User } from "@/services/localDatabase";
+import { authenticateUser, createUser, getUserByEmail, getUsers, updateUser } from "@/services/localDatabase";
+
+// Define User type since it's not exported from localDatabase
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: 'patient' | 'doctor';
+  phoneNumber?: string;
+  avatar?: string;
+}
 
 type UserRole = "patient" | "doctor" | null;
 
@@ -39,7 +49,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(true);
     
     try {
-      const loggedInUser = await loginUser(email, password);
+      const loggedInUser = await authenticateUser(email, password);
+      
+      if (!loggedInUser) {
+        throw new Error("Invalid email or password");
+      }
       
       // Verify the role matches if one was specified
       if (role && loggedInUser.role !== role) {
@@ -63,7 +77,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(true);
     
     try {
-      const newUser = await addUser({ name, email, password, role });
+      // Check if user already exists
+      const existingUser = getUserByEmail(email);
+      if (existingUser) {
+        throw new Error("User with this email already exists");
+      }
+      
+      const newUser = createUser({ 
+        name, 
+        email, 
+        password, 
+        role: role as 'patient' | 'doctor'
+      });
+      
       setUser(newUser);
       localStorage.setItem("user", JSON.stringify(newUser));
     } catch (error) {
