@@ -48,6 +48,17 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         theme === "dark" ? "#000000" : "#ffffff"
       );
     }
+    
+    // Apple-specific meta tag for status bar appearance
+    const metaAppleStatusBar = document.querySelector("meta[name=apple-mobile-web-app-status-bar-style]");
+    if (!metaAppleStatusBar) {
+      const newMeta = document.createElement("meta");
+      newMeta.setAttribute("name", "apple-mobile-web-app-status-bar-style");
+      newMeta.setAttribute("content", theme === "dark" ? "black-translucent" : "default");
+      document.head.appendChild(newMeta);
+    } else {
+      metaAppleStatusBar.setAttribute("content", theme === "dark" ? "black-translucent" : "default");
+    }
   }, [theme]);
 
   const toggleTheme = () => {
