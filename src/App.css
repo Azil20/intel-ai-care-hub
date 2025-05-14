@@ -36,19 +36,23 @@
 
 .card {
   padding: 2em;
+  background-color: #ffffff;
+  color: #333333;
 }
 
 .read-the-docs {
-  color: #888;
+  color: #64748b;
 }
 
 /* Custom gradients */
 .teal-gradient {
   background: linear-gradient(135deg, #10b981 0%, #0d9488 100%);
+  color: white;
 }
 
 .blue-gradient {
   background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+  color: white;
 }
 
 .card-hover {
@@ -58,4 +62,51 @@
 .card-hover:hover {
   transform: translateY(-5px);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Additional color classes for consistent styling */
+.text-hospital {
+  color: #10b981;
+}
+
+.text-hospital-dark {
+  color: #059669;
+}
+
+.bg-hospital-light {
+  background-color: rgba(16, 185, 129, 0.1);
+}
+
+.bg-hospital-medium {
+  background-color: rgba(16, 185, 129, 0.3);
+}
+
+/* Button styles */
+.btn-hospital {
+  background-color: #10b981;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.btn-hospital:hover {
+  background-color: #059669;
+  transform: translateY(-2px);
+}
+
+/* Improved card styles */
+.card-light {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  color: #333333;
+}
+
+/* Light mode link styles */
+a {
+  color: #10b981;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: #059669;
 }
