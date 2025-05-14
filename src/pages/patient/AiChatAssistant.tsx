@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -38,16 +39,16 @@ const AiChatAssistant = () => {
     
     if (!message.trim() || !user) return;
     
-    const userMessage = {
+    // Create a new message
+    const newMessage = createMessage({
       userId: user.id,
       content: message,
       isAi: false,
       timestamp: new Date()
-    };
+    });
     
-    createMessage(userMessage);
-    
-    setMessages(prevMessages => [...prevMessages, userMessage]);
+    // Add the new message to the state
+    setMessages(prevMessages => [...prevMessages, newMessage]);
     setMessage("");
     
     // Scroll to the bottom after sending a message
