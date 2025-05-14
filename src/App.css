@@ -19,6 +19,7 @@
   filter: drop-shadow(0 0 2em #10b981aa);
 }
 
+/* Remove logo animation */
 @keyframes logo-spin {
   from {
     transform: rotate(0deg);
@@ -28,10 +29,9 @@
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+/* Explicitly disable animation */
+a .logo {
+  animation: none !important;
 }
 
 .card {
@@ -109,4 +109,19 @@ a {
 
 a:hover {
   color: #059669;
+}
+
+/* Dark mode specifics */
+.dark .card {
+  background-color: #111111;
+  border-color: #222222;
+  color: #f1f1f1;
+}
+
+.dark a {
+  color: #10b981;
+}
+
+.dark a:hover {
+  color: #0d9488;
 }

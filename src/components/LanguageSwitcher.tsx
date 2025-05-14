@@ -13,19 +13,37 @@ import {
 const LanguageSwitcher: React.FC = () => {
   const { language, setLanguage } = useLanguage();
 
+  // Function to handle language change with localStorage
+  const handleLanguageChange = (lang: "en" | "ar") => {
+    setLanguage(lang);
+    localStorage.setItem("language", lang); // Ensure browser stores language preference locally
+    
+    // Apply RTL/LTR to the document
+    document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+    document.documentElement.lang = lang;
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full">
           <Globe className="h-5 w-5" />
-          <span className="sr-only">Toggle language</span>
+          <span className="sr-only">
+            {language === "ar" ? "تغيير اللغة" : "Toggle language"}
+          </span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => setLanguage("en")} className={language === "en" ? "bg-muted" : ""}>
+        <DropdownMenuItem 
+          onClick={() => handleLanguageChange("en")} 
+          className={language === "en" ? "bg-muted" : ""}
+        >
           English
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setLanguage("ar")} className={language === "ar" ? "bg-muted" : ""}>
+        <DropdownMenuItem 
+          onClick={() => handleLanguageChange("ar")} 
+          className={`${language === "ar" ? "bg-muted" : ""} font-arabic`}
+        >
           العربية
         </DropdownMenuItem>
       </DropdownMenuContent>

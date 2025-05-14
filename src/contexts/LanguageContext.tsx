@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
 
 // Define available languages
@@ -103,8 +102,8 @@ const translations: Translations = {
     ar: "إلغاء"
   },
   welcomeToIntelejHosp: {
-    en: "Welcome to Intelej Hosp",
-    ar: "مرحبًا بكم في مستشفى إنتيلej"
+    en: "Welcome to IntelEJ Hospital",
+    ar: "مرحبًا بكم في مستشفى إنتيلEJ"
   },
   yourHealthIsOurPriority: {
     en: "Your health is our priority. Access your medical information and services securely and locally.",
@@ -127,8 +126,8 @@ const translations: Translations = {
     ar: "تسجيل دخول الطبيب"
   },
   whyChooseIntelejHosp: {
-    en: "Why Choose Intelej Hosp?",
-    ar: "لماذا تختار مستشفى إنتيلej؟"
+    en: "Why Choose IntelEJ Hospital?",
+    ar: "لماذا تختار مستشفى إنتيلEJ؟"
   },
   localAndSecure: {
     en: "100% Local & Secure",
@@ -186,11 +185,18 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }
     return savedLang === 'ar' || savedLang === 'en' ? savedLang : 'en';
   });
 
-  // Update HTML lang attribute when language changes
+  // Update HTML lang attribute and direction when language changes
   useEffect(() => {
     document.documentElement.lang = language;
     document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
     localStorage.setItem('language', language);
+    
+    // Add appropriate font class to the body
+    if (language === 'ar') {
+      document.body.classList.add('font-arabic');
+    } else {
+      document.body.classList.remove('font-arabic');
+    }
   }, [language]);
 
   // Translation function
