@@ -103,7 +103,7 @@ const translations: Translations = {
   },
   welcomeToIntelejHosp: {
     en: "Welcome to IntelEJ Hospital",
-    ar: "مرحبًا بكم في مستشفى إنتيلEJ"
+    ar: "مرحبًا بكم في IntelEJ Hospital"
   },
   yourHealthIsOurPriority: {
     en: "Your health is our priority. Access your medical information and services securely and locally.",
@@ -127,7 +127,7 @@ const translations: Translations = {
   },
   whyChooseIntelejHosp: {
     en: "Why Choose IntelEJ Hospital?",
-    ar: "لماذا تختار مستشفى إنتيلEJ؟"
+    ar: "لماذا تختار IntelEJ Hospital?"
   },
   localAndSecure: {
     en: "100% Local & Secure",

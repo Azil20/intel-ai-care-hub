@@ -159,14 +159,7 @@ const PatientList: React.FC = () => {
                 </div>
               </div>
               
-              <div className="grid grid-cols-2 gap-4">
-                <Button className="w-full bg-hospital-500 hover:bg-hospital-600">
-                  Patient Records
-                </Button>
-                <Button className="w-full bg-teal-500 hover:bg-teal-600">
-                  Schedule Appointment
-                </Button>
-              </div>
+              {/* Removed the buttons grid from here */}
             </div>
           )}
         </DialogContent>

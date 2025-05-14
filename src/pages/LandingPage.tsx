@@ -1,4 +1,3 @@
-
 import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -38,7 +37,7 @@ const LandingPage: React.FC = () => {
             <img 
               src="/lovable-uploads/43612f72-7738-4bf9-9695-426ddabfecaf.png"
               alt="Intelej Hosp Logo"
-              className="w-32 h-32 object-contain animate-bounce-slow"
+              className="w-32 h-32 object-contain"
             />
           </div>
           <div className={`text-center ${isArabic ? "md:text-right" : "md:text-right"}`}>
@@ -59,7 +58,7 @@ const LandingPage: React.FC = () => {
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80')] bg-cover bg-center opacity-20"></div>
         <div className="relative z-10 max-w-5xl mx-auto">
           <h1 className={`text-4xl md:text-6xl font-bold mb-6 ${isArabic ? "font-arabic" : ""}`}>
-            {isArabic ? "مرحبا بكم في IntelEJ Hosp" : "Welcome to Intelej Hosp"}
+            {isArabic ? "مرحبا بكم في IntelEJ Hospital" : "Welcome to Intelej Hosp"}
           </h1>
           <p className={`text-xl md:text-2xl max-w-3xl mx-auto mb-8 ${isArabic ? "font-arabic" : ""}`}>
             {isArabic ? 
@@ -86,7 +85,7 @@ const LandingPage: React.FC = () => {
           </div>
         </div>
       </div>
-
+      
       {/* Login Cards Section */}
       <div className="container mx-auto my-12 px-4 relative z-10 -mt-16">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
@@ -141,12 +140,12 @@ const LandingPage: React.FC = () => {
           </Card>
         </div>
       </div>
-
+      
       {/* Features Section */}
       <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-gray-900 dark:to-gray-800 py-16 mt-12">
         <div className="container mx-auto px-4">
           <h2 className={`text-3xl font-bold text-center mb-12 ${isArabic ? "font-arabic" : ""} animate-on-scroll dark:text-gray-100`}>
-            {isArabic ? "لماذا تختار IntelEJ Hosp؟" : "Why Choose Intelej Hosp?"}
+            {isArabic ? "لماذا تختار IntelEJ Hospital؟" : "Why Choose Intelej Hosp?"}
           </h2>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
