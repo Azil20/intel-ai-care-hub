@@ -114,6 +114,10 @@ html[lang="ar"] body {
   font-family: 'Noto Sans Arabic', 'Amiri', 'Montserrat', sans-serif;
 }
 
+.font-arabic {
+  font-family: 'Noto Sans Arabic', 'Amiri', sans-serif;
+}
+
 /* Animation for credits */
 @keyframes pulse-slow {
   0%, 100% { opacity: 1; }
@@ -122,6 +126,26 @@ html[lang="ar"] body {
 
 .animate-pulse-slow {
   animation: pulse-slow 3s ease-in-out infinite;
+}
+
+/* Fade in animation */
+@keyframes fadeIn {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.8s ease-out forwards;
+}
+
+/* Bounce slow animation */
+@keyframes bounceSlow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.animate-bounce-slow {
+  animation: bounceSlow 3s ease-in-out infinite;
 }
 
 /* Card gradients */

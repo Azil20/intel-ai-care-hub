@@ -1,420 +1,290 @@
 
-// Local database service using IndexedDB
 import { v4 as uuidv4 } from 'uuid';
 
-export interface User {
+interface User {
   id: string;
   name: string;
   email: string;
   password: string;
-  role: "patient" | "doctor";
+  role: 'patient' | 'doctor';
+  phoneNumber?: string;
+  avatar?: string;
 }
 
-export interface Appointment {
+interface Appointment {
   id: string;
   patientId: string;
+  patientName: string;
+  patientPhoneNumber?: string;
   doctorId: string;
+  doctorName: string;
   date: string;
   time: string;
-  reason: string;
-  phoneNumber?: string; // Added phone number field
-  status: "scheduled" | "completed" | "cancelled";
+  reason?: string;
+  status: 'scheduled' | 'completed' | 'cancelled';
 }
 
-export interface Message {
+interface Message {
   id: string;
   userId: string;
   content: string;
-  timestamp: string;
-  role: "user" | "bot";
+  isAi: boolean;
+  timestamp: Date;
 }
 
-// Database initialization
-export const initializeLocalDatabase = (): Promise<void> => {
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open("IntelEJHospitalDB", 1);
+// Initialize the database
+export const initializeLocalDatabase = async () => {
+  // Check if the database has been initialized
+  if (!localStorage.getItem('db_initialized')) {
+    console.log('Initializing local database...');
 
-    request.onupgradeneeded = (event) => {
-      const db = (event.target as IDBOpenDBRequest).result;
-      
-      // Create users store
-      if (!db.objectStoreNames.contains("users")) {
-        const usersStore = db.createObjectStore("users", { keyPath: "id" });
-        usersStore.createIndex("email", "email", { unique: true });
-        usersStore.createIndex("role", "role", { unique: false });
+    // Create default users
+    const users: User[] = [
+      {
+        id: 'd1',
+        name: 'Dr. Sarah Smith',
+        email: 'doctor@example.com',
+        password: 'password',
+        role: 'doctor',
+        avatar: '/profile-placeholder.png'
+      },
+      {
+        id: 'p1',
+        name: 'John Doe',
+        email: 'patient@example.com',
+        password: 'password',
+        role: 'patient',
+        phoneNumber: '555-123-4567',
+        avatar: '/profile-placeholder.png'
+      },
+      {
+        id: 'd2',
+        name: 'Dr. Ahmed Al-Mansoori',
+        email: 'doctor2@example.com',
+        password: 'password',
+        role: 'doctor',
+        avatar: '/profile-placeholder.png'
       }
+    ];
 
-      // Create appointments store
-      if (!db.objectStoreNames.contains("appointments")) {
-        const appointmentsStore = db.createObjectStore("appointments", { keyPath: "id" });
-        appointmentsStore.createIndex("patientId", "patientId", { unique: false });
-        appointmentsStore.createIndex("doctorId", "doctorId", { unique: false });
-        appointmentsStore.createIndex("date", "date", { unique: false });
+    // Create default appointments
+    const appointments: Appointment[] = [
+      {
+        id: 'a1',
+        patientId: 'p1',
+        patientName: 'John Doe',
+        patientPhoneNumber: '555-123-4567',
+        doctorId: 'd1',
+        doctorName: 'Dr. Sarah Smith',
+        date: '2025-05-20',
+        time: '10:00',
+        reason: 'Regular checkup',
+        status: 'scheduled'
       }
+    ];
 
-      // Create messages store for AI chat
-      if (!db.objectStoreNames.contains("messages")) {
-        const messagesStore = db.createObjectStore("messages", { keyPath: "id" });
-        messagesStore.createIndex("userId", "userId", { unique: false });
-        messagesStore.createIndex("timestamp", "timestamp", { unique: false });
+    // Save to local storage
+    localStorage.setItem('users', JSON.stringify(users));
+    localStorage.setItem('appointments', JSON.stringify(appointments));
+    localStorage.setItem('messages', JSON.stringify([]));
+    localStorage.setItem('db_initialized', 'true');
+
+    console.log('Database initialized with default data');
+  } else {
+    console.log('Database already initialized');
+    
+    // Check if we need to update the appointment structure to include patient names
+    const appointments = JSON.parse(localStorage.getItem('appointments') || '[]');
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    
+    let updated = false;
+    
+    for (let i = 0; i < appointments.length; i++) {
+      // Add patient name if missing
+      if (!appointments[i].patientName) {
+        const patient = users.find((u: User) => u.id === appointments[i].patientId);
+        if (patient) {
+          appointments[i].patientName = patient.name;
+          updated = true;
+        }
       }
-    };
-
-    request.onsuccess = (event) => {
-      console.log("Database initialized successfully");
-      const db = (event.target as IDBOpenDBRequest).result;
-      // Now we can safely add default users after the database is initialized
-      addDefaultUsers(db)
-        .then(() => resolve())
-        .catch((error) => {
-          console.error("Error adding default users:", error);
-          resolve(); // Still resolve to allow app to function
-        });
-    };
-
-    request.onerror = (event) => {
-      console.error("Database error:", (event.target as IDBOpenDBRequest).error);
-      reject((event.target as IDBOpenDBRequest).error);
-    };
-  });
-};
-
-// Add default users in a separate function that returns a promise
-const addDefaultUsers = (db: IDBDatabase): Promise<void> => {
-  return new Promise((resolve, reject) => {
-    try {
-      const transaction = db.transaction("users", "readwrite");
-      const usersStore = transaction.objectStore("users");
       
-      // Use a counter to track when both user checks are complete
-      let checksDone = 0;
-      const totalChecks = 2;
+      // Add doctor name if missing
+      if (!appointments[i].doctorName) {
+        const doctor = users.find((u: User) => u.id === appointments[i].doctorId);
+        if (doctor) {
+          appointments[i].doctorName = doctor.name;
+          updated = true;
+        }
+      }
       
-      // Check if default doctor exists
-      const doctorRequest = usersStore.index("email").get("doctor@example.com");
-      doctorRequest.onsuccess = () => {
-        if (!doctorRequest.result) {
-          // Add default doctor
-          usersStore.add({
-            id: "d1",
-            name: "Dr. Sarah Smith",
-            email: "doctor@example.com",
-            password: "password", // In a real app, this should be hashed
-            role: "doctor"
-          });
+      // Ensure all users have an avatar
+      users.forEach((user: User) => {
+        if (!user.avatar) {
+          user.avatar = '/profile-placeholder.png';
+          updated = true;
         }
-        checksDone++;
-        if (checksDone === totalChecks) {
-          transaction.oncomplete = () => resolve();
-          transaction.onerror = (e) => reject(e);
-        }
-      };
-      
-      // Check if default patient exists
-      const patientRequest = usersStore.index("email").get("patient@example.com");
-      patientRequest.onsuccess = () => {
-        if (!patientRequest.result) {
-          // Add default patient
-          usersStore.add({
-            id: "p1",
-            name: "John Doe",
-            email: "patient@example.com",
-            password: "password", // In a real app, this should be hashed
-            role: "patient"
-          });
-        }
-        checksDone++;
-        if (checksDone === totalChecks) {
-          transaction.oncomplete = () => resolve();
-          transaction.onerror = (e) => reject(e);
-        }
-      };
-    } catch (error) {
-      console.error("Error in addDefaultUsers:", error);
-      reject(error);
+      });
     }
-  });
+    
+    if (updated) {
+      localStorage.setItem('appointments', JSON.stringify(appointments));
+      localStorage.setItem('users', JSON.stringify(users));
+      console.log('Updated appointment structure to include names');
+    }
+  }
 };
 
-// User operations
-export const addUser = (user: Omit<User, "id">): Promise<User> => {
-  return new Promise((resolve, reject) => {
-    const dbRequest = indexedDB.open("IntelEJHospitalDB", 1);
-    
-    dbRequest.onsuccess = (event) => {
-      const db = (event.target as IDBOpenDBRequest).result;
-      const transaction = db.transaction("users", "readwrite");
-      const usersStore = transaction.objectStore("users");
-      
-      // Check if email already exists
-      const emailCheck = usersStore.index("email").get(user.email);
-      
-      emailCheck.onsuccess = () => {
-        if (emailCheck.result) {
-          reject(new Error("User with this email already exists"));
-          return;
-        }
-        
-        // Add new user with generated ID
-        const newUser = {
-          ...user,
-          id: uuidv4()
-        };
-        
-        const addRequest = usersStore.add(newUser);
-        
-        addRequest.onsuccess = () => {
-          resolve(newUser);
-        };
-        
-        addRequest.onerror = (event) => {
-          reject((event.target as IDBRequest).error);
-        };
-      };
-    };
-    
-    dbRequest.onerror = (event) => {
-      reject((event.target as IDBOpenDBRequest).error);
-    };
-  });
+// User Management
+export const getUsers = (): User[] => {
+  return JSON.parse(localStorage.getItem('users') || '[]');
 };
 
-// Login operation
-export const loginUser = (email: string, password: string): Promise<User> => {
-  return new Promise((resolve, reject) => {
-    const dbRequest = indexedDB.open("IntelEJHospitalDB", 1);
-    
-    dbRequest.onsuccess = (event) => {
-      const db = (event.target as IDBOpenDBRequest).result;
-      const transaction = db.transaction("users", "readonly");
-      const usersStore = transaction.objectStore("users");
-      const emailIndex = usersStore.index("email");
-      
-      const request = emailIndex.get(email);
-      
-      request.onsuccess = () => {
-        const user = request.result;
-        if (user && user.password === password) {
-          // In real app, use bcrypt to compare hashed passwords
-          resolve(user);
-        } else {
-          reject(new Error("Invalid email or password"));
-        }
-      };
-      
-      request.onerror = (event) => {
-        reject((event.target as IDBRequest).error);
-      };
-    };
-    
-    dbRequest.onerror = (event) => {
-      reject((event.target as IDBOpenDBRequest).error);
-    };
-  });
+export const getUserById = (id: string): User | undefined => {
+  const users = getUsers();
+  return users.find(user => user.id === id);
 };
 
-// Get users by role
-export const getUsersByRole = (role: "patient" | "doctor"): Promise<User[]> => {
-  return new Promise((resolve, reject) => {
-    const dbRequest = indexedDB.open("IntelEJHospitalDB", 1);
-    
-    dbRequest.onsuccess = (event) => {
-      const db = (event.target as IDBOpenDBRequest).result;
-      const transaction = db.transaction("users", "readonly");
-      const usersStore = transaction.objectStore("users");
-      const roleIndex = usersStore.index("role");
-      
-      const request = roleIndex.getAll(role);
-      
-      request.onsuccess = () => {
-        resolve(request.result);
-      };
-      
-      request.onerror = (event) => {
-        reject((event.target as IDBRequest).error);
-      };
-    };
-    
-    dbRequest.onerror = (event) => {
-      reject((event.target as IDBOpenDBRequest).error);
-    };
-  });
+export const getUserByEmail = (email: string): User | undefined => {
+  const users = getUsers();
+  return users.find(user => user.email === email);
 };
 
-// Appointment operations
-export const addAppointment = (appointment: Omit<Appointment, "id">): Promise<Appointment> => {
-  return new Promise((resolve, reject) => {
-    const dbRequest = indexedDB.open("IntelEJHospitalDB", 1);
-    
-    dbRequest.onsuccess = (event) => {
-      const db = (event.target as IDBOpenDBRequest).result;
-      const transaction = db.transaction("appointments", "readwrite");
-      const appointmentsStore = transaction.objectStore("appointments");
-      
-      const newAppointment = {
-        ...appointment,
-        id: uuidv4()
-      };
-      
-      const request = appointmentsStore.add(newAppointment);
-      
-      request.onsuccess = () => {
-        resolve(newAppointment);
-      };
-      
-      request.onerror = (event) => {
-        reject((event.target as IDBRequest).error);
-      };
-    };
-    
-    dbRequest.onerror = (event) => {
-      reject((event.target as IDBOpenDBRequest).error);
-    };
-  });
+export const createUser = (user: Omit<User, 'id'>): User => {
+  const users = getUsers();
+  const newUser: User = {
+    ...user,
+    id: uuidv4()
+  };
+  users.push(newUser);
+  localStorage.setItem('users', JSON.stringify(users));
+  return newUser;
 };
 
-// Get all appointments
-export const getAllAppointments = (): Promise<Appointment[]> => {
-  return new Promise((resolve, reject) => {
-    const dbRequest = indexedDB.open("IntelEJHospitalDB", 1);
-    
-    dbRequest.onsuccess = (event) => {
-      const db = (event.target as IDBOpenDBRequest).result;
-      const transaction = db.transaction("appointments", "readonly");
-      const appointmentsStore = transaction.objectStore("appointments");
-      
-      const request = appointmentsStore.getAll();
-      
-      request.onsuccess = () => {
-        resolve(request.result);
-      };
-      
-      request.onerror = (event) => {
-        reject((event.target as IDBRequest).error);
-      };
-    };
-    
-    dbRequest.onerror = (event) => {
-      reject((event.target as IDBOpenDBRequest).error);
-    };
-  });
+export const updateUser = (id: string, updates: Partial<User>): User | undefined => {
+  const users = getUsers();
+  const index = users.findIndex(user => user.id === id);
+  
+  if (index !== -1) {
+    users[index] = { ...users[index], ...updates };
+    localStorage.setItem('users', JSON.stringify(users));
+    return users[index];
+  }
+  return undefined;
 };
 
-// Get appointments by patient ID
-export const getAppointmentsByPatient = (patientId: string): Promise<Appointment[]> => {
-  return new Promise((resolve, reject) => {
-    const dbRequest = indexedDB.open("IntelEJHospitalDB", 1);
-    
-    dbRequest.onsuccess = (event) => {
-      const db = (event.target as IDBOpenDBRequest).result;
-      const transaction = db.transaction("appointments", "readonly");
-      const appointmentsStore = transaction.objectStore("appointments");
-      const patientIndex = appointmentsStore.index("patientId");
-      
-      const request = patientIndex.getAll(patientId);
-      
-      request.onsuccess = () => {
-        resolve(request.result);
-      };
-      
-      request.onerror = (event) => {
-        reject((event.target as IDBRequest).error);
-      };
-    };
-    
-    dbRequest.onerror = (event) => {
-      reject((event.target as IDBOpenDBRequest).error);
-    };
-  });
+export const deleteUser = (id: string): boolean => {
+  const users = getUsers();
+  const filteredUsers = users.filter(user => user.id !== id);
+  
+  if (users.length !== filteredUsers.length) {
+    localStorage.setItem('users', JSON.stringify(filteredUsers));
+    return true;
+  }
+  return false;
 };
 
-// Get appointments by doctor ID
-export const getAppointmentsByDoctor = (doctorId: string): Promise<Appointment[]> => {
-  return new Promise((resolve, reject) => {
-    const dbRequest = indexedDB.open("IntelEJHospitalDB", 1);
-    
-    dbRequest.onsuccess = (event) => {
-      const db = (event.target as IDBOpenDBRequest).result;
-      const transaction = db.transaction("appointments", "readonly");
-      const appointmentsStore = transaction.objectStore("appointments");
-      const doctorIndex = appointmentsStore.index("doctorId");
-      
-      const request = doctorIndex.getAll(doctorId);
-      
-      request.onsuccess = () => {
-        resolve(request.result);
-      };
-      
-      request.onerror = (event) => {
-        reject((event.target as IDBRequest).error);
-      };
-    };
-    
-    dbRequest.onerror = (event) => {
-      reject((event.target as IDBOpenDBRequest).error);
-    };
-  });
+// Appointment Management
+export const getAppointments = (): Appointment[] => {
+  return JSON.parse(localStorage.getItem('appointments') || '[]');
 };
 
-// Message operations for AI chat
-export const saveMessage = (message: Omit<Message, "id">): Promise<Message> => {
-  return new Promise((resolve, reject) => {
-    const dbRequest = indexedDB.open("IntelEJHospitalDB", 1);
-    
-    dbRequest.onsuccess = (event) => {
-      const db = (event.target as IDBOpenDBRequest).result;
-      const transaction = db.transaction("messages", "readwrite");
-      const messagesStore = transaction.objectStore("messages");
-      
-      const newMessage = {
-        ...message,
-        id: uuidv4()
-      };
-      
-      const request = messagesStore.add(newMessage);
-      
-      request.onsuccess = () => {
-        resolve(newMessage);
-      };
-      
-      request.onerror = (event) => {
-        reject((event.target as IDBRequest).error);
-      };
-    };
-    
-    dbRequest.onerror = (event) => {
-      reject((event.target as IDBOpenDBRequest).error);
-    };
-  });
+export const getAppointmentsByPatientId = (patientId: string): Appointment[] => {
+  const appointments = getAppointments();
+  return appointments.filter(appointment => appointment.patientId === patientId);
 };
 
-// Get message history by user ID
-export const getMessagesByUser = (userId: string): Promise<Message[]> => {
-  return new Promise((resolve, reject) => {
-    const dbRequest = indexedDB.open("IntelEJHospitalDB", 1);
-    
-    dbRequest.onsuccess = (event) => {
-      const db = (event.target as IDBOpenDBRequest).result;
-      const transaction = db.transaction("messages", "readonly");
-      const messagesStore = transaction.objectStore("messages");
-      const userIndex = messagesStore.index("userId");
-      
-      const request = userIndex.getAll(userId);
-      
-      request.onsuccess = () => {
-        // Sort messages by timestamp
-        const messages = request.result;
-        messages.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
-        resolve(messages);
-      };
-      
-      request.onerror = (event) => {
-        reject((event.target as IDBRequest).error);
-      };
-    };
-    
-    dbRequest.onerror = (event) => {
-      reject((event.target as IDBOpenDBRequest).error);
-    };
-  });
+export const getAppointmentsByDoctorId = (doctorId: string): Appointment[] => {
+  const appointments = getAppointments();
+  return appointments.filter(appointment => appointment.doctorId === doctorId);
+};
+
+export const createAppointment = (appointment: Omit<Appointment, 'id' | 'patientName' | 'doctorName'>): Appointment => {
+  const appointments = getAppointments();
+  const users = getUsers();
+  
+  // Get patient name
+  const patient = users.find(user => user.id === appointment.patientId);
+  const patientName = patient ? patient.name : 'Unknown Patient';
+  const patientPhoneNumber = patient?.phoneNumber;
+  
+  // Get doctor name
+  const doctor = users.find(user => user.id === appointment.doctorId);
+  const doctorName = doctor ? doctor.name : 'Unknown Doctor';
+  
+  const newAppointment: Appointment = {
+    ...appointment,
+    id: uuidv4(),
+    patientName,
+    patientPhoneNumber,
+    doctorName,
+  };
+  
+  appointments.push(newAppointment);
+  localStorage.setItem('appointments', JSON.stringify(appointments));
+  return newAppointment;
+};
+
+export const updateAppointment = (id: string, updates: Partial<Appointment>): Appointment | undefined => {
+  const appointments = getAppointments();
+  const index = appointments.findIndex(appointment => appointment.id === id);
+  
+  if (index !== -1) {
+    appointments[index] = { ...appointments[index], ...updates };
+    localStorage.setItem('appointments', JSON.stringify(appointments));
+    return appointments[index];
+  }
+  return undefined;
+};
+
+export const deleteAppointment = (id: string): boolean => {
+  const appointments = getAppointments();
+  const filteredAppointments = appointments.filter(appointment => appointment.id !== id);
+  
+  if (appointments.length !== filteredAppointments.length) {
+    localStorage.setItem('appointments', JSON.stringify(filteredAppointments));
+    return true;
+  }
+  return false;
+};
+
+// Message Management
+export const getMessages = (): Message[] => {
+  return JSON.parse(localStorage.getItem('messages') || '[]');
+};
+
+export const getMessagesByUserId = (userId: string): Message[] => {
+  const messages = getMessages();
+  return messages.filter(message => message.userId === userId);
+};
+
+export const createMessage = (message: Omit<Message, 'id'>): Message => {
+  const messages = getMessages();
+  const newMessage: Message = {
+    ...message,
+    id: uuidv4()
+  };
+  messages.push(newMessage);
+  localStorage.setItem('messages', JSON.stringify(messages));
+  return newMessage;
+};
+
+export const deleteAllMessagesForUser = (userId: string): boolean => {
+  const messages = getMessages();
+  const filteredMessages = messages.filter(message => message.userId !== userId);
+  
+  if (messages.length !== filteredMessages.length) {
+    localStorage.setItem('messages', JSON.stringify(filteredMessages));
+    return true;
+  }
+  return false;
+};
+
+// Authentication
+export const authenticateUser = (email: string, password: string): User | null => {
+  const user = getUserByEmail(email);
+  if (user && user.password === password) {
+    return user;
+  }
+  return null;
 };

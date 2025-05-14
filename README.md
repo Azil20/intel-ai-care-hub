@@ -5,6 +5,38 @@
 
 **URL**: https://lovable.dev/projects/b93f38e7-cdb4-4939-9d45-efab4d38b1de
 
+## Technologies Used
+
+This healthcare application is built using a modern tech stack:
+
+### Frontend Technologies
+- **TypeScript**: Strongly typed programming language that builds on JavaScript
+- **React**: JavaScript library for building user interfaces
+- **Tailwind CSS**: Utility-first CSS framework for rapid UI development
+- **shadcn/ui**: High-quality UI components built with Radix UI and Tailwind CSS
+- **React Router**: Library for routing in React applications
+- **React Query**: Data fetching and state management library
+- **Lucide Icons**: Beautiful open source icons
+- **Recharts**: Responsive charting library for React
+
+### Backend Technologies
+- **IndexedDB**: Browser-based database for local storage
+- **Ollama**: Local AI inference with Microsoft's Phi model
+- **MySQL** (optional): Relational database for persistent storage
+
+### Development Tools
+- **Vite**: Fast frontend build tool
+- **Node.js**: JavaScript runtime for building the application
+- **npm**: Package manager for JavaScript
+- **ESLint**: JavaScript linting utility
+- **TypeScript**: Type system for JavaScript
+
+### Languages Used
+- **TypeScript/JavaScript**: Core programming language
+- **HTML5**: Markup language for structuring web content
+- **CSS3**: Styling language for design
+- **SQL**: Database query language (when using MySQL)
+
 ## How can I edit this code?
 
 There are several ways of editing your application.
@@ -181,17 +213,6 @@ Currently, the application uses IndexedDB for local storage. To switch to MySQL,
 2. Update the database service layer
 
 Note: In a production environment, you should never store passwords as plain text. Always use proper password hashing algorithms.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-- Ollama (for local AI inference)
 
 ## How can I deploy this project?
 
