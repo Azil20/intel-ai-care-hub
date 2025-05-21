@@ -8,8 +8,9 @@ import { useLanguage } from "@/contexts/LanguageContext";
 
 const LandingPage: React.FC = () => {
   const navigate = useNavigate();
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const isArabic = language === "ar";
+  const isFrench = language === "fr";
 
   useEffect(() => {
     // Simple animation for elements with animate-on-scroll class
@@ -30,7 +31,7 @@ const LandingPage: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Logo and Verse Section */}
+      {/* Logo and Verse Section - Keep Quran verse the same in all languages */}
       <div className="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 py-12 px-4">
         <div className="container mx-auto max-w-5xl flex flex-col md:flex-row items-center justify-center gap-6">
           <div className="flex-shrink-0 animate-on-scroll">
@@ -40,9 +41,10 @@ const LandingPage: React.FC = () => {
               className="w-32 h-32 object-contain"
             />
           </div>
-          <div className={`text-center ${isArabic ? "md:text-right" : "md:text-right"}`}>
+          <div className="text-center md:text-right">
             <div className="bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/30 dark:to-amber-800/30 p-8 rounded-2xl shadow-lg border-2 border-amber-200 dark:border-amber-700 animate-on-scroll">
-              <p className={`text-4xl md:text-5xl font-arabic ${isArabic ? "" : "rtl"} text-amber-800 dark:text-amber-300 leading-relaxed tracking-wide`} 
+              {/* Keep Quran verse in Arabic regardless of selected language */}
+              <p className="text-4xl md:text-5xl font-arabic rtl text-amber-800 dark:text-amber-300 leading-relaxed tracking-wide" 
                 style={{ 
                   textShadow: '0 1px 2px rgba(0,0,0,0.1)',
                   background: 'linear-gradient(to bottom, #d4af37 0%, #f9d342 50%, #d4af37 100%)',
@@ -54,7 +56,12 @@ const LandingPage: React.FC = () => {
                 "وَإِذا مَرِضتُ فَهُوَ يَشفينِ"
               </p>
               <p className="text-gray-700 dark:text-amber-200 mt-4 italic text-lg">
-                {isArabic ? "وعندما أمرض، فهو الذي يشفيني" : "And when I am ill, it is He Who cures me"} - {isArabic ? "القرآن" : "Quran"} [26:80]
+                {isArabic 
+                  ? "وعندما أمرض، فهو الذي يشفيني" 
+                  : isFrench 
+                    ? "Et quand je suis malade, c'est Lui qui me guérit"
+                    : "And when I am ill, it is He Who cures me"
+                } - {isArabic ? "القرآن" : isFrench ? "Coran" : "Quran"} [26:80]
               </p>
             </div>
           </div>

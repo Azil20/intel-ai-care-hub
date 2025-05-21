@@ -1,9 +1,45 @@
-
 # Welcome to Intelej Hosp
 
 ## Project info
 
 **URL**: https://lovable.dev/projects/b93f38e7-cdb4-4939-9d45-efab4d38b1de
+
+## File Analysis Guide
+
+To understand how this application works, it's recommended to analyze the files in the following order:
+
+### 1. Core Structure Files
+1. `src/main.tsx` - Entry point of the application
+2. `src/App.tsx` - Main component defining routes and providers
+3. `src/index.css` - Global Tailwind CSS styles
+
+### 2. Context Providers
+1. `src/contexts/AuthContext.tsx` - Authentication management
+2. `src/contexts/LanguageContext.tsx` - Internationalization (Arabic, English, French)
+3. `src/contexts/ThemeContext.tsx` - Light/Dark mode management
+
+### 3. Core Pages
+1. `src/pages/Index.tsx` - Landing page with welcome popup
+2. `src/pages/LandingPage.tsx` - Main homepage content
+3. `src/pages/LoginPage.tsx` - Authentication interface
+4. `src/pages/patient/PatientDashboard.tsx` - Patient interface after login
+5. `src/pages/doctor/DoctorDashboard.tsx` - Doctor interface after login
+
+### 4. Key Components
+1. `src/components/Header.tsx` - Navigation header with language switcher
+2. `src/components/Footer.tsx` - Application footer
+3. `src/components/WelcomePopup.tsx` - iOS-style welcome notification
+4. `src/components/ProtectedRoute.tsx` - Authentication protection for routes
+
+### 5. Data & Services
+1. `src/services/localDatabase.ts` - IndexedDB implementation
+2. `src/services/mysqlAdapter.ts` - MySQL connection functionality
+3. `src/services/ollamaService.ts` - Integration with MedLlama AI model
+
+### 6. Specialized Features
+1. `src/pages/patient/AiChatAssistant.tsx` - Medical AI assistant using MedLlama
+2. `src/pages/patient/AppointmentBooking.tsx` - Appointment scheduling system
+3. `src/pages/doctor/AppointmentCalendar.tsx` - Doctor's appointment management
 
 ## Technologies Used
 
@@ -36,46 +72,6 @@ This healthcare application is built using a modern tech stack:
 - **HTML5**: Markup language for structuring web content
 - **CSS3**: Styling language for design
 - **SQL**: Database query language (when using MySQL)
-
-## Project Structure Analysis
-
-Here's a breakdown of the key files and directories in the project:
-
-### Core Application Files
-- `src/main.tsx` (TypeScript/React): Application entry point that sets up React with providers
-- `src/App.tsx` (TypeScript/React): Main application component defining routes
-- `src/index.css` (CSS/Tailwind): Global styles using Tailwind CSS
-- `vite.config.ts` (TypeScript): Vite configuration for build tools
-
-### Components
-- `src/components/` (TypeScript/React): Reusable UI components
-  - `Header.tsx`: Navigation header component
-  - `Footer.tsx`: Page footer component
-  - `WelcomePopup.tsx`: Apple-style popup with project credits
-  - `ui/`: shadcn UI components (buttons, cards, dialogs, etc.)
-
-### Pages
-- `src/pages/` (TypeScript/React): Application pages
-  - `Index.tsx`: Main entry page with welcome popup
-  - `LandingPage.tsx`: Homepage with Quran verse and features
-  - `LoginPage.tsx`: Authentication page
-  - `patient/`: Patient-specific pages (dashboard, appointments, AI chat)
-  - `doctor/`: Doctor-specific pages (dashboard, patient list)
-
-### Contexts and Hooks
-- `src/contexts/` (TypeScript/React): Global state management
-  - `AuthContext.tsx`: Authentication state management
-  - `LanguageContext.tsx`: Internationalization support (English/Arabic)
-  - `ThemeContext.tsx`: Theme management (light/dark mode)
-- `src/hooks/` (TypeScript/React): Custom React hooks
-  - `use-welcome-styles.ts`: Dynamic styling for welcome popup
-  - `use-mobile.tsx`: Responsive design utilities
-
-### Services
-- `src/services/` (TypeScript): Backend service integrations
-  - `localDatabase.ts`: IndexedDB implementation for local storage
-  - `mysqlAdapter.ts`: MySQL database adapter (optional)
-  - `ollamaService.ts`: Integration with AI model
 
 ## Setting up MedLlama for the AI Health Assistant
 
@@ -110,28 +106,7 @@ ollama pull medllama
 ```
 3. Wait for the download to complete (approximately 4GB)
 
-### 3. Configure the Application to Use MedLlama
-
-To configure the application to use MedLlama:
-
-1. Open `src/services/ollamaService.ts` and update the model name from "phi" to "medllama":
-
-```typescript
-// Example modification
-const response = await fetch("http://localhost:11434/api/generate", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify({
-    model: "medllama", // Changed from phi to medllama
-    prompt: message,
-    stream: false,
-  }),
-});
-```
-
-### 4. Start the Ollama Service
+### 3. Start the Ollama Service
 
 1. Make sure Ollama is running in the background:
    - **Windows**: It should start automatically after installation
@@ -142,7 +117,7 @@ const response = await fetch("http://localhost:11434/api/generate", {
 4. Use the AI Chat Assistant to send a medical query
 5. The response will be generated locally using MedLlama's specialized medical knowledge
 
-### 5. Optimizing MedLlama Responses
+### 4. Optimizing MedLlama Responses
 
 To get the best results from MedLlama:
 

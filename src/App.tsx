@@ -17,9 +17,24 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import NotFound from "./pages/NotFound";
 import { initializeLocalDatabase } from "./services/localDatabase";
 import "./services/mysqlAdapter"; // Import MySQL adapter to ensure it initializes
+import { checkOllamaConnection } from "./services/ollamaService"; // Import Ollama service
 
 // Initialize database when app loads
 initializeLocalDatabase();
+
+// Check if Ollama service is available
+checkOllamaConnection()
+  .then(available => {
+    if (available) {
+      console.log("✅ MedLlama model is available and connected");
+    } else {
+      console.warn("⚠️ MedLlama model is not available. Some features may be limited.");
+      console.info("To install MedLlama, run: ollama pull medllama");
+    }
+  })
+  .catch(err => {
+    console.error("Failed to check Ollama connection:", err);
+  });
 
 const queryClient = new QueryClient();
 

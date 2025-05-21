@@ -1,5 +1,5 @@
 
-// Service for connecting to Ollama Phi model
+// Service for connecting to Ollama MedLlama model
 const OLLAMA_API_URL = "http://localhost:11434/api/generate";
 
 export interface OllamaResponse {
@@ -14,7 +14,7 @@ export const generateResponse = async (prompt: string): Promise<string> => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'phi',
+        model: 'medllama', // Changed from phi to medllama
         prompt: prompt,
         stream: false,
       }),
@@ -28,7 +28,7 @@ export const generateResponse = async (prompt: string): Promise<string> => {
     return data.response;
   } catch (error) {
     console.error("Error connecting to Ollama:", error);
-    return "I'm unable to connect to the AI service at the moment. Please ensure Ollama is running locally with the phi model installed.";
+    return "I'm unable to connect to the AI service at the moment. Please ensure Ollama is running locally with the medllama model installed.";
   }
 };
 
@@ -40,7 +40,7 @@ export const checkOllamaConnection = async (): Promise<boolean> => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'phi',
+        model: 'medllama', // Changed from phi to medllama
         prompt: 'Say "Connected" if you can read this message.',
         stream: false,
       }),

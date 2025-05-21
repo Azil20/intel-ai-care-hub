@@ -49,6 +49,25 @@ export const useWelcomeStyles = () => {
         .pulse-animation {
           animation: gentle-pulse 3s infinite ease-in-out;
         }
+        
+        .notification-icon {
+          animation: pop 0.6s ease-out;
+        }
+        
+        @keyframes pop {
+          0% { 
+            transform: scale(0.8);
+            opacity: 0; 
+          }
+          70% { 
+            transform: scale(1.1);
+            opacity: 1; 
+          }
+          100% { 
+            transform: scale(1);
+            opacity: 1; 
+          }
+        }
       `;
       document.head.appendChild(styleElement);
     }

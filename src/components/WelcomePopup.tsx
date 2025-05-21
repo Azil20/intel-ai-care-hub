@@ -60,7 +60,7 @@ const WelcomePopup: React.FC<WelcomePopupProps> = ({ onClose }) => {
           </button>
           
           <div className="flex flex-col items-center text-center">
-            <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mb-4 shadow-lg">
+            <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mb-4 shadow-lg notification-icon">
               <span className="text-white text-2xl font-bold">IH</span>
             </div>
             
@@ -99,4 +99,3 @@ const WelcomePopup: React.FC<WelcomePopupProps> = ({ onClose }) => {
 };
 
 export default WelcomePopup;
-
