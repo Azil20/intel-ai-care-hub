@@ -151,113 +151,271 @@ To get the best results from MedLlama:
 3. Ask one question at a time
 4. Include relevant patient information when applicable
 
-## How to Rebuild This Project From Scratch
+## Setting Up MySQL for Intelej Hosp
 
-If you want to rebuild this project yourself, here's a step-by-step guide:
+The application by default uses browser-based IndexedDB for local data storage. For production or more robust development, you can set up a MySQL database. Follow these steps to implement MySQL support:
 
-### 1. Setup Development Environment
+### 1. Install MySQL Server
 
-1. Install Node.js and npm from [nodejs.org](https://nodejs.org/)
-2. Install Git from [git-scm.com](https://git-scm.com/)
-3. Install a code editor like VS Code from [code.visualstudio.com](https://code.visualstudio.com/)
+#### Windows
+1. Download MySQL Installer from [MySQL official website](https://dev.mysql.com/downloads/installer/)
+2. Run the installer and select "MySQL Server" during installation
+3. Follow the installation wizard and setup root password
+4. Make sure the service is running after installation
 
-### 2. Create a New React Project with Vite
+#### macOS
+1. Install with Homebrew: `brew install mysql`
+2. Start MySQL service: `brew services start mysql`
+3. Set root password: `mysql_secure_installation`
 
-```bash
-# Create a new project with Vite
-npm create vite@latest intelej-hosp -- --template react-ts
-
-# Navigate to the project directory
-cd intelej-hosp
-
-# Install dependencies
-npm install
+#### Linux (Ubuntu/Debian)
+```sh
+sudo apt update
+sudo apt install mysql-server
+sudo systemctl start mysql
+sudo mysql_secure_installation
 ```
 
-### 3. Add Required Dependencies
+### 2. Create Database and Tables
 
-```bash
-# UI and styling
-npm install tailwindcss postcss autoprefixer
-npm install @radix-ui/react-dialog @radix-ui/react-toast # and other Radix UI components
-npm install lucide-react recharts date-fns
-
-# Routing and state management
-npm install react-router-dom @tanstack/react-query
-
-# Utility libraries
-npm install uuid class-variance-authority clsx tailwind-merge zod
-
-# Initialize Tailwind CSS
-npx tailwindcss init -p
+1. Access MySQL command line:
+```sh
+mysql -u root -p
 ```
 
-### 4. Project Structure Setup
-
-Create the following directory structure:
-
-```
-src/
-├── components/
-│   ├── ui/
-│   ├── Header.tsx
-│   └── Footer.tsx
-├── contexts/
-│   ├── AuthContext.tsx
-│   ├── LanguageContext.tsx
-│   └── ThemeContext.tsx
-├── hooks/
-│   └── use-mobile.tsx
-├── pages/
-│   ├── patient/
-│   ├── doctor/
-│   ├── Index.tsx
-│   ├── LandingPage.tsx
-│   └── LoginPage.tsx
-├── services/
-│   ├── localDatabase.ts
-│   ├── mysqlAdapter.ts
-│   └── ollamaService.ts
-├── lib/
-│   └── utils.ts
-├── App.tsx
-├── main.tsx
-└── index.css
+2. Create a new database for the application:
+```sql
+CREATE DATABASE intelejhosp;
+USE intelejhosp;
 ```
 
-### 5. Learning Path for Each Technology
+3. Create necessary tables for the application:
+```sql
+-- Users table
+CREATE TABLE users (
+  id VARCHAR(36) PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  email VARCHAR(100) UNIQUE NOT NULL,
+  password VARCHAR(100) NOT NULL,
+  role ENUM('patient', 'doctor') NOT NULL,
+  phoneNumber VARCHAR(20),
+  avatar VARCHAR(255)
+);
 
-To master the technologies used in this project:
+-- Appointments table
+CREATE TABLE appointments (
+  id VARCHAR(36) PRIMARY KEY,
+  patientId VARCHAR(36) NOT NULL,
+  patientName VARCHAR(100) NOT NULL,
+  patientPhoneNumber VARCHAR(20),
+  doctorId VARCHAR(36) NOT NULL,
+  doctorName VARCHAR(100) NOT NULL,
+  date DATE NOT NULL,
+  time TIME NOT NULL,
+  reason TEXT,
+  status ENUM('scheduled', 'completed', 'cancelled') NOT NULL,
+  FOREIGN KEY (patientId) REFERENCES users(id),
+  FOREIGN KEY (doctorId) REFERENCES users(id)
+);
 
-#### TypeScript & React
-1. Learn JavaScript basics (variables, functions, objects)
-2. Learn TypeScript fundamentals (types, interfaces, generics)
-3. Learn React basics (components, props, state, hooks)
-4. Study React's advanced patterns (context, custom hooks)
-5. Learn TypeScript with React (typing props, hooks, events)
+-- Messages table
+CREATE TABLE messages (
+  id VARCHAR(36) PRIMARY KEY,
+  userId VARCHAR(36) NOT NULL,
+  content TEXT NOT NULL,
+  isAi BOOLEAN NOT NULL,
+  timestamp DATETIME NOT NULL,
+  FOREIGN KEY (userId) REFERENCES users(id)
+);
+```
 
-#### CSS & Tailwind
-1. Learn CSS fundamentals (selectors, properties, layouts)
-2. Learn Flexbox and Grid layout systems
-3. Learn Tailwind CSS utility-first approach
-4. Study responsive design principles
-5. Master dark mode implementation
+4. Add sample data (optional):
+```sql
+-- Insert sample doctor
+INSERT INTO users (id, name, email, password, role, avatar)
+VALUES ('d1', 'Dr. Sarah Smith', 'doctor@example.com', 'password', 'doctor', '/profile-placeholder.png');
 
-#### Backend & Database
-1. Learn IndexedDB basics for browser storage
-2. Understand RESTful API concepts
-3. Learn basic SQL for database operations
-4. Study authentication and security principles
-5. Learn about AI model integration
+-- Insert sample patient
+INSERT INTO users (id, name, email, password, role, phoneNumber, avatar)
+VALUES ('p1', 'John Doe', 'patient@example.com', 'password', 'patient', '555-123-4567', '/profile-placeholder.png');
+```
 
-### 6. Resources for Learning
+### 3. Set Up Node.js Backend (Required for MySQL Connectivity)
 
-- **TypeScript**: [TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/intro.html)
-- **React**: [React Documentation](https://react.dev/)
-- **Tailwind CSS**: [Tailwind CSS Documentation](https://tailwindcss.com/docs)
-- **React Router**: [React Router Documentation](https://reactrouter.com/en/main)
-- **React Query**: [TanStack Query Documentation](https://tanstack.com/query/latest)
-- **IndexedDB**: [MDN IndexedDB API](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API)
+Since browsers cannot connect directly to MySQL, you need a backend service:
+
+1. Create a new Node.js project for your backend:
+```sh
+mkdir intelejhosp-backend
+cd intelejhosp-backend
+npm init -y
+npm install express cors mysql2 dotenv
+```
+
+2. Create a `.env` file for database credentials:
+```
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=yourpassword
+DB_NAME=intelejhosp
+PORT=3001
+```
+
+3. Create a `server.js` file:
+```javascript
+const express = require('express');
+const cors = require('cors');
+const mysql = require('mysql2/promise');
+require('dotenv').config();
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+// Create MySQL connection pool
+const pool = mysql.createPool({
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
+});
+
+// Test database connection
+app.get('/api/test', async (req, res) => {
+  try {
+    const [result] = await pool.query('SELECT 1+1 as result');
+    res.json({ message: 'Database connection successful', result: result[0] });
+  } catch (error) {
+    res.status(500).json({ message: 'Database connection failed', error: error.message });
+  }
+});
+
+// API endpoint for users
+app.get('/api/users', async (req, res) => {
+  try {
+    const [rows] = await pool.query('SELECT id, name, email, role, phoneNumber, avatar FROM users');
+    res.json(rows);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching users', error: error.message });
+  }
+});
+
+// API endpoint for appointments
+app.get('/api/appointments', async (req, res) => {
+  try {
+    const [rows] = await pool.query('SELECT * FROM appointments');
+    res.json(rows);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching appointments', error: error.message });
+  }
+});
+
+// Start server
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
+```
+
+4. Start your backend:
+```sh
+node server.js
+```
+
+### 4. Update Frontend to Use MySQL
+
+1. Update the `src/services/mysqlAdapter.ts` file with proper connection and query methods
+2. Create a toggle to switch between IndexedDB and MySQL in your application settings
+3. Update your frontend API calls to use the MySQL adapter
+
+### 5. Integrating MySQL with the Frontend
+
+To use MySQL in your frontend application:
+
+1. Open your project and modify the data service layer to use the MySQL adapter:
+
+```typescript
+import { setupMySQLConnection, executeMySQLQuery } from './mysqlAdapter';
+
+// Initialize MySQL connection
+const mysqlConnection = setupMySQLConnection({
+  host: 'localhost',
+  port: 3001, // This is your Node.js backend port, not MySQL port
+  username: 'root',
+  password: 'password',
+  database: 'intelejhosp'
+});
+
+// Example function to fetch users from MySQL
+export const fetchUsersFromMySQL = async () => {
+  const response = await fetch('http://localhost:3001/api/users');
+  if (!response.ok) {
+    throw new Error('Failed to fetch users from MySQL');
+  }
+  return await response.json();
+};
+```
+
+2. Create a toggle between storage types in your application settings:
+
+```typescript
+// In a settings context or component
+const [storageType, setStorageType] = useState('indexeddb'); // or 'mysql'
+
+// Function to switch storage types
+const switchToMySQL = () => {
+  setStorageType('mysql');
+  // Initialize MySQL connection here
+};
+
+const switchToIndexedDB = () => {
+  setStorageType('indexeddb');
+  // Go back to using IndexedDB
+};
+```
+
+### 6. Data Migration Tool
+
+For migrating data from IndexedDB to MySQL:
+
+1. Create a migration utility:
+```typescript
+import * as localDB from './localDatabase';
+import { migrateToMySQL } from './mysqlAdapter';
+
+// Migration function
+export const migrateDataToMySQL = async () => {
+  // 1. Get all data from IndexedDB
+  const users = localDB.getUsers();
+  const appointments = localDB.getAppointments();
+  const messages = localDB.getMessages();
+  
+  // 2. Format data for MySQL insertion
+  // This would be handled by your backend
+  
+  // 3. Call the migration function
+  const result = await migrateToMySQL();
+  
+  return result;
+};
+```
+
+2. Add a migration button in your application settings
+3. When clicked, execute the migration process
+
+### 7. Testing MySQL Integration
+
+To verify your MySQL setup is working:
+
+1. Start your Node.js backend server
+2. Open your application and switch to MySQL storage
+3. Attempt to load user data or create a new appointment
+4. Check your MySQL database to confirm the data was stored
 
 ## How can I edit this code?
 
