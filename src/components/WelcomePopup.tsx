@@ -1,9 +1,10 @@
 
 import React, { useState, useEffect, useRef } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useWelcomeStyles } from "@/hooks/use-welcome-styles";
 import { X } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface WelcomePopupProps {
   onClose: () => void;
@@ -12,6 +13,7 @@ interface WelcomePopupProps {
 const WelcomePopup: React.FC<WelcomePopupProps> = ({ onClose }) => {
   const [open, setOpen] = useState(true);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const { language, t } = useLanguage();
   
   // Apply welcome styles
   useWelcomeStyles();
@@ -62,16 +64,23 @@ const WelcomePopup: React.FC<WelcomePopupProps> = ({ onClose }) => {
               <span className="text-white text-2xl font-bold">IH</span>
             </div>
             
-            <h2 className="text-2xl font-semibold mb-2 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-              IntelEJ Hospital
+            <h2 className="text-2xl font-semibold mb-2 text-gradient">
+              {t('intelejHospital')}
             </h2>
             
             <div className="space-y-4 mb-6">
               <div className="space-y-1">
-                <p className="text-base text-gray-700 dark:text-gray-300 font-medium">PROJECT CREDITS</p>
-                <p className="text-xl font-bold text-gray-900 dark:text-white">MOUNIR KHAOULAF & MOHAMED AZRI</p>
+                <p className="text-base text-gray-700 dark:text-gray-300 font-medium">{t('projectCredits')}</p>
+                <p className="text-xl font-bold text-gray-900 dark:text-white">
+                  MOUNIR KHAOULAF & MOHAMED AZRI
+                </p>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  FOR THE LAST YEAR PROJECT OF THE<br />UNIVERSITY OF IBN TOFAIL
+                  {t('forLastYearProject')}
+                </p>
+              </div>
+              <div className="space-y-2 pulse-animation">
+                <p className="text-sm text-gray-700 dark:text-gray-300">
+                  {t('projectDescription')}
                 </p>
               </div>
             </div>
@@ -80,7 +89,7 @@ const WelcomePopup: React.FC<WelcomePopupProps> = ({ onClose }) => {
               onClick={handleClose}
               className="w-full rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium py-2"
             >
-              Continue
+              {t('continue')}
             </Button>
           </div>
         </div>
@@ -90,3 +99,4 @@ const WelcomePopup: React.FC<WelcomePopupProps> = ({ onClose }) => {
 };
 
 export default WelcomePopup;
+

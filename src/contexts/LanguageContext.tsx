@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
 
 // Define available languages
@@ -204,6 +203,32 @@ const translations: Translations = {
     en: "Chat with Health Assistant",
     ar: "الدردشة مع المساعد الصحي",
     fr: "Discuter avec l'Assistant Santé"
+  },
+  // New translations for the welcome popup
+  intelejHospital: {
+    en: "IntelEJ Hospital",
+    ar: "مستشفى إنتلج",
+    fr: "Hôpital IntelEJ"
+  },
+  projectCredits: {
+    en: "PROJECT CREDITS",
+    ar: "الإعتمادات",
+    fr: "CRÉDITS DU PROJET"
+  },
+  forLastYearProject: {
+    en: "FOR THE LAST YEAR PROJECT OF THE UNIVERSITY OF IBN TOFAIL",
+    ar: "لمشروع السنة الأخيرة لجامعة ابن طفيل",
+    fr: "POUR LE PROJET DE DERNIÈRE ANNÉE DE L'UNIVERSITÉ IBN TOFAIL"
+  },
+  projectDescription: {
+    en: "We Give Our 100% To Make It Pro Class to Help Hospitals To Upgrade Their Quality Of Helping Patients",
+    ar: "نقدم 100٪ من جهودنا لجعله فئة محترفة لمساعدة المستشفيات على ترقية جودة مساعدة المرضى",
+    fr: "Nous donnons 100% pour en faire une classe professionnelle pour aider les hôpitaux à améliorer leur qualité d'aide aux patients"
+  },
+  continue: {
+    en: "Continue",
+    ar: "متابعة",
+    fr: "Continuer"
   }
 };
 
