@@ -41,11 +41,19 @@ const LandingPage: React.FC = () => {
             />
           </div>
           <div className={`text-center ${isArabic ? "md:text-right" : "md:text-right"}`}>
-            <div className="bg-gradient-to-r from-gray-50 to-indigo-50 dark:from-gray-800 dark:to-gray-700 p-6 rounded-lg shadow-md border-r-4 border-teal-500 animate-on-scroll">
-              <p className={`text-3xl md:text-4xl font-serif ${isArabic ? "" : "rtl"} text-gray-800 dark:text-gray-100 leading-relaxed`}>
+            <div className="bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/30 dark:to-amber-800/30 p-8 rounded-2xl shadow-lg border-2 border-amber-200 dark:border-amber-700 animate-on-scroll">
+              <p className={`text-4xl md:text-5xl font-arabic ${isArabic ? "" : "rtl"} text-amber-800 dark:text-amber-300 leading-relaxed tracking-wide`} 
+                style={{ 
+                  textShadow: '0 1px 2px rgba(0,0,0,0.1)',
+                  background: 'linear-gradient(to bottom, #d4af37 0%, #f9d342 50%, #d4af37 100%)',
+                  WebkitBackgroundClip: 'text', 
+                  backgroundClip: 'text',
+                  color: 'transparent',
+                  fontWeight: 700
+                }}>
                 "وَإِذا مَرِضتُ فَهُوَ يَشفينِ"
               </p>
-              <p className="text-gray-600 dark:text-gray-300 mt-3 italic">
+              <p className="text-gray-700 dark:text-amber-200 mt-4 italic text-lg">
                 {isArabic ? "وعندما أمرض، فهو الذي يشفيني" : "And when I am ill, it is He Who cures me"} - {isArabic ? "القرآن" : "Quran"} [26:80]
               </p>
             </div>

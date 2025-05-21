@@ -47,25 +47,27 @@ const WelcomePopup: React.FC<WelcomePopupProps> = ({ onClose }) => {
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[600px] glass-popup">
+      <DialogContent className="sm:max-w-[600px] glass-popup border-0 rounded-2xl shadow-2xl">
         <DialogHeader>
-          <DialogTitle className="text-2xl text-center mb-2">Welcome to IntelEJ Hospital</DialogTitle>
+          <DialogTitle className="text-3xl font-medium text-center mb-2 text-gradient">Welcome to IntelEJ Hospital</DialogTitle>
         </DialogHeader>
         
         <div className="text-center space-y-6 py-4">
-          <div className="bg-gradient-to-r from-blue-500 to-teal-500 p-1 rounded-lg pulse-animation">
-            <div className="bg-background dark:bg-gray-900 p-6 rounded-md">
-              <h3 className="text-xl font-semibold mb-4 text-gradient">PROJECT CREDITS</h3>
-              <p className="text-lg font-medium">THIS PROJECT WAS BUILT BY</p>
-              <p className="text-2xl font-bold my-3 text-blue-500 dark:text-blue-400">MOUNIR KHAOULAF & MOHAMED AZRI</p>
-              <p className="text-lg font-medium">FOR THE LAST YEAR PROJECT OF THE</p>
-              <p className="text-xl font-bold mt-3 text-teal-600 dark:text-teal-400">UNIVERSITY OF IBN TOFAIL</p>
+          <div className="backdrop-blur-md bg-white/5 dark:bg-black/5 border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden shadow-xl">
+            <div className="p-8">
+              <h3 className="text-2xl font-medium mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">PROJECT CREDITS</h3>
+              <div className="space-y-5">
+                <p className="text-xl text-gray-600 dark:text-gray-300">THIS PROJECT WAS BUILT BY</p>
+                <p className="text-3xl font-semibold my-3 bg-gradient-to-r from-blue-500 to-indigo-600 bg-clip-text text-transparent pulse-animation">MOUNIR KHAOULAF & MOHAMED AZRI</p>
+                <p className="text-xl text-gray-600 dark:text-gray-300">FOR THE LAST YEAR PROJECT OF THE</p>
+                <p className="text-2xl font-semibold mt-3 bg-gradient-to-r from-indigo-500 to-purple-600 bg-clip-text text-transparent">UNIVERSITY OF IBN TOFAIL</p>
+              </div>
             </div>
           </div>
           
           <Button 
             onClick={handleClose}
-            className="mt-4 px-8 py-2 bg-gradient-to-r from-teal-500 to-blue-500 hover:from-teal-600 hover:to-blue-600 text-white font-medium rounded-md"
+            className="mt-6 px-8 py-6 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium text-lg transition-all hover:shadow-lg hover:scale-105"
           >
             Continue to Hospital System
           </Button>

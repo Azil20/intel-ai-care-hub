@@ -9,28 +9,30 @@ export const useWelcomeStyles = () => {
       styleElement.id = 'welcome-popup-styles';
       styleElement.textContent = `
         .glass-popup {
-          background: rgba(255, 255, 255, 0.8) !important;
-          backdrop-filter: blur(10px) !important;
+          background: rgba(255, 255, 255, 0.7) !important;
+          backdrop-filter: blur(25px) !important;
+          -webkit-backdrop-filter: blur(25px) !important;
+          border-radius: 24px !important;
           border: 1px solid rgba(255, 255, 255, 0.3) !important;
-          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
+          box-shadow: 0 20px 80px rgba(0, 0, 0, 0.15) !important;
         }
 
         .dark .glass-popup {
-          background: rgba(30, 30, 35, 0.8) !important;
+          background: rgba(25, 25, 30, 0.7) !important;
           border: 1px solid rgba(255, 255, 255, 0.1) !important;
         }
 
         .text-gradient {
-          background: linear-gradient(to right, #3b82f6, #10b981);
+          background: linear-gradient(to right, #3b82f6, #8b5cf6);
           -webkit-background-clip: text;
           background-clip: text;
           color: transparent;
         }
 
         @keyframes gentle-pulse {
-          0% { transform: scale(1); }
-          50% { transform: scale(1.03); }
-          100% { transform: scale(1); }
+          0% { transform: scale(1); opacity: 1; }
+          50% { transform: scale(1.02); opacity: 0.9; }
+          100% { transform: scale(1); opacity: 1; }
         }
 
         .pulse-animation {

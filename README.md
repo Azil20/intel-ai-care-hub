@@ -21,7 +21,7 @@ This healthcare application is built using a modern tech stack:
 
 ### Backend Technologies
 - **IndexedDB**: Browser-based database for local storage
-- **Ollama**: Local AI inference with Microsoft's Phi model
+- **MedLlama**: Specialized medical AI model for healthcare assistance
 - **MySQL** (optional): Relational database for persistent storage
 
 ### Development Tools
@@ -36,6 +36,228 @@ This healthcare application is built using a modern tech stack:
 - **HTML5**: Markup language for structuring web content
 - **CSS3**: Styling language for design
 - **SQL**: Database query language (when using MySQL)
+
+## Project Structure Analysis
+
+Here's a breakdown of the key files and directories in the project:
+
+### Core Application Files
+- `src/main.tsx` (TypeScript/React): Application entry point that sets up React with providers
+- `src/App.tsx` (TypeScript/React): Main application component defining routes
+- `src/index.css` (CSS/Tailwind): Global styles using Tailwind CSS
+- `vite.config.ts` (TypeScript): Vite configuration for build tools
+
+### Components
+- `src/components/` (TypeScript/React): Reusable UI components
+  - `Header.tsx`: Navigation header component
+  - `Footer.tsx`: Page footer component
+  - `WelcomePopup.tsx`: Apple-style popup with project credits
+  - `ui/`: shadcn UI components (buttons, cards, dialogs, etc.)
+
+### Pages
+- `src/pages/` (TypeScript/React): Application pages
+  - `Index.tsx`: Main entry page with welcome popup
+  - `LandingPage.tsx`: Homepage with Quran verse and features
+  - `LoginPage.tsx`: Authentication page
+  - `patient/`: Patient-specific pages (dashboard, appointments, AI chat)
+  - `doctor/`: Doctor-specific pages (dashboard, patient list)
+
+### Contexts and Hooks
+- `src/contexts/` (TypeScript/React): Global state management
+  - `AuthContext.tsx`: Authentication state management
+  - `LanguageContext.tsx`: Internationalization support (English/Arabic)
+  - `ThemeContext.tsx`: Theme management (light/dark mode)
+- `src/hooks/` (TypeScript/React): Custom React hooks
+  - `use-welcome-styles.ts`: Dynamic styling for welcome popup
+  - `use-mobile.tsx`: Responsive design utilities
+
+### Services
+- `src/services/` (TypeScript): Backend service integrations
+  - `localDatabase.ts`: IndexedDB implementation for local storage
+  - `mysqlAdapter.ts`: MySQL database adapter (optional)
+  - `ollamaService.ts`: Integration with AI model
+
+## Setting up MedLlama for the AI Health Assistant
+
+MedLlama is a specialized large language model fine-tuned for medical domain knowledge. To integrate MedLlama with this application:
+
+### 1. Install Ollama
+
+First, you need to install Ollama, which is a framework for running LLMs locally:
+
+#### Windows
+1. Download and install Ollama from [the official website](https://ollama.com/download/windows)
+2. Run the installer and follow the instructions
+
+#### macOS
+1. Download and install Ollama from [the official website](https://ollama.com/download/mac)
+2. Or use Homebrew: `brew install ollama`
+
+#### Linux
+1. Run the following command:
+```sh
+curl -fsSL https://ollama.com/install.sh | sh
+```
+
+### 2. Pull the MedLlama Model
+
+After installing Ollama:
+
+1. Open a terminal/command prompt
+2. Run the following command to download MedLlama:
+```sh
+ollama pull medllama
+```
+3. Wait for the download to complete (approximately 4GB)
+
+### 3. Configure the Application to Use MedLlama
+
+To configure the application to use MedLlama:
+
+1. Open `src/services/ollamaService.ts` and update the model name from "phi" to "medllama":
+
+```typescript
+// Example modification
+const response = await fetch("http://localhost:11434/api/generate", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    model: "medllama", // Changed from phi to medllama
+    prompt: message,
+    stream: false,
+  }),
+});
+```
+
+### 4. Start the Ollama Service
+
+1. Make sure Ollama is running in the background:
+   - **Windows**: It should start automatically after installation
+   - **macOS/Linux**: Run `ollama serve` in a terminal window
+
+2. Start the Intelej Hosp application
+3. Navigate to the Patient Dashboard
+4. Use the AI Chat Assistant to send a medical query
+5. The response will be generated locally using MedLlama's specialized medical knowledge
+
+### 5. Optimizing MedLlama Responses
+
+To get the best results from MedLlama:
+
+1. Add medical context to your prompts
+2. Be specific about symptoms or conditions
+3. Ask one question at a time
+4. Include relevant patient information when applicable
+
+## How to Rebuild This Project From Scratch
+
+If you want to rebuild this project yourself, here's a step-by-step guide:
+
+### 1. Setup Development Environment
+
+1. Install Node.js and npm from [nodejs.org](https://nodejs.org/)
+2. Install Git from [git-scm.com](https://git-scm.com/)
+3. Install a code editor like VS Code from [code.visualstudio.com](https://code.visualstudio.com/)
+
+### 2. Create a New React Project with Vite
+
+```bash
+# Create a new project with Vite
+npm create vite@latest intelej-hosp -- --template react-ts
+
+# Navigate to the project directory
+cd intelej-hosp
+
+# Install dependencies
+npm install
+```
+
+### 3. Add Required Dependencies
+
+```bash
+# UI and styling
+npm install tailwindcss postcss autoprefixer
+npm install @radix-ui/react-dialog @radix-ui/react-toast # and other Radix UI components
+npm install lucide-react recharts date-fns
+
+# Routing and state management
+npm install react-router-dom @tanstack/react-query
+
+# Utility libraries
+npm install uuid class-variance-authority clsx tailwind-merge zod
+
+# Initialize Tailwind CSS
+npx tailwindcss init -p
+```
+
+### 4. Project Structure Setup
+
+Create the following directory structure:
+
+```
+src/
+├── components/
+│   ├── ui/
+│   ├── Header.tsx
+│   └── Footer.tsx
+├── contexts/
+│   ├── AuthContext.tsx
+│   ├── LanguageContext.tsx
+│   └── ThemeContext.tsx
+├── hooks/
+│   └── use-mobile.tsx
+├── pages/
+│   ├── patient/
+│   ├── doctor/
+│   ├── Index.tsx
+│   ├── LandingPage.tsx
+│   └── LoginPage.tsx
+├── services/
+│   ├── localDatabase.ts
+│   ├── mysqlAdapter.ts
+│   └── ollamaService.ts
+├── lib/
+│   └── utils.ts
+├── App.tsx
+├── main.tsx
+└── index.css
+```
+
+### 5. Learning Path for Each Technology
+
+To master the technologies used in this project:
+
+#### TypeScript & React
+1. Learn JavaScript basics (variables, functions, objects)
+2. Learn TypeScript fundamentals (types, interfaces, generics)
+3. Learn React basics (components, props, state, hooks)
+4. Study React's advanced patterns (context, custom hooks)
+5. Learn TypeScript with React (typing props, hooks, events)
+
+#### CSS & Tailwind
+1. Learn CSS fundamentals (selectors, properties, layouts)
+2. Learn Flexbox and Grid layout systems
+3. Learn Tailwind CSS utility-first approach
+4. Study responsive design principles
+5. Master dark mode implementation
+
+#### Backend & Database
+1. Learn IndexedDB basics for browser storage
+2. Understand RESTful API concepts
+3. Learn basic SQL for database operations
+4. Study authentication and security principles
+5. Learn about AI model integration
+
+### 6. Resources for Learning
+
+- **TypeScript**: [TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/intro.html)
+- **React**: [React Documentation](https://react.dev/)
+- **Tailwind CSS**: [Tailwind CSS Documentation](https://tailwindcss.com/docs)
+- **React Router**: [React Router Documentation](https://reactrouter.com/en/main)
+- **React Query**: [TanStack Query Documentation](https://tanstack.com/query/latest)
+- **IndexedDB**: [MDN IndexedDB API](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API)
 
 ## How can I edit this code?
 
@@ -68,151 +290,6 @@ npm i
 # Step 4: Start the development server with auto-reloading and an instant preview.
 npm run dev
 ```
-
-## Setting up Ollama with Phi Model
-
-Intelej Hosp uses [Ollama](https://ollama.com/) for local AI inference with Microsoft's Phi model. This allows the AI chat assistant to work completely locally without sending data to external services.
-
-### 1. Install Ollama
-
-#### Windows
-1. Download and install Ollama from [the official website](https://ollama.com/download/windows)
-2. Follow the installation instructions
-
-#### macOS
-1. Download and install Ollama from [the official website](https://ollama.com/download/mac)
-2. Or use Homebrew: `brew install ollama`
-
-#### Linux
-1. Run the following command:
-```sh
-curl -fsSL https://ollama.com/install.sh | sh
-```
-
-### 2. Pull the Phi Model
-
-After installing Ollama:
-
-1. Open a terminal/command prompt
-2. Run the following command to download Microsoft's Phi model:
-```sh
-ollama pull phi
-```
-3. Wait for the download to complete (approx. 1.8GB)
-
-### 3. Start the Ollama Service
-
-Make sure Ollama is running in the background:
-
-- **Windows**: It should start automatically after installation
-- **macOS/Linux**: Run `ollama serve` in a terminal window
-
-### 4. Test the Connection
-
-Once Ollama is running with the Phi model:
-
-1. Start the Intelej Hosp application
-2. Navigate to the Patient Dashboard
-3. Use the AI Chat Assistant to send a test message
-4. You should receive a response generated locally by the Phi model
-
-### 5. Troubleshooting
-
-If you experience issues:
-- Ensure Ollama is running (look for the Ollama icon in your system tray)
-- Verify the Phi model was downloaded successfully with `ollama list`
-- Check that Ollama is listening on the default port: http://localhost:11434
-- Look at the browser's console logs for any connection errors
-
-## Setting up MySQL Database Locally
-
-To use MySQL locally with this application, follow these steps:
-
-### 1. Install MySQL Server
-
-#### Windows
-1. Download MySQL Installer from [MySQL official website](https://dev.mysql.com/downloads/installer/)
-2. Run the installer and follow the installation wizard
-3. Select "Developer Default" or "Server only" option
-4. Complete the setup and make note of your root password
-
-#### macOS
-1. Using Homebrew: `brew install mysql`
-2. Start MySQL: `brew services start mysql`
-3. Secure the installation: `mysql_secure_installation`
-
-#### Linux (Ubuntu/Debian)
-```sh
-sudo apt update
-sudo apt install mysql-server
-sudo mysql_secure_installation
-```
-
-### 2. Create Database for Intelej Hosp
-
-1. Log in to MySQL:
-```sh
-mysql -u root -p
-```
-
-2. Create a database:
-```sql
-CREATE DATABASE intelej_hospital;
-```
-
-3. Create a user for the application:
-```sql
-CREATE USER 'intelej_user'@'localhost' IDENTIFIED BY 'your_password';
-GRANT ALL PRIVILEGES ON intelej_hospital.* TO 'intelej_user'@'localhost';
-FLUSH PRIVILEGES;
-```
-
-4. Create necessary tables:
-```sql
-USE intelej_hospital;
-
-CREATE TABLE users (
-  id VARCHAR(36) PRIMARY KEY,
-  name VARCHAR(100) NOT NULL,
-  email VARCHAR(100) UNIQUE NOT NULL,
-  password VARCHAR(255) NOT NULL,
-  role ENUM('patient', 'doctor') NOT NULL
-);
-
-CREATE TABLE appointments (
-  id VARCHAR(36) PRIMARY KEY,
-  patientId VARCHAR(36) NOT NULL,
-  doctorId VARCHAR(36) NOT NULL,
-  date DATETIME NOT NULL,
-  reason TEXT,
-  status ENUM('scheduled', 'completed', 'cancelled') DEFAULT 'scheduled',
-  FOREIGN KEY (patientId) REFERENCES users(id),
-  FOREIGN KEY (doctorId) REFERENCES users(id)
-);
-
-CREATE TABLE messages (
-  id VARCHAR(36) PRIMARY KEY,
-  userId VARCHAR(36) NOT NULL,
-  content TEXT NOT NULL,
-  isAi BOOLEAN DEFAULT FALSE,
-  timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (userId) REFERENCES users(id)
-);
-
--- Insert default users
-INSERT INTO users (id, name, email, password, role) VALUES
-('d1', 'Dr. Sarah Smith', 'doctor@example.com', 'password', 'doctor'),
-('p1', 'John Doe', 'patient@example.com', 'password', 'patient');
-```
-
-### 3. Configure Application for MySQL
-
-Currently, the application uses IndexedDB for local storage. To switch to MySQL, you'll need to:
-
-1. Install a MySQL client for Node.js/TypeScript
-2. Update the database service layer
-
-Note: In a production environment, you should never store passwords as plain text. Always use proper password hashing algorithms.
 
 ## How can I deploy this project?
 
