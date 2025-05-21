@@ -1,13 +1,15 @@
+
 import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
 
 // Define available languages
-type Language = "en" | "ar";
+type Language = "en" | "ar" | "fr";
 
 // Define translations object structure
 interface Translations {
   [key: string]: {
     en: string;
     ar: string;
+    fr: string;
   };
 }
 
@@ -15,155 +17,193 @@ interface Translations {
 const translations: Translations = {
   welcome: {
     en: "Welcome",
-    ar: "مرحبًا"
+    ar: "مرحبًا",
+    fr: "Bienvenue"
   },
   dashboard: {
     en: "Dashboard",
-    ar: "لوحة التحكم"
+    ar: "لوحة التحكم",
+    fr: "Tableau de bord"
   },
   appointments: {
     en: "Appointments",
-    ar: "المواعيد"
+    ar: "المواعيد",
+    fr: "Rendez-vous"
   },
   patients: {
     en: "Patients",
-    ar: "المرضى"
+    ar: "المرضى",
+    fr: "Patients"
   },
   doctors: {
     en: "Doctors",
-    ar: "الأطباء"
+    ar: "الأطباء",
+    fr: "Médecins"
   },
   login: {
     en: "Login",
-    ar: "تسجيل الدخول"
+    ar: "تسجيل الدخول",
+    fr: "Connexion"
   },
   register: {
     en: "Register",
-    ar: "تسجيل"
+    ar: "تسجيل",
+    fr: "S'inscrire"
   },
   logout: {
     en: "Logout",
-    ar: "تسجيل الخروج"
+    ar: "تسجيل الخروج",
+    fr: "Déconnexion"
   },
   healthAssistant: {
     en: "Health Assistant",
-    ar: "المساعد الصحي"
+    ar: "المساعد الصحي",
+    fr: "Assistant santé"
   },
   overview: {
     en: "Overview",
-    ar: "نظرة عامة"
+    ar: "نظرة عامة",
+    fr: "Vue d'ensemble"
   },
   name: {
     en: "Name",
-    ar: "الاسم"
+    ar: "الاسم",
+    fr: "Nom"
   },
   email: {
     en: "Email",
-    ar: "البريد الإلكتروني"
+    ar: "البريد الإلكتروني",
+    fr: "E-mail"
   },
   password: {
     en: "Password",
-    ar: "كلمة المرور"
+    ar: "كلمة المرور",
+    fr: "Mot de passe"
   },
   emergencyHotline: {
     en: "Emergency Hotline",
-    ar: "خط الطوارئ"
+    ar: "خط الطوارئ",
+    fr: "Ligne d'urgence"
   },
   phoneNumber: {
     en: "Phone Number",
-    ar: "رقم الهاتف"
+    ar: "رقم الهاتف",
+    fr: "Numéro de téléphone"
   },
   bookAppointment: {
     en: "Book Appointment",
-    ar: "حجز موعد"
+    ar: "حجز موعد",
+    fr: "Prendre rendez-vous"
   },
   selectDoctor: {
     en: "Select Doctor",
-    ar: "اختر الطبيب"
+    ar: "اختر الطبيب",
+    fr: "Sélectionner un médecin"
   },
   selectDate: {
     en: "Select Date",
-    ar: "اختر التاريخ"
+    ar: "اختر التاريخ",
+    fr: "Sélectionner une date"
   },
   selectTime: {
     en: "Select Time",
-    ar: "اختر الوقت"
+    ar: "اختر الوقت",
+    fr: "Sélectionner une heure"
   },
   reason: {
     en: "Reason",
-    ar: "السبب"
+    ar: "السبب",
+    fr: "Raison"
   },
   submit: {
     en: "Submit",
-    ar: "إرسال"
+    ar: "إرسال",
+    fr: "Soumettre"
   },
   cancel: {
     en: "Cancel",
-    ar: "إلغاء"
+    ar: "إلغاء",
+    fr: "Annuler"
   },
   welcomeToIntelejHosp: {
     en: "Welcome to IntelEJ Hospital",
-    ar: "مرحبًا بكم في IntelEJ Hospital"
+    ar: "مرحبًا بكم في IntelEJ Hospital",
+    fr: "Bienvenue à l'Hôpital IntelEJ"
   },
   yourHealthIsOurPriority: {
     en: "Your health is our priority. Access your medical information and services securely and locally.",
-    ar: "صحتك هي أولويتنا. الوصول إلى معلوماتك الطبية والخدمات بشكل آمن ومحلي."
+    ar: "صحتك هي أولويتنا. الوصول إلى معلوماتك الطبية والخدمات بشكل آمن ومحلي.",
+    fr: "Votre santé est notre priorité. Accédez à vos informations médicales et services de manière sécurisée et locale."
   },
   patientPortal: {
     en: "Patient Portal",
-    ar: "بوابة المريض"
+    ar: "بوابة المريض",
+    fr: "Portail patient"
   },
   doctorPortal: {
     en: "Doctor Portal",
-    ar: "بوابة الطبيب"
+    ar: "بوابة الطبيب",
+    fr: "Portail médecin"
   },
   patientLogin: {
     en: "Patient Login",
-    ar: "تسجيل دخول المريض"
+    ar: "تسجيل دخول المريض",
+    fr: "Connexion patient"
   },
   doctorLogin: {
     en: "Doctor Login",
-    ar: "تسجيل دخول الطبيب"
+    ar: "تسجيل دخول الطبيب",
+    fr: "Connexion médecin"
   },
   whyChooseIntelejHosp: {
     en: "Why Choose IntelEJ Hospital?",
-    ar: "لماذا تختار IntelEJ Hospital?"
+    ar: "لماذا تختار IntelEJ Hospital؟",
+    fr: "Pourquoi choisir l'Hôpital IntelEJ ?"
   },
   localAndSecure: {
     en: "100% Local & Secure",
-    ar: "١٠٠٪ محلي وآمن"
+    ar: "١٠٠٪ محلي وآمن",
+    fr: "100% Local et Sécurisé"
   },
   aiHealthAssistant: {
     en: "AI Health Assistant",
-    ar: "مساعد صحي ذكي"
+    ar: "مساعد صحي ذكي",
+    fr: "Assistant Santé IA"
   },
   seamlessExperience: {
     en: "Seamless Experience",
-    ar: "تجربة سلسة"
+    ar: "تجربة سلسة",
+    fr: "Expérience Fluide"
   },
   contact: {
     en: "Contact",
-    ar: "تواصل معنا"
+    ar: "تواصل معنا",
+    fr: "Contact"
   },
   upcomingAppointments: {
     en: "Upcoming Appointments",
-    ar: "المواعيد القادمة"
+    ar: "المواعيد القادمة",
+    fr: "Rendez-vous à venir"
   },
   recentPrescriptions: {
     en: "Recent Prescriptions",
-    ar: "الوصفات الطبية الأخيرة"
+    ar: "الوصفات الطبية الأخيرة",
+    fr: "Prescriptions récentes"
   },
   noUpcomingAppointments: {
     en: "No upcoming appointments",
-    ar: "لا توجد مواعيد قادمة"
+    ar: "لا توجد مواعيد قادمة",
+    fr: "Aucun rendez-vous à venir"
   },
   noPrescriptions: {
     en: "No recent prescriptions",
-    ar: "لا توجد وصفات طبية حديثة"
+    ar: "لا توجد وصفات طبية حديثة",
+    fr: "Aucune prescription récente"
   },
   chatWithAi: {
     en: "Chat with Health Assistant",
-    ar: "الدردشة مع المساعد الصحي"
+    ar: "الدردشة مع المساعد الصحي",
+    fr: "Discuter avec l'Assistant Santé"
   }
 };
 
@@ -182,7 +222,7 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }
   const [language, setLanguage] = useState<Language>(() => {
     // Try to get language from localStorage
     const savedLang = localStorage.getItem('language') as Language;
-    return savedLang === 'ar' || savedLang === 'en' ? savedLang : 'en';
+    return savedLang === 'ar' || savedLang === 'en' || savedLang === 'fr' ? savedLang : 'en';
   });
 
   // Update HTML lang attribute and direction when language changes
@@ -194,8 +234,12 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }
     // Add appropriate font class to the body
     if (language === 'ar') {
       document.body.classList.add('font-arabic');
-    } else {
+      document.body.classList.remove('font-french');
+    } else if (language === 'fr') {
+      document.body.classList.add('font-french');
       document.body.classList.remove('font-arabic');
+    } else {
+      document.body.classList.remove('font-arabic', 'font-french');
     }
   }, [language]);
 

@@ -14,7 +14,7 @@ const LanguageSwitcher: React.FC = () => {
   const { language, setLanguage } = useLanguage();
 
   // Function to handle language change with localStorage
-  const handleLanguageChange = (lang: "en" | "ar") => {
+  const handleLanguageChange = (lang: "en" | "ar" | "fr") => {
     setLanguage(lang);
     localStorage.setItem("language", lang); // Ensure browser stores language preference locally
     
@@ -29,7 +29,7 @@ const LanguageSwitcher: React.FC = () => {
         <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full">
           <Globe className="h-5 w-5" />
           <span className="sr-only">
-            {language === "ar" ? "تغيير اللغة" : "Toggle language"}
+            {language === "ar" ? "تغيير اللغة" : language === "fr" ? "Changer de langue" : "Toggle language"}
           </span>
         </Button>
       </DropdownMenuTrigger>
@@ -39,6 +39,12 @@ const LanguageSwitcher: React.FC = () => {
           className={language === "en" ? "bg-muted" : ""}
         >
           English
+        </DropdownMenuItem>
+        <DropdownMenuItem 
+          onClick={() => handleLanguageChange("fr")} 
+          className={language === "fr" ? "bg-muted" : ""}
+        >
+          Français
         </DropdownMenuItem>
         <DropdownMenuItem 
           onClick={() => handleLanguageChange("ar")} 
