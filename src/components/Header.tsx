@@ -94,7 +94,7 @@ const Header: React.FC = () => {
           <img 
             src="/lovable-uploads/43612f72-7738-4bf9-9695-426ddabfecaf.png" 
             alt="Intelej Hosp Logo" 
-            className="h-12 w-auto" 
+            className="h-12 w-auto logo-no-animation" 
           />
           <span className="font-bold text-2xl text-hospital-700 dark:text-hospital-300">
             {language === "ar" ? "مستشفى إنتيلEJ" : "IntelEJ Hospital"}
@@ -105,7 +105,7 @@ const Header: React.FC = () => {
           {/* Emergency Hotline Button */}
           <div className="hidden md:flex items-center mr-4">
             <span className="text-red-600 font-semibold">
-              {t("emergencyHotline")}: 0612256568
+              {t("emergencyHotline")}: 911
             </span>
           </div>
 

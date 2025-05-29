@@ -9,9 +9,9 @@ const Index = () => {
   const { language } = useLanguage();
 
   return (
-    <div className={`min-h-screen flex flex-col ${language === "ar" ? "rtl" : ""}`}>
+    <div className={`min-h-screen flex flex-col relative ${language === "ar" ? "rtl" : ""}`}>
       <Header />
-      <main className="flex-1">
+      <main className="flex-1 relative z-10">
         <LandingPage />
       </main>
       <Footer />

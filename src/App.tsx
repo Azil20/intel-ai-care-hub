@@ -9,6 +9,7 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import BackgroundAmbience from "@/components/BackgroundAmbience";
 import Index from "./pages/Index";
 import LoginPage from "./pages/LoginPage";
 import PatientDashboard from "./pages/patient/PatientDashboard";
@@ -46,14 +47,15 @@ const App = () => (
           <TooltipProvider>
             <Toaster />
             <Sonner />
+            <BackgroundAmbience />
             <BrowserRouter>
-              <div className="min-h-screen flex flex-col">
+              <div className="min-h-screen flex flex-col relative">
                 <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/login/:role" element={
-                    <div className="min-h-screen flex flex-col">
+                    <div className="min-h-screen flex flex-col relative">
                       <Header />
-                      <main className="flex-1">
+                      <main className="flex-1 relative z-10">
                         <LoginPage />
                       </main>
                       <Footer />
@@ -61,9 +63,9 @@ const App = () => (
                   } />
                   <Route path="/patient-dashboard" element={
                     <ProtectedRoute requiredRole="patient">
-                      <div className="min-h-screen flex flex-col">
+                      <div className="min-h-screen flex flex-col relative">
                         <Header />
-                        <main className="flex-1">
+                        <main className="flex-1 relative z-10">
                           <PatientDashboard />
                         </main>
                         <Footer />
@@ -72,9 +74,9 @@ const App = () => (
                   } />
                   <Route path="/doctor-dashboard" element={
                     <ProtectedRoute requiredRole="doctor">
-                      <div className="min-h-screen flex flex-col">
+                      <div className="min-h-screen flex flex-col relative">
                         <Header />
-                        <main className="flex-1">
+                        <main className="flex-1 relative z-10">
                           <DoctorDashboard />
                         </main>
                         <Footer />

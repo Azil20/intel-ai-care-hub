@@ -1,4 +1,5 @@
 
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -19,6 +20,12 @@
   filter: drop-shadow(0 0 2em #10b981aa);
 }
 
+/* Disable logo animation specifically */
+.logo-no-animation {
+  animation: none !important;
+  transform: none !important;
+}
+
 /* Remove logo animation */
 @keyframes logo-spin {
   from {
@@ -32,6 +39,13 @@
 /* Explicitly disable animation */
 a .logo {
   animation: none !important;
+}
+
+/* Disable animation for logo-no-animation class */
+.logo-no-animation,
+a .logo-no-animation {
+  animation: none !important;
+  transform: none !important;
 }
 
 .card {
@@ -125,3 +139,4 @@ a:hover {
 .dark a:hover {
   color: #0d9488;
 }
+
