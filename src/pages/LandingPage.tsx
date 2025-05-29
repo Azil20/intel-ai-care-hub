@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { BadgePlus, Heart, Shield, Star, Bot, Stethoscope, Calendar } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import AboutSection from "@/components/AboutSection";
 
 const LandingPage: React.FC = () => {
   const navigate = useNavigate();
@@ -262,9 +261,6 @@ const LandingPage: React.FC = () => {
           </div>
         </div>
       </div>
-
-      {/* About Section */}
-      <AboutSection />
 
       {/* Modern Hospital Image Section */}
       <div className="container mx-auto my-20 px-4 animate-on-scroll">

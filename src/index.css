@@ -1,87 +1,82 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    /* Light mode - Modern, clean colors */
-    --background: 255 255 255;
-    --foreground: 15 23 42;
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
 
-    --card: 255 255 255;
-    --card-foreground: 15 23 42;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
 
-    --popover: 255 255 255;
-    --popover-foreground: 15 23 42;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
 
-    /* Modern sage green primary colors */
+    /* Modern calm primary colors - Sage Green */
     --primary: 142 71% 45%;
-    --primary-foreground: 255 255 255;
+    --primary-foreground: 210 40% 98%;
 
-    --secondary: 248 250 252;
-    --secondary-foreground: 15 23 42;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
 
-    --muted: 248 250 252;
-    --muted-foreground: 100 116 139;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 248 250 252;
-    --accent-foreground: 15 23 42;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
 
-    --destructive: 239 68 68;
-    --destructive-foreground: 255 255 255;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
 
-    --border: 226 232 240;
-    --input: 226 232 240;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
     --ring: 142 71% 45%;
 
-    --radius: 0.75rem;
+    --radius: 0.5rem;
     
-    /* Modern hospital color palette */
-    --hospital-50: 248 253 250;
-    --hospital-100: 220 252 231;
-    --hospital-200: 187 247 208;
-    --hospital-300: 134 239 172;
-    --hospital-400: 74 222 128;
-    --hospital-500: 34 197 94;
-    --hospital-600: 22 163 74;
-    --hospital-700: 21 128 61;
-    --hospital-800: 22 101 52;
-    --hospital-900: 20 83 45;
+    /* Modern hospital color palette - Calm and sophisticated */
+    --hospital-50: 142 100% 97%;
+    --hospital-100: 142 85% 92%;
+    --hospital-200: 142 75% 85%;
+    --hospital-300: 142 65% 75%;
+    --hospital-400: 142 60% 65%;
+    --hospital-500: 142 71% 45%;
+    --hospital-600: 142 80% 35%;
+    --hospital-700: 142 85% 25%;
+    --hospital-800: 142 90% 15%;
+    --hospital-900: 142 95% 10%;
   }
 
   .dark {
-    --background: 2 6 23;
-    --foreground: 248 250 252;
+    --background: 0 0% 3.9%;
+    --foreground: 210 40% 98%;
 
-    --card: 15 23 42;
-    --card-foreground: 248 250 252;
+    --card: 0 0% 6%;
+    --card-foreground: 210 40% 98%;
 
-    --popover: 15 23 42;
-    --popover-foreground: 248 250 252;
+    --popover: 0 0% 6%;
+    --popover-foreground: 210 40% 98%;
 
     --primary: 142 71% 45%;
-    --primary-foreground: 15 23 42;
+    --primary-foreground: 222.2 47.4% 11.2%;
 
-    --secondary: 30 41 59;
-    --secondary-foreground: 248 250 252;
+    --secondary: 0 0% 14%;
+    --secondary-foreground: 210 40% 98%;
 
-    --muted: 30 41 59;
-    --muted-foreground: 148 163 184;
+    --muted: 0 0% 14%;
+    --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 30 41 59;
-    --accent-foreground: 248 250 252;
+    --accent: 0 0% 14%;
+    --accent-foreground: 210 40% 98%;
 
-    --destructive: 220 38 38;
-    --destructive-foreground: 248 250 252;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
 
-    --border: 30 41 59;
-    --input: 30 41 59;
-    --ring: 142 71% 45%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 212.7 26.8% 83.9%;
   }
 }
 
@@ -92,21 +87,28 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-weight: 400;
-    line-height: 1.6;
   }
 }
 
-/* Modern Header Gradient */
+/* Modern Header Gradient - Calm sage green */
 .header-gradient {
   background: linear-gradient(90deg, hsl(142 71% 45%) 0%, hsl(142 80% 35%) 100%);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* Hospital gradient */
+/* Hospital gradient - Modern calm colors */
 .hospital-gradient {
   background: linear-gradient(135deg, hsl(142 71% 45%) 0%, hsl(142 80% 35%) 50%, hsl(142 85% 25%) 100%);
+}
+
+/* Font families */
+body {
+  font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  color: #2d3748;
+}
+
+.dark body {
+  color: #f7fafc;
 }
 
 /* RTL Support for Arabic */
@@ -115,36 +117,25 @@
   text-align: right;
 }
 
-/* Modern Arabic Font - Light and clean like Google */
-html[lang="ar"] body,
+/* Arabic Font */
+html[lang="ar"] body {
+  font-family: 'Noto Naskh Arabic', 'Amiri', 'Inter', sans-serif;
+}
+
 .font-arabic {
-  font-family: 'Cairo', 'Tajawal', 'Inter', sans-serif;
-  font-weight: 300;
-  letter-spacing: 0.01em;
-}
-
-html[lang="ar"] .font-bold,
-.font-arabic.font-bold {
-  font-weight: 600;
-}
-
-html[lang="ar"] h1, html[lang="ar"] h2, html[lang="ar"] h3,
-.font-arabic h1, .font-arabic h2, .font-arabic h3 {
-  font-weight: 500;
-  letter-spacing: 0.02em;
+  font-family: 'Noto Naskh Arabic', 'Amiri', sans-serif;
 }
 
 /* French Font */
 html[lang="fr"] body {
-  font-family: 'Inter', sans-serif;
-  font-weight: 400;
+  font-family: 'Nunito', 'Inter', sans-serif;
 }
 
 /* Scroll-based animations */
 @keyframes fadeInUp {
   0% { 
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(60px);
   }
   100% { 
     opacity: 1;
@@ -155,7 +146,7 @@ html[lang="fr"] body {
 @keyframes fadeInLeft {
   0% { 
     opacity: 0;
-    transform: translateX(-30px);
+    transform: translateX(-60px);
   }
   100% { 
     opacity: 1;
@@ -166,7 +157,7 @@ html[lang="fr"] body {
 @keyframes fadeInRight {
   0% { 
     opacity: 0;
-    transform: translateX(30px);
+    transform: translateX(60px);
   }
   100% { 
     opacity: 1;
@@ -177,7 +168,7 @@ html[lang="fr"] body {
 @keyframes scaleIn {
   0% { 
     opacity: 0;
-    transform: scale(0.95);
+    transform: scale(0.8);
   }
   100% { 
     opacity: 1;
@@ -185,10 +176,10 @@ html[lang="fr"] body {
   }
 }
 
-/* Animation classes */
+/* Animation classes for scroll-triggered animations */
 .animate-on-scroll {
   opacity: 0;
-  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.6s ease-out;
 }
 
 .animate-fade-in {
@@ -212,24 +203,24 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Modern card styles */
+/* Modern card styles with subtle shadows */
 .card {
-  background: rgba(255, 255, 255, 0.98);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(226, 232, 240, 0.8);
-  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.08);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
 }
 
 .card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
 }
 
 .dark .card {
-  background: rgba(15, 23, 42, 0.95);
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  background: rgba(15, 15, 15, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 /* Modern button styles */
@@ -239,15 +230,14 @@ html {
   border-radius: 12px;
   padding: 12px 24px;
   color: white;
-  font-weight: 500;
-  font-size: 14px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.25);
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(142, 162, 147, 0.3);
 }
 
 .btn-modern:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 15px rgba(34, 197, 94, 0.35);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(142, 162, 147, 0.4);
 }
 
 /* Gradient text effects */
@@ -256,36 +246,36 @@ html {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  font-weight: 600;
+  font-weight: 700;
 }
 
-/* Glass morphism effects */
+/* Enhanced glass morphism effects */
 .glass-morphism {
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 16px;
 }
 
 .dark .glass-morphism {
-  background: rgba(15, 23, 42, 0.3);
-  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Floating animation */
+/* Floating animation for icons */
 @keyframes float {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+  50% { transform: translateY(-10px); }
 }
 
 .animate-float {
   animation: float 3s ease-in-out infinite;
 }
 
-/* Pulse animation */
+/* Pulse animation for attention */
 @keyframes pulse-gentle {
   0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.9; transform: scale(1.02); }
+  50% { opacity: 0.8; transform: scale(1.05); }
 }
 
 .animate-pulse-gentle {
@@ -293,23 +283,27 @@ html {
 }
 
 /* Modern color utilities */
-.bg-sage-50 { background-color: hsl(var(--hospital-50)); }
-.bg-sage-100 { background-color: hsl(var(--hospital-100)); }
-.bg-sage-500 { background-color: hsl(var(--hospital-500)); }
-.bg-sage-600 { background-color: hsl(var(--hospital-600)); }
+.bg-sage-50 { background-color: hsl(142 100% 97%); }
+.bg-sage-100 { background-color: hsl(142 85% 92%); }
+.bg-sage-500 { background-color: hsl(142 71% 45%); }
+.bg-sage-600 { background-color: hsl(142 80% 35%); }
 
-.text-sage-600 { color: hsl(var(--hospital-600)); }
-.text-sage-700 { color: hsl(var(--hospital-700)); }
+.text-sage-600 { color: hsl(142 80% 35%); }
+.text-sage-700 { color: hsl(142 85% 25%); }
 
 /* Improved contrast for readability */
 .text-muted-foreground {
-  color: hsl(var(--muted-foreground)) !important;
+  color: #64748b !important;
+}
+
+.dark .text-muted-foreground {
+  color: #a1a1aa !important;
 }
 
 /* Modern input focus styles */
 .input-modern:focus {
-  border-color: hsl(var(--primary));
-  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.1);
+  border-color: hsl(142 71% 45%);
+  box-shadow: 0 0 0 3px rgba(142, 162, 147, 0.1);
   outline: none;
 }
 
@@ -333,22 +327,4 @@ html {
   height: 100%;
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
   animation: shimmer 1.5s infinite;
-}
-
-/* Modern scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: hsl(var(--muted));
-}
-
-::-webkit-scrollbar-thumb {
-  background: hsl(var(--muted-foreground));
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--primary));
 }

@@ -24,7 +24,7 @@ import { Sun, Moon, User, LogOut } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useForm } from "react-hook-form";
 import { useToast } from "@/hooks/use-toast";
-import LanguageSwitcher from "./LanguageSwitcher";
+import LanguageSwitcher from "./LanguageSwitcher"; // Import language switcher
 import { useLanguage } from "@/contexts/LanguageContext";
 
 const Header: React.FC = () => {
@@ -102,10 +102,10 @@ const Header: React.FC = () => {
         </Link>
 
         <div className="flex items-center space-x-2 md:space-x-4">
-          {/* Emergency Hotline Button - Updated to 911 */}
+          {/* Emergency Hotline Button */}
           <div className="hidden md:flex items-center mr-4">
             <span className="text-red-600 font-semibold">
-              {t("emergencyHotline")}: 911
+              {t("emergencyHotline")}: 0612256568
             </span>
           </div>
 
