@@ -17,23 +17,23 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import NotFound from "./pages/NotFound";
 import { initializeLocalDatabase } from "./services/localDatabase";
 import "./services/mysqlAdapter"; // Import MySQL adapter to ensure it initializes
-import { checkOllamaConnection } from "./services/ollamaService"; // Import Ollama service
+import { checkOllamaConnection } from "./services/ollamaService"; // Import Al-Rāzī service
 
-// Initialize database when app loads
+// Initialize local database when app loads
 initializeLocalDatabase();
 
-// Check if Ollama service is available
+// Check if Al-Rāzī (MedLlama2) AI assistant is available
 checkOllamaConnection()
   .then(available => {
     if (available) {
-      console.log("✅ MedLlama model is available and connected");
+      console.log("✅ Al-Rāzī (الرازي) - MedLlama2 AI assistant is available and connected");
     } else {
-      console.warn("⚠️ MedLlama model is not available. Some features may be limited.");
-      console.info("To install MedLlama, run: ollama pull medllama");
+      console.warn("⚠️ Al-Rāzī (الرازي) - MedLlama2 AI assistant is not available. Some features may be limited.");
+      console.info("To install MedLlama2, run: ollama pull medllama2");
     }
   })
   .catch(err => {
-    console.error("Failed to check Ollama connection:", err);
+    console.error("Failed to check Al-Rāzī connection:", err);
   });
 
 const queryClient = new QueryClient();

@@ -1,172 +1,197 @@
-# Welcome to Intelej Hosp
 
-## Project info
+# Intelej Hosp - Modern Healthcare Management System
 
-**URL**: https://lovable.dev/projects/b93f38e7-cdb4-4939-9d45-efab4d38b1de
+![Intelej Hosp Logo](public/lovable-uploads/43612f72-7738-4bf9-9695-426ddabfecaf.png)
 
-## File Analysis Guide
+## 🏥 Project Overview
 
-To understand how this application works, it's recommended to analyze the files in the following order:
+**Intelej Hosp** is a modern, multilingual healthcare management system designed for both patients and healthcare providers. The system features **Al-Rāzī (الرازي)**, our advanced AI medical assistant named after the legendary Persian-Arab doctor Abu Bakr al-Razi.
 
-### 1. Core Structure Files
-1. `src/main.tsx` - Entry point of the application
-2. `src/App.tsx` - Main component defining routes and providers
-3. `src/index.css` - Global Tailwind CSS styles
+**Live Demo**: [https://lovable.dev/projects/b93f38e7-cdb4-4939-9d45-efab4d38b1de](https://lovable.dev/projects/b93f38e7-cdb4-4939-9d45-efab4d38b1de)
 
-### 2. Context Providers
-1. `src/contexts/AuthContext.tsx` - Authentication management
-2. `src/contexts/LanguageContext.tsx` - Internationalization (Arabic, English, French)
-3. `src/contexts/ThemeContext.tsx` - Light/Dark mode management
+---
 
-### 3. Core Pages
-1. `src/pages/Index.tsx` - Landing page with welcome popup
-2. `src/pages/LandingPage.tsx` - Main homepage content
-3. `src/pages/LoginPage.tsx` - Authentication interface
-4. `src/pages/patient/PatientDashboard.tsx` - Patient interface after login
-5. `src/pages/doctor/DoctorDashboard.tsx` - Doctor interface after login
+## 🤖 Meet Al-Rāzī - Our AI Medical Assistant
 
-### 4. Key Components
-1. `src/components/Header.tsx` - Navigation header with language switcher
-2. `src/components/Footer.tsx` - Application footer
-3. `src/components/WelcomePopup.tsx` - iOS-style welcome notification
-4. `src/components/ProtectedRoute.tsx` - Authentication protection for routes
+**Al-Rāzī (الرازي)** is our specialized medical AI assistant, named after Abu Bakr Muhammad ibn Zakariya al-Razi (854–925 CE), the legendary Persian-Arab physician, alchemist, and philosopher who made groundbreaking contributions to medicine.
 
-### 5. Data & Services
-1. `src/services/localDatabase.ts` - IndexedDB implementation
-2. `src/services/mysqlAdapter.ts` - MySQL connection functionality
-3. `src/services/ollamaService.ts` - Integration with MedLlama AI model
+### Features of Al-Rāzī:
+- **Powered by MedLlama2**: Advanced medical language model specialized for healthcare
+- **Multilingual Support**: Communicates in Arabic, English, and French
+- **Local Privacy**: Runs completely locally on your machine - no data leaves your device
+- **Medical Expertise**: Trained on medical literature and clinical guidelines
+- **24/7 Availability**: Always ready to assist with medical questions
 
-### 6. Specialized Features
-1. `src/pages/patient/AiChatAssistant.tsx` - Medical AI assistant using MedLlama
-2. `src/pages/patient/AppointmentBooking.tsx` - Appointment scheduling system
-3. `src/pages/doctor/AppointmentCalendar.tsx` - Doctor's appointment management
+---
 
-## Technologies Used
+## 🛠️ Programming Languages & Technologies Used
 
-This healthcare application is built using a modern tech stack:
+### **Frontend Technologies**
+| Language/Framework | Version | Purpose |
+|-------------------|---------|---------|
+| **TypeScript** | ^5.0.0 | Main programming language for type safety |
+| **JavaScript (ES6+)** | Native | Core scripting language |
+| **HTML5** | Native | Markup structure |
+| **CSS3** | Native | Styling and animations |
+| **React** | ^18.3.1 | Frontend framework for UI components |
+| **Tailwind CSS** | ^3.0.0 | Utility-first CSS framework |
 
-### Frontend Technologies
-- **TypeScript**: Strongly typed programming language that builds on JavaScript
-- **React**: JavaScript library for building user interfaces
-- **Tailwind CSS**: Utility-first CSS framework for rapid UI development
-- **shadcn/ui**: High-quality UI components built with Radix UI and Tailwind CSS
-- **React Router**: Library for routing in React applications
-- **React Query**: Data fetching and state management library
-- **Lucide Icons**: Beautiful open source icons
-- **Recharts**: Responsive charting library for React
+### **Backend & Data Technologies**
+| Technology | Purpose |
+|------------|---------|
+| **IndexedDB** | Browser-based local database |
+| **MySQL** | Optional relational database |
+| **Node.js** | Runtime for MySQL backend service |
+| **SQL** | Database queries and management |
 
-### Backend Technologies
-- **IndexedDB**: Browser-based database for local storage
-- **MedLlama**: Specialized medical AI model for healthcare assistance
-- **MySQL** (optional): Relational database for persistent storage
+### **AI & Machine Learning**
+| Technology | Purpose |
+|------------|---------|
+| **MedLlama2** | Medical AI language model |
+| **Ollama** | Local LLM inference engine |
+| **Python** | AI model training and inference (backend) |
 
-### Development Tools
-- **Vite**: Fast frontend build tool
-- **Node.js**: JavaScript runtime for building the application
-- **npm**: Package manager for JavaScript
-- **ESLint**: JavaScript linting utility
-- **TypeScript**: Type system for JavaScript
+### **Development Tools**
+| Tool | Purpose |
+|------|---------|
+| **Vite** | Fast development build tool |
+| **ESLint** | Code linting and quality |
+| **Prettier** | Code formatting |
+| **Git** | Version control |
 
-### Languages Used
-- **TypeScript/JavaScript**: Core programming language
-- **HTML5**: Markup language for structuring web content
-- **CSS3**: Styling language for design
-- **SQL**: Database query language (when using MySQL)
+---
 
-## Setting up MedLlama for the AI Health Assistant
+## 🚀 How to Run the Project Locally
 
-MedLlama is a specialized large language model fine-tuned for medical domain knowledge. To integrate MedLlama with this application:
+### **Prerequisites**
+- **Node.js** (v18.0.0 or higher)
+- **npm** or **yarn** package manager
+- **Git** for version control
+- **Ollama** for AI functionality
+- **MySQL** (optional, for production database)
 
-### 1. Install Ollama
-
-First, you need to install Ollama, which is a framework for running LLMs locally:
-
-#### Windows
-1. Download and install Ollama from [the official website](https://ollama.com/download/windows)
-2. Run the installer and follow the instructions
-
-#### macOS
-1. Download and install Ollama from [the official website](https://ollama.com/download/mac)
-2. Or use Homebrew: `brew install ollama`
-
-#### Linux
-1. Run the following command:
-```sh
-curl -fsSL https://ollama.com/install.sh | sh
+### **Step 1: Clone the Repository**
+```bash
+git clone https://github.com/your-username/intelej-hosp.git
+cd intelej-hosp
 ```
 
-### 2. Pull the MedLlama Model
+### **Step 2: Install Dependencies**
+```bash
+# Using npm
+npm install
 
-After installing Ollama:
-
-1. Open a terminal/command prompt
-2. Run the following command to download MedLlama:
-```sh
-ollama pull medllama
-```
-3. Wait for the download to complete (approximately 4GB)
-
-### 3. Start the Ollama Service
-
-1. Make sure Ollama is running in the background:
-   - **Windows**: It should start automatically after installation
-   - **macOS/Linux**: Run `ollama serve` in a terminal window
-
-2. Start the Intelej Hosp application
-3. Navigate to the Patient Dashboard
-4. Use the AI Chat Assistant to send a medical query
-5. The response will be generated locally using MedLlama's specialized medical knowledge
-
-### 4. Optimizing MedLlama Responses
-
-To get the best results from MedLlama:
-
-1. Add medical context to your prompts
-2. Be specific about symptoms or conditions
-3. Ask one question at a time
-4. Include relevant patient information when applicable
-
-## Setting Up MySQL for Intelej Hosp
-
-The application by default uses browser-based IndexedDB for local data storage. For production or more robust development, you can set up a MySQL database. Follow these steps to implement MySQL support:
-
-### 1. Install MySQL Server
-
-#### Windows
-1. Download MySQL Installer from [MySQL official website](https://dev.mysql.com/downloads/installer/)
-2. Run the installer and select "MySQL Server" during installation
-3. Follow the installation wizard and setup root password
-4. Make sure the service is running after installation
-
-#### macOS
-1. Install with Homebrew: `brew install mysql`
-2. Start MySQL service: `brew services start mysql`
-3. Set root password: `mysql_secure_installation`
-
-#### Linux (Ubuntu/Debian)
-```sh
-sudo apt update
-sudo apt install mysql-server
-sudo systemctl start mysql
-sudo mysql_secure_installation
+# Or using yarn
+yarn install
 ```
 
-### 2. Create Database and Tables
-
-1. Access MySQL command line:
-```sh
-mysql -u root -p
+### **Step 3: Setup Environment**
+Create a `.env` file in the root directory:
+```env
+VITE_APP_NAME=Intelej Hosp
+VITE_APP_VERSION=1.0.0
+VITE_OLLAMA_URL=http://localhost:11434
 ```
 
-2. Create a new database for the application:
+### **Step 4: Start Development Server**
+```bash
+# Using npm
+npm run dev
+
+# Or using yarn
+yarn dev
+```
+
+The application will be available at: `http://localhost:5173`
+
+---
+
+## 🧠 Setting Up Al-Rāzī AI Assistant (MedLlama2)
+
+### **For Windows 10 Users**
+
+#### **Step 1: Install Ollama**
+1. **Download Ollama for Windows**:
+   - Visit: [https://ollama.com/download/windows](https://ollama.com/download/windows)
+   - Download the Windows installer (.exe file)
+   - Run the installer as Administrator
+   - Follow the installation wizard
+
+2. **Verify Installation**:
+   ```cmd
+   # Open Command Prompt (Win + R, type 'cmd')
+   ollama --version
+   ```
+
+#### **Step 2: Install MedLlama2 Model**
+```cmd
+# Open Command Prompt as Administrator
+ollama pull medllama2
+```
+**Note**: This will download approximately 4-7GB of data. Ensure you have sufficient internet bandwidth and storage space.
+
+#### **Step 3: Start Ollama Service**
+```cmd
+# Start Ollama service (run this in Command Prompt)
+ollama serve
+```
+**Keep this terminal window open** - Ollama needs to run continuously for Al-Rāzī to work.
+
+#### **Step 4: Test Al-Rāzī Connection**
+```cmd
+# In a new Command Prompt window, test the model
+ollama run medllama2 "Hello, I am Al-Rāzī"
+```
+
+#### **Step 5: Configure Windows Firewall**
+1. Open **Windows Security** → **Firewall & network protection**
+2. Click **Allow an app through firewall**
+3. Find **Ollama** and ensure both **Private** and **Public** are checked
+4. If Ollama isn't listed, click **Change Settings** → **Allow another app** → Browse to Ollama installation
+
+#### **Step 6: Verify Integration**
+1. Start your Intelej Hosp application: `npm run dev`
+2. Navigate to Patient Dashboard → AI Chat Assistant
+3. You should see "✅ Al-Rāzī (الرازي) - MedLlama2 AI assistant is available" in the browser console
+
+### **Troubleshooting Al-Rāzī Setup**
+
+| Issue | Solution |
+|-------|----------|
+| "Command not found: ollama" | Restart Command Prompt or add Ollama to PATH |
+| Model download fails | Check internet connection, try `ollama pull medllama2` again |
+| Connection refused | Ensure `ollama serve` is running in background |
+| Firewall blocking | Configure Windows Firewall as described above |
+| Port 11434 in use | Kill process: `netstat -ano \| findstr :11434` then `taskkill /F /PID <PID>` |
+
+---
+
+## 🗄️ MySQL Database Integration (Optional)
+
+### **Windows 10 MySQL Setup**
+
+#### **Step 1: Install MySQL Server**
+1. **Download MySQL Installer**:
+   - Visit: [https://dev.mysql.com/downloads/installer/](https://dev.mysql.com/downloads/installer/)
+   - Download **mysql-installer-community-8.0.xx.x.msi**
+   - Run installer as Administrator
+
+2. **Configure MySQL**:
+   - Choose **Server only** installation
+   - Use **Strong Password Encryption**
+   - Set root password (remember this!)
+   - Configure as **Windows Service** (start automatically)
+
+#### **Step 2: Create Database**
 ```sql
+-- Open MySQL Command Line Client
+mysql -u root -p
+
+-- Create the database
 CREATE DATABASE intelejhosp;
 USE intelejhosp;
-```
 
-3. Create necessary tables for the application:
-```sql
--- Users table
+-- Create tables
 CREATE TABLE users (
   id VARCHAR(36) PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
@@ -174,10 +199,10 @@ CREATE TABLE users (
   password VARCHAR(100) NOT NULL,
   role ENUM('patient', 'doctor') NOT NULL,
   phoneNumber VARCHAR(20),
-  avatar VARCHAR(255)
+  avatar VARCHAR(255),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Appointments table
 CREATE TABLE appointments (
   id VARCHAR(36) PRIMARY KEY,
   patientId VARCHAR(36) NOT NULL,
@@ -188,56 +213,42 @@ CREATE TABLE appointments (
   date DATE NOT NULL,
   time TIME NOT NULL,
   reason TEXT,
-  status ENUM('scheduled', 'completed', 'cancelled') NOT NULL,
-  FOREIGN KEY (patientId) REFERENCES users(id),
-  FOREIGN KEY (doctorId) REFERENCES users(id)
+  status ENUM('scheduled', 'completed', 'cancelled') DEFAULT 'scheduled',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (patientId) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (doctorId) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- Messages table
 CREATE TABLE messages (
   id VARCHAR(36) PRIMARY KEY,
   userId VARCHAR(36) NOT NULL,
   content TEXT NOT NULL,
-  isAi BOOLEAN NOT NULL,
+  isAi BOOLEAN NOT NULL DEFAULT FALSE,
   timestamp DATETIME NOT NULL,
-  FOREIGN KEY (userId) REFERENCES users(id)
+  FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
 );
+
+-- Insert sample data
+INSERT INTO users (id, name, email, password, role, avatar) VALUES 
+('doc1', 'Dr. Sarah Johnson', 'doctor@intelejhosp.com', 'securepass123', 'doctor', '/profile-placeholder.png'),
+('pat1', 'Ahmed Al-Mahmoud', 'patient@intelejhosp.com', 'securepass123', 'patient', '/profile-placeholder.png');
 ```
 
-4. Add sample data (optional):
-```sql
--- Insert sample doctor
-INSERT INTO users (id, name, email, password, role, avatar)
-VALUES ('d1', 'Dr. Sarah Smith', 'doctor@example.com', 'password', 'doctor', '/profile-placeholder.png');
+#### **Step 3: Setup Backend API**
+```bash
+# Create backend directory
+mkdir intelej-backend
+cd intelej-backend
 
--- Insert sample patient
-INSERT INTO users (id, name, email, password, role, phoneNumber, avatar)
-VALUES ('p1', 'John Doe', 'patient@example.com', 'password', 'patient', '555-123-4567', '/profile-placeholder.png');
-```
-
-### 3. Set Up Node.js Backend (Required for MySQL Connectivity)
-
-Since browsers cannot connect directly to MySQL, you need a backend service:
-
-1. Create a new Node.js project for your backend:
-```sh
-mkdir intelejhosp-backend
-cd intelejhosp-backend
+# Initialize Node.js project
 npm init -y
-npm install express cors mysql2 dotenv
+
+# Install dependencies
+npm install express cors mysql2 dotenv bcryptjs jsonwebtoken
 ```
 
-2. Create a `.env` file for database credentials:
-```
-DB_HOST=localhost
-DB_PORT=3306
-DB_USER=root
-DB_PASSWORD=yourpassword
-DB_NAME=intelejhosp
-PORT=3001
-```
-
-3. Create a `server.js` file:
+#### **Step 4: Create Backend Server**
+Create `server.js`:
 ```javascript
 const express = require('express');
 const cors = require('cors');
@@ -248,190 +259,223 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Create MySQL connection pool
+// MySQL connection pool
 const pool = mysql.createPool({
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
+  host: 'localhost',
+  port: 3306,
+  user: 'root',
+  password: 'your_mysql_password',
+  database: 'intelejhosp',
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0
 });
 
-// Test database connection
-app.get('/api/test', async (req, res) => {
+// Test endpoint
+app.get('/api/health', async (req, res) => {
   try {
-    const [result] = await pool.query('SELECT 1+1 as result');
-    res.json({ message: 'Database connection successful', result: result[0] });
+    const [result] = await pool.query('SELECT 1 as healthy');
+    res.json({ status: 'MySQL connected', data: result });
   } catch (error) {
-    res.status(500).json({ message: 'Database connection failed', error: error.message });
+    res.status(500).json({ error: error.message });
   }
 });
 
-// API endpoint for users
+// Users API
 app.get('/api/users', async (req, res) => {
   try {
     const [rows] = await pool.query('SELECT id, name, email, role, phoneNumber, avatar FROM users');
     res.json(rows);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching users', error: error.message });
+    res.status(500).json({ error: error.message });
   }
 });
 
-// API endpoint for appointments
+// Appointments API
 app.get('/api/appointments', async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT * FROM appointments');
+    const [rows] = await pool.query('SELECT * FROM appointments ORDER BY date DESC, time DESC');
     res.json(rows);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching appointments', error: error.message });
+    res.status(500).json({ error: error.message });
   }
 });
 
-// Start server
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`🚀 Backend server running on http://localhost:${PORT}`);
+  console.log(`📊 MySQL database: intelejhosp`);
 });
 ```
 
-4. Start your backend:
-```sh
+#### **Step 5: Start Backend**
+```bash
+# In intelej-backend directory
 node server.js
 ```
 
-### 4. Update Frontend to Use MySQL
-
-1. Update the `src/services/mysqlAdapter.ts` file with proper connection and query methods
-2. Create a toggle to switch between IndexedDB and MySQL in your application settings
-3. Update your frontend API calls to use the MySQL adapter
-
-### 5. Integrating MySQL with the Frontend
-
-To use MySQL in your frontend application:
-
-1. Open your project and modify the data service layer to use the MySQL adapter:
-
+#### **Step 6: Update Frontend Configuration**
+In your main project, update `src/services/mysqlAdapter.ts` to point to your backend:
 ```typescript
-import { setupMySQLConnection, executeMySQLQuery } from './mysqlAdapter';
-
-// Initialize MySQL connection
-const mysqlConnection = setupMySQLConnection({
-  host: 'localhost',
-  port: 3001, // This is your Node.js backend port, not MySQL port
-  username: 'root',
-  password: 'password',
-  database: 'intelejhosp'
-});
-
-// Example function to fetch users from MySQL
-export const fetchUsersFromMySQL = async () => {
-  const response = await fetch('http://localhost:3001/api/users');
-  if (!response.ok) {
-    throw new Error('Failed to fetch users from MySQL');
-  }
-  return await response.json();
-};
+const API_BASE_URL = 'http://localhost:3001/api';
 ```
 
-2. Create a toggle between storage types in your application settings:
+---
 
+## 📁 Source Code Analysis Guide
+
+Analyze the files in this **exact order** for optimal understanding:
+
+### **1. Core Application Structure**
 ```typescript
-// In a settings context or component
-const [storageType, setStorageType] = useState('indexeddb'); // or 'mysql'
-
-// Function to switch storage types
-const switchToMySQL = () => {
-  setStorageType('mysql');
-  // Initialize MySQL connection here
-};
-
-const switchToIndexedDB = () => {
-  setStorageType('indexeddb');
-  // Go back to using IndexedDB
-};
+src/main.tsx                    // Application entry point and providers setup
+src/App.tsx                     // Main routing and authentication flow
+src/index.css                   // Global styles, themes, and animations
 ```
 
-### 6. Data Migration Tool
-
-For migrating data from IndexedDB to MySQL:
-
-1. Create a migration utility:
+### **2. Context Providers (State Management)**
 ```typescript
-import * as localDB from './localDatabase';
-import { migrateToMySQL } from './mysqlAdapter';
-
-// Migration function
-export const migrateDataToMySQL = async () => {
-  // 1. Get all data from IndexedDB
-  const users = localDB.getUsers();
-  const appointments = localDB.getAppointments();
-  const messages = localDB.getMessages();
-  
-  // 2. Format data for MySQL insertion
-  // This would be handled by your backend
-  
-  // 3. Call the migration function
-  const result = await migrateToMySQL();
-  
-  return result;
-};
+src/contexts/AuthContext.tsx    // User authentication and session management
+src/contexts/LanguageContext.tsx // Multi-language support (AR/EN/FR)
+src/contexts/ThemeContext.tsx   // Dark/Light mode theme switching
 ```
 
-2. Add a migration button in your application settings
-3. When clicked, execute the migration process
-
-### 7. Testing MySQL Integration
-
-To verify your MySQL setup is working:
-
-1. Start your Node.js backend server
-2. Open your application and switch to MySQL storage
-3. Attempt to load user data or create a new appointment
-4. Check your MySQL database to confirm the data was stored
-
-## How can I edit this code?
-
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/b93f38e7-cdb4-4939-9d45-efab4d38b1de) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+### **3. Core Pages (User Interface)**
+```typescript
+src/pages/Index.tsx             // Landing page wrapper component
+src/pages/LandingPage.tsx       // Homepage with hero section and features
+src/pages/LoginPage.tsx         // Authentication form for users
+src/pages/NotFound.tsx          // 404 error page handling
 ```
 
-## How can I deploy this project?
+### **4. Patient Portal**
+```typescript
+src/pages/patient/PatientDashboard.tsx    // Patient's main interface
+src/pages/patient/AiChatAssistant.tsx     // Al-Rāzī AI chat interface
+src/pages/patient/AppointmentBooking.tsx  // Appointment scheduling system
+```
 
-Simply open [Lovable](https://lovable.dev/projects/b93f38e7-cdb4-4939-9d45-efab4d38b1de) and click on Share -> Publish.
+### **5. Doctor Portal**
+```typescript
+src/pages/doctor/DoctorDashboard.tsx      // Doctor's main interface
+src/pages/doctor/AppointmentCalendar.tsx  // Doctor's appointment management
+src/pages/doctor/PatientList.tsx          // Patient records management
+```
 
-## Can I connect a custom domain to my Lovable project?
+### **6. Shared Components**
+```typescript
+src/components/Header.tsx          // Navigation header with language switcher
+src/components/Footer.tsx          // Application footer with links
+src/components/ProtectedRoute.tsx  // Route authentication wrapper
+src/components/WelcomePopup.tsx    // iOS-style welcome notification
+```
 
-Yes, you can!
+### **7. Data Services (Backend Integration)**
+```typescript
+src/services/localDatabase.ts     // IndexedDB browser storage operations
+src/services/mysqlAdapter.ts      // MySQL database connection adapter
+src/services/ollamaService.ts     // Al-Rāzī AI integration service
+```
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+### **8. Utility Functions**
+```typescript
+src/lib/utils.ts               // Helper functions and utilities
+src/hooks/use-toast.ts         // Toast notification hook
+src/hooks/use-mobile.tsx       // Mobile device detection
+```
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+---
+
+## 🎨 Design System & Colors
+
+### **Modern Calm Color Palette**
+- **Primary**: Sage Green (`hsl(142 71% 45%)`) - Calming, medical-inspired
+- **Secondary**: Soft Blue (`hsl(210 40% 96%)`) - Professional, trustworthy
+- **Accent**: Warm Gray (`hsl(215.4 16.3% 46.9%)`) - Subtle, sophisticated
+- **Background**: Pure White / Deep Dark (`hsl(0 0% 100%)` / `hsl(0 0% 3.9%)`)
+
+### **Typography**
+- **Primary Font**: Inter, SF Pro Display
+- **Arabic Font**: Noto Naskh Arabic, Amiri
+- **French Font**: Nunito
+
+---
+
+## 🌐 Multilingual Support
+
+### **Supported Languages**
+1. **English** (Default) - Left-to-right (LTR)
+2. **Arabic (العربية)** - Right-to-left (RTL) support
+3. **French (Français)** - Left-to-right (LTR)
+
+### **Language Features**
+- Complete UI translation
+- RTL layout support for Arabic
+- Al-Rāzī AI responds in user's language
+- Cultural adaptations for medical terminology
+
+---
+
+## 🔒 Security Features
+
+- **Local-First**: All medical data stays on your device
+- **No Data Transmission**: Al-Rāzī runs locally via Ollama
+- **Encrypted Storage**: IndexedDB with encryption
+- **Authentication**: Secure login system
+- **Privacy Compliant**: HIPAA-ready architecture
+
+---
+
+## 🚀 Performance Features
+
+- **Fast Loading**: Vite-powered development
+- **Tree Shaking**: Only used code is bundled
+- **Code Splitting**: Pages load on demand
+- **Local AI**: No internet required for AI features
+- **Responsive Design**: Works on all devices
+
+---
+
+## 📱 Browser Support
+
+- **Chrome**: 90+ (Recommended)
+- **Firefox**: 88+
+- **Safari**: 14+
+- **Edge**: 90+
+
+---
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
+3. Commit changes: `git commit -m 'Add amazing feature'`
+4. Push to branch: `git push origin feature/amazing-feature`
+5. Open a Pull Request
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🙏 Acknowledgments
+
+- **Abu Bakr al-Razi** - The legendary physician who inspired our AI assistant
+- **MedLlama2** - Advanced medical language model
+- **Ollama** - Local LLM inference platform
+- **React & Tailwind** - Modern web development frameworks
+
+---
+
+## 📞 Support
+
+- **Documentation**: [Lovable Docs](https://docs.lovable.dev/)
+- **Community**: [Discord](https://discord.com/channels/1119885301872070706/1280461670979993613)
+- **Issues**: [GitHub Issues](https://github.com/your-username/intelej-hosp/issues)
+
+---
+
+**Made with ❤️ for better healthcare** | **Intelej Hosp © 2024**
