@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -9,7 +8,6 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import BackgroundAmbience from "@/components/BackgroundAmbience";
 import Index from "./pages/Index";
 import LoginPage from "./pages/LoginPage";
 import PatientDashboard from "./pages/patient/PatientDashboard";
@@ -47,7 +45,6 @@ const App = () => (
           <TooltipProvider>
             <Toaster />
             <Sonner />
-            <BackgroundAmbience />
             <BrowserRouter>
               <div className="min-h-screen flex flex-col relative">
                 <Routes>
