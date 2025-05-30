@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -20,16 +19,14 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Sun, Moon, User, LogOut } from "lucide-react";
-import { useTheme } from "@/contexts/ThemeContext";
+import { User, LogOut, Phone } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useToast } from "@/hooks/use-toast";
-import LanguageSwitcher from "./LanguageSwitcher"; // Import language switcher
+import LanguageSwitcher from "./LanguageSwitcher";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 const Header: React.FC = () => {
   const { user, logout, register } = useAuth();
-  const { setTheme, theme } = useTheme();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [isRegisterOpen, setIsRegisterOpen] = React.useState(false);
@@ -88,23 +85,24 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header className={`bg-white dark:bg-gray-900 shadow-md ${dirClass}`}>
-      <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-        <Link to="/" className="flex items-center space-x-2">
+    <header className={`header-gradient ${dirClass} sticky top-0 z-50`}>
+      <div className="container mx-auto px-6 py-4 flex items-center justify-between">
+        <Link to="/" className="flex items-center space-x-3">
           <img 
             src="/lovable-uploads/43612f72-7738-4bf9-9695-426ddabfecaf.png" 
-            alt="Intelej Hosp Logo" 
-            className="h-12 w-auto logo-no-animation" 
+            alt="IntelEJ Hospital Logo" 
+            className="h-12 w-auto logo-no-animation neon-glow" 
           />
-          <span className="font-bold text-2xl text-hospital-700 dark:text-hospital-300">
+          <span className="font-bold text-2xl text-gradient font-modern">
             {language === "ar" ? "مستشفى إنتيلEJ" : "IntelEJ Hospital"}
           </span>
         </Link>
 
-        <div className="flex items-center space-x-2 md:space-x-4">
+        <div className="flex items-center space-x-6">
           {/* Emergency Hotline Button */}
-          <div className="hidden md:flex items-center mr-4">
-            <span className="text-red-600 font-semibold">
+          <div className="hidden md:flex items-center space-x-2 bg-red-500/10 px-4 py-2 rounded-full border border-red-500/20">
+            <Phone className="h-4 w-4 text-red-400" />
+            <span className="text-red-400 font-medium font-modern">
               {t("emergencyHotline")}: 911
             </span>
           </div>
@@ -113,12 +111,12 @@ const Header: React.FC = () => {
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative">
-                  <User className="h-5 w-5 mr-2" />
-                  <span className="hidden md:inline">{user.name}</span>
+                <Button variant="ghost" className="relative glass-morphism hover:neon-border">
+                  <User className="h-5 w-5 mr-2 text-neon-cyan" />
+                  <span className="hidden md:inline font-modern">{user.name}</span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
+              <DropdownMenuContent align="end" className="glass-morphism">
                 <DropdownMenuItem onClick={handleLogout}>
                   <LogOut className="h-4 w-4 mr-2" />
                   <span>{t("logout")}</span>
@@ -126,14 +124,14 @@ const Header: React.FC = () => {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-3">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" className="glass-morphism hover:neon-border font-modern">
                     {t("login")}
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
+                <DropdownMenuContent align="end" className="glass-morphism">
                   <DropdownMenuItem onClick={() => handleLogin("patient")}>
                     {language === "ar" ? "تسجيل دخول كمريض" : "Login as Patient"}
                   </DropdownMenuItem>
@@ -145,11 +143,11 @@ const Header: React.FC = () => {
 
               <Dialog open={isRegisterOpen} onOpenChange={setIsRegisterOpen}>
                 <DialogTrigger asChild>
-                  <Button size="sm" className="bg-hospital-600 hover:bg-hospital-700">
+                  <Button size="sm" className="btn-modern">
                     {t("register")}
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
+                <DialogContent className="glass-morphism border-neon-cyan/30">
                   <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)}>
                     <DialogHeader>
                       <DialogTitle>{t("register")}</DialogTitle>
@@ -216,21 +214,6 @@ const Header: React.FC = () => {
               </Dialog>
             </div>
           )}
-
-          {/* Theme Toggler */}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="h-9 w-9 rounded-full"
-          >
-            {theme === "dark" ? (
-              <Sun className="h-5 w-5" />
-            ) : (
-              <Moon className="h-5 w-5" />
-            )}
-            <span className="sr-only">Toggle theme</span>
-          </Button>
 
           {/* Language Switcher */}
           <LanguageSwitcher />

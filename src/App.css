@@ -1,142 +1,137 @@
 
-
+/* Modern App Styling */
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0f0f0f 100%);
+  min-height: 100vh;
 }
 
+/* Logo styling */
 .logo {
-  height: 6em;
-  padding: 1.5em;
+  height: 3rem;
+  padding: 0;
   will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #10b981aa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #10b981aa);
+  transition: filter 300ms ease;
 }
 
-/* Disable logo animation specifically */
+.logo:hover {
+  filter: drop-shadow(0 0 1rem #00e5ffaa);
+}
+
+/* Disable logo animation */
 .logo-no-animation {
   animation: none !important;
   transform: none !important;
 }
 
-/* Remove logo animation */
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* Explicitly disable animation */
-a .logo {
-  animation: none !important;
-}
-
-/* Disable animation for logo-no-animation class */
-.logo-no-animation,
-a .logo-no-animation {
-  animation: none !important;
-  transform: none !important;
-}
-
+/* Modern card styling */
 .card {
-  padding: 2em;
-  background-color: #ffffff;
-  color: #333333;
-}
-
-.read-the-docs {
-  color: #64748b;
-}
-
-/* Custom gradients */
-.teal-gradient {
-  background: linear-gradient(135deg, #10b981 0%, #0d9488 100%);
-  color: white;
-}
-
-.blue-gradient {
-  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
-  color: white;
-}
-
-.card-hover {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.card-hover:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-}
-
-/* Additional color classes for consistent styling */
-.text-hospital {
-  color: #10b981;
-}
-
-.text-hospital-dark {
-  color: #059669;
-}
-
-.bg-hospital-light {
-  background-color: rgba(16, 185, 129, 0.1);
-}
-
-.bg-hospital-medium {
-  background-color: rgba(16, 185, 129, 0.3);
-}
-
-/* Button styles */
-.btn-hospital {
-  background-color: #10b981;
-  color: white;
+  background: rgba(10, 10, 10, 0.8);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 229, 255, 0.1);
+  border-radius: 16px;
+  padding: 2rem;
+  color: #f8fafc;
   transition: all 0.3s ease;
 }
 
-.btn-hospital:hover {
-  background-color: #059669;
+.card:hover {
+  border-color: rgba(0, 229, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 20px rgba(0, 229, 255, 0.1);
+}
+
+/* Modern gradients */
+.neon-gradient {
+  background: linear-gradient(135deg, #00e5ff 0%, #00b8d4 100%);
+  color: #0a0a0a;
+}
+
+.dark-gradient {
+  background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+  color: #f8fafc;
+}
+
+/* Card hover effects */
+.card-hover {
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 30px rgba(0, 229, 255, 0.1);
+}
+
+/* Modern color classes */
+.text-neon {
+  color: #00e5ff;
+}
+
+.text-neon-secondary {
+  color: #00b8d4;
+}
+
+.bg-dark-card {
+  background-color: rgba(10, 10, 10, 0.8);
+}
+
+.bg-dark-surface {
+  background-color: rgba(26, 26, 26, 0.9);
+}
+
+/* Button styles */
+.btn-neon {
+  background: linear-gradient(135deg, #00e5ff 0%, #00b8d4 100%);
+  color: #0a0a0a;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border: none;
+  border-radius: 12px;
+}
+
+.btn-neon:hover {
+  background: linear-gradient(135deg, #00b8d4 0%, #0097a7 100%);
   transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 229, 255, 0.4);
 }
 
-/* Improved card styles */
-.card-light {
-  background-color: #ffffff;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-  color: #333333;
+/* Modern section styling */
+.section-modern {
+  padding: 4rem 0;
+  background: rgba(10, 10, 10, 0.5);
 }
 
-/* Light mode link styles */
-a {
-  color: #10b981;
-  transition: color 0.2s ease;
+/* Typography improvements */
+.heading-modern {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  background: linear-gradient(135deg, #00e5ff 0%, #00b8d4 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
-a:hover {
-  color: #059669;
+.text-modern {
+  font-family: 'Inter', sans-serif;
+  font-weight: 300;
+  color: #cbd5e1;
+  line-height: 1.7;
 }
 
-/* Dark mode specifics */
-.dark .card {
-  background-color: #111111;
-  border-color: #222222;
-  color: #f1f1f1;
+/* Glass effect containers */
+.glass-container {
+  background: rgba(10, 10, 10, 0.6);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 229, 255, 0.1);
+  border-radius: 20px;
 }
 
-.dark a {
-  color: #10b981;
+/* Modern spacing utilities */
+.space-modern {
+  padding: 3rem;
 }
 
-.dark a:hover {
-  color: #0d9488;
+.space-modern-sm {
+  padding: 1.5rem;
 }
-

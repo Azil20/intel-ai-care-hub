@@ -1,7 +1,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 
-type ThemeType = "light" | "dark";
+type ThemeType = "dark";
 
 interface ThemeContextType {
   theme: ThemeType;
@@ -20,33 +20,20 @@ export const useTheme = () => {
 };
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Check for saved theme or user preference
-  const [theme, setTheme] = useState<ThemeType>(() => {
-    const savedTheme = localStorage.getItem("theme");
-    if (savedTheme === "dark" || savedTheme === "light") {
-      return savedTheme;
-    }
-    // Check user preference
-    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
-      return "dark";
-    }
-    return "light";
-  });
+  // Force dark theme only
+  const [theme] = useState<ThemeType>("dark");
 
   useEffect(() => {
-    // Apply theme to document
+    // Apply dark theme to document
     const root = window.document.documentElement;
     root.classList.remove("light", "dark");
-    root.classList.add(theme);
-    localStorage.setItem("theme", theme);
+    root.classList.add("dark");
+    localStorage.setItem("theme", "dark");
     
     // Set theme color meta tag for mobile browsers
     const metaThemeColor = document.querySelector("meta[name=theme-color]");
     if (metaThemeColor) {
-      metaThemeColor.setAttribute(
-        "content",
-        theme === "dark" ? "#000000" : "#ffffff"
-      );
+      metaThemeColor.setAttribute("content", "#0a0a0a");
     }
     
     // Apple-specific meta tag for status bar appearance
@@ -54,15 +41,19 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     if (!metaAppleStatusBar) {
       const newMeta = document.createElement("meta");
       newMeta.setAttribute("name", "apple-mobile-web-app-status-bar-style");
-      newMeta.setAttribute("content", theme === "dark" ? "black-translucent" : "default");
+      newMeta.setAttribute("content", "black-translucent");
       document.head.appendChild(newMeta);
     } else {
-      metaAppleStatusBar.setAttribute("content", theme === "dark" ? "black-translucent" : "default");
+      metaAppleStatusBar.setAttribute("content", "black-translucent");
     }
-  }, [theme]);
+  }, []);
 
   const toggleTheme = () => {
-    setTheme(prev => prev === "light" ? "dark" : "light");
+    // Disabled - force dark mode only
+  };
+
+  const setTheme = () => {
+    // Disabled - force dark mode only
   };
 
   return (
