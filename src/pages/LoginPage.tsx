@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -8,6 +9,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import VantaLoginBackground from "@/components/VantaLoginBackground";
+import SocialLogin from "@/components/SocialLogin";
 
 const LoginPage: React.FC = () => {
   const { role } = useParams<{ role: string }>();
@@ -113,11 +115,18 @@ const LoginPage: React.FC = () => {
     }
   };
 
+  const handleSocialLogin = (provider: string) => {
+    toast({
+      title: `${provider} Login`,
+      description: `${provider} login integration coming soon`,
+    });
+  };
+
   return (
     <>
       <VantaLoginBackground />
       <div className="min-h-[calc(100vh-64px)] flex items-center justify-center p-4 relative z-10">
-        <Card className="w-full max-w-md p-6 shadow-xl bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm">
+        <Card className="w-full max-w-md p-6 shadow-xl glass-morphism">
           <div className="text-center mb-8">
             <h1 className="text-2xl font-bold">
               {role === "patient" ? "Patient Portal" : "Doctor Portal"}
@@ -172,6 +181,8 @@ const LoginPage: React.FC = () => {
                   {isLoading ? "Signing in..." : "Sign In"}
                 </Button>
               </form>
+              
+              <SocialLogin onSocialLogin={handleSocialLogin} />
             </TabsContent>
             
             <TabsContent value="register">
@@ -232,6 +243,8 @@ const LoginPage: React.FC = () => {
                   {isLoading ? "Registering..." : "Register"}
                 </Button>
               </form>
+              
+              <SocialLogin onSocialLogin={handleSocialLogin} />
             </TabsContent>
           </Tabs>
 

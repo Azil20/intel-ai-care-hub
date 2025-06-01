@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -23,6 +24,7 @@ import { User, LogOut, Phone } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useToast } from "@/hooks/use-toast";
 import LanguageSwitcher from "./LanguageSwitcher";
+import SocialLogin from "./SocialLogin";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 const Header: React.FC = () => {
@@ -84,6 +86,11 @@ const Header: React.FC = () => {
     navigate("/");
   };
 
+  const handleSocialLogin = (provider: string) => {
+    // Handle social login integration here
+    console.log(`Social login with ${provider}`);
+  };
+
   return (
     <header className={`header-gradient ${dirClass} sticky top-0 z-50`}>
       <div className="container mx-auto px-6 py-4 flex items-center justify-between">
@@ -91,7 +98,7 @@ const Header: React.FC = () => {
           <img 
             src="/lovable-uploads/43612f72-7738-4bf9-9695-426ddabfecaf.png" 
             alt="IntelEJ Hospital Logo" 
-            className="h-12 w-auto logo-no-animation neon-glow" 
+            className="h-12 w-auto no-animation" 
           />
           <span className="font-bold text-2xl text-gradient font-modern">
             {language === "ar" ? "مستشفى إنتيلEJ" : "IntelEJ Hospital"}
@@ -100,9 +107,9 @@ const Header: React.FC = () => {
 
         <div className="flex items-center space-x-6">
           {/* Emergency Hotline Button */}
-          <div className="hidden md:flex items-center space-x-2 bg-red-500/10 px-4 py-2 rounded-full border border-red-500/20">
-            <Phone className="h-4 w-4 text-red-400" />
-            <span className="text-red-400 font-medium font-modern">
+          <div className="hidden md:flex items-center space-x-2 bg-red-50 px-4 py-2 rounded-full border border-red-200">
+            <Phone className="h-4 w-4 text-red-500" />
+            <span className="text-red-600 font-medium font-modern">
               {t("emergencyHotline")}: 911
             </span>
           </div>
@@ -111,8 +118,8 @@ const Header: React.FC = () => {
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative glass-morphism hover:neon-border">
-                  <User className="h-5 w-5 mr-2 text-neon-cyan" />
+                <Button variant="ghost" className="relative glass-morphism hover:clean-border">
+                  <User className="h-5 w-5 mr-2 text-clean-blue" />
                   <span className="hidden md:inline font-modern">{user.name}</span>
                 </Button>
               </DropdownMenuTrigger>
@@ -127,7 +134,7 @@ const Header: React.FC = () => {
             <div className="flex items-center space-x-3">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm" className="glass-morphism hover:neon-border font-modern">
+                  <Button variant="outline" size="sm" className="glass-morphism hover:clean-border font-modern">
                     {t("login")}
                   </Button>
                 </DropdownMenuTrigger>
@@ -147,7 +154,7 @@ const Header: React.FC = () => {
                     {t("register")}
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="glass-morphism border-neon-cyan/30">
+                <DialogContent className="glass-morphism border-clean-blue/30">
                   <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)}>
                     <DialogHeader>
                       <DialogTitle>{t("register")}</DialogTitle>
@@ -206,7 +213,10 @@ const Header: React.FC = () => {
                         </select>
                       </div>
                     </div>
-                    <DialogFooter>
+                    
+                    <SocialLogin onSocialLogin={handleSocialLogin} />
+                    
+                    <DialogFooter className="mt-6">
                       <Button type="submit">{t("register")}</Button>
                     </DialogFooter>
                   </form>

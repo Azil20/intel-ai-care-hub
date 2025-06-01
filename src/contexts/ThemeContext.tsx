@@ -1,7 +1,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 
-type ThemeType = "dark";
+type ThemeType = "light";
 
 interface ThemeContextType {
   theme: ThemeType;
@@ -20,20 +20,20 @@ export const useTheme = () => {
 };
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Force dark theme only
-  const [theme] = useState<ThemeType>("dark");
+  // Force light theme only for clean design
+  const [theme] = useState<ThemeType>("light");
 
   useEffect(() => {
-    // Apply dark theme to document
+    // Apply light theme to document
     const root = window.document.documentElement;
     root.classList.remove("light", "dark");
-    root.classList.add("dark");
-    localStorage.setItem("theme", "dark");
+    root.classList.add("light");
+    localStorage.setItem("theme", "light");
     
     // Set theme color meta tag for mobile browsers
     const metaThemeColor = document.querySelector("meta[name=theme-color]");
     if (metaThemeColor) {
-      metaThemeColor.setAttribute("content", "#0a0a0a");
+      metaThemeColor.setAttribute("content", "#f8fafc");
     }
     
     // Apple-specific meta tag for status bar appearance
@@ -41,19 +41,19 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     if (!metaAppleStatusBar) {
       const newMeta = document.createElement("meta");
       newMeta.setAttribute("name", "apple-mobile-web-app-status-bar-style");
-      newMeta.setAttribute("content", "black-translucent");
+      newMeta.setAttribute("content", "default");
       document.head.appendChild(newMeta);
     } else {
-      metaAppleStatusBar.setAttribute("content", "black-translucent");
+      metaAppleStatusBar.setAttribute("content", "default");
     }
   }, []);
 
   const toggleTheme = () => {
-    // Disabled - force dark mode only
+    // Disabled - force light mode only
   };
 
   const setTheme = () => {
-    // Disabled - force dark mode only
+    // Disabled - force light mode only
   };
 
   return (

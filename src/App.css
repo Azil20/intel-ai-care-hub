@@ -4,134 +4,181 @@
   width: 100%;
   margin: 0;
   padding: 0;
-  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0f0f0f 100%);
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%);
   min-height: 100vh;
 }
 
-/* Logo styling */
+/* Logo styling - no animation */
 .logo {
   height: 3rem;
   padding: 0;
-  will-change: filter;
-  transition: filter 300ms ease;
+  will-change: auto;
+  transition: none;
+  animation: none !important;
+  transform: none !important;
 }
 
 .logo:hover {
-  filter: drop-shadow(0 0 1rem #00e5ffaa);
+  filter: none;
 }
 
-/* Disable logo animation */
+/* Disable all logo animations */
 .logo-no-animation {
   animation: none !important;
   transform: none !important;
 }
 
-/* Modern card styling */
+/* Clean card styling */
 .card {
-  background: rgba(10, 10, 10, 0.8);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(0, 229, 255, 0.1);
+  border: 1px solid rgba(71, 85, 105, 0.1);
   border-radius: 16px;
   padding: 2rem;
-  color: #f8fafc;
+  color: #1e293b;
   transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
 .card:hover {
-  border-color: rgba(0, 229, 255, 0.3);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 20px rgba(0, 229, 255, 0.1);
+  border-color: rgba(59, 130, 246, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
 }
 
-/* Modern gradients */
-.neon-gradient {
-  background: linear-gradient(135deg, #00e5ff 0%, #00b8d4 100%);
-  color: #0a0a0a;
+/* Clean gradients */
+.clean-gradient {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: #ffffff;
 }
 
-.dark-gradient {
-  background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
-  color: #f8fafc;
+.light-gradient {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  color: #1e293b;
 }
 
 /* Card hover effects */
 .card-hover {
-  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .card-hover:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 30px rgba(0, 229, 255, 0.1);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
 }
 
-/* Modern color classes */
-.text-neon {
-  color: #00e5ff;
+/* Clean color classes */
+.text-primary {
+  color: #3b82f6;
 }
 
-.text-neon-secondary {
-  color: #00b8d4;
+.text-secondary {
+  color: #64748b;
 }
 
-.bg-dark-card {
-  background-color: rgba(10, 10, 10, 0.8);
+.bg-clean-card {
+  background-color: rgba(255, 255, 255, 0.95);
 }
 
-.bg-dark-surface {
-  background-color: rgba(26, 26, 26, 0.9);
+.bg-clean-surface {
+  background-color: rgba(248, 250, 252, 0.9);
 }
 
 /* Button styles */
-.btn-neon {
-  background: linear-gradient(135deg, #00e5ff 0%, #00b8d4 100%);
-  color: #0a0a0a;
+.btn-clean {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: #ffffff;
   font-weight: 500;
   transition: all 0.3s ease;
   border: none;
   border-radius: 12px;
 }
 
-.btn-neon:hover {
-  background: linear-gradient(135deg, #00b8d4 0%, #0097a7 100%);
+.btn-clean:hover {
+  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 229, 255, 0.4);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
 }
 
-/* Modern section styling */
-.section-modern {
+/* Social login buttons */
+.btn-social {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #374151;
+}
+
+.btn-social:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+  transform: translateY(-1px);
+}
+
+.btn-google {
+  border-color: #ea4335;
+  color: #ea4335;
+}
+
+.btn-facebook {
+  border-color: #1877f2;
+  color: #1877f2;
+}
+
+.btn-apple {
+  border-color: #000000;
+  color: #000000;
+}
+
+/* Arabic font for Quranic verse */
+.font-arabic-classic {
+  font-family: 'Amiri Quran', 'Scheherazade New', 'Noto Naskh Arabic', serif;
+  font-weight: 400;
+  font-size: 1.5rem;
+  line-height: 1.8;
+  text-align: center;
+  color: #1e293b;
+}
+
+/* Clean section styling */
+.section-clean {
   padding: 4rem 0;
-  background: rgba(10, 10, 10, 0.5);
+  background: rgba(248, 250, 252, 0.5);
 }
 
 /* Typography improvements */
-.heading-modern {
-  font-family: 'Poppins', sans-serif;
-  font-weight: 600;
-  background: linear-gradient(135deg, #00e5ff 0%, #00b8d4 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-.text-modern {
+.heading-clean {
   font-family: 'Inter', sans-serif;
   font-weight: 300;
-  color: #cbd5e1;
+  color: #1e293b;
+}
+
+.text-clean {
+  font-family: 'Inter', sans-serif;
+  font-weight: 300;
+  color: #64748b;
   line-height: 1.7;
 }
 
 /* Glass effect containers */
-.glass-container {
-  background: rgba(10, 10, 10, 0.6);
+.glass-container-clean {
+  background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(0, 229, 255, 0.1);
+  border: 1px solid rgba(71, 85, 105, 0.1);
   border-radius: 20px;
 }
 
-/* Modern spacing utilities */
-.space-modern {
+/* Clean spacing utilities */
+.space-clean {
   padding: 3rem;
 }
 
-.space-modern-sm {
+.space-clean-sm {
   padding: 1.5rem;
 }
