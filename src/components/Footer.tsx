@@ -10,7 +10,7 @@ const Footer: React.FC = () => {
   const isFrench = language === "fr";
 
   return (
-    <footer className={`relative overflow-hidden ${isArabic ? "rtl text-right" : ""}`}>
+    <footer className={`relative overflow-hidden font-sf ${isArabic ? "rtl text-right" : ""}`}>
       {/* Glass background effect */}
       <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-gray-800 dark:from-black dark:to-gray-900 opacity-95"></div>
       
@@ -22,20 +22,24 @@ const Footer: React.FC = () => {
       </div>
       
       <div className="relative container mx-auto py-12 px-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
           <div className="space-y-4">
             <div className="flex items-center">
-              <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-hospital-500 to-teal-500 flex items-center justify-center mr-3">
-                <span className="text-white font-bold text-lg">IH</span>
+              <div className="ios-logo mr-3">
+                <img 
+                  src="/lovable-uploads/43612f72-7738-4bf9-9695-426ddabfecaf.png" 
+                  alt="IntelEJ Hospital Logo" 
+                  className="h-8 w-8 no-animation" 
+                />
               </div>
-              <h3 className="text-xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+              <h3 className="text-xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent font-sf">
                 IntelEJ Hospital
               </h3>
             </div>
-            <p className="text-gray-300 dark:text-gray-400 max-w-md">
-              {isArabic ? "توفير حلول رعاية صحية آمنة ومحلية." : 
-               isFrench ? "Fournir des solutions de soins de santé sécurisées et locales." :
-               "Providing secure, local healthcare solutions with innovative technology."}
+            <p className="text-gray-300 dark:text-gray-400 max-w-md font-sf">
+              {isArabic ? "توفير حلول رعاية صحية آمنة ومحلية مع التكنولوجيا المتقدمة 🤖✨" : 
+               isFrench ? "Fournir des solutions de soins de santé sécurisées et locales avec technologie avancée 🤖✨" :
+               "Providing secure, local healthcare solutions with advanced AI technology 🤖✨"}
             </p>
             <div className="flex space-x-4 mt-4">
               {/* Social icons */}
@@ -58,64 +62,81 @@ const Footer: React.FC = () => {
           </div>
           
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-white">{isArabic ? "تواصل معنا" : isFrench ? "Contactez-nous" : "Contact Us"}</h3>
+            <h3 className="text-lg font-semibold text-white font-sf">{isArabic ? "تواصل معنا" : isFrench ? "Contactez-nous" : "Contact Us"}</h3>
             <div className="space-y-3">
-              <p className="text-gray-300 flex items-center gap-2">
+              <a href="mailto:mounir.khaoulaf@uit.ac.ma" className="text-gray-300 hover:text-white transition-colors flex items-center gap-2">
                 <svg className="w-5 h-5 text-hospital-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                 </svg>
-                <span>Mounir.Khaoulaf@uit.ac.ma</span>
-              </p>
+                <span className="font-sf">mounir.khaoulaf@uit.ac.ma</span>
+              </a>
               <p className="text-gray-300 flex items-center gap-2">
                 <svg className="w-5 h-5 text-hospital-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
                 </svg>
-                <span>WhatsApp: +212 629320292</span>
+                <span className="font-sf">WhatsApp: +212 629320292</span>
               </p>
               <p className="text-gray-300 flex items-center gap-2">
                 <svg className="w-5 h-5 text-hospital-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
                 </svg>
-                <span>Ibn Tofail University, Kenitra, Morocco</span>
+                <span className="font-sf">Ibn Tofail University, Kenitra, Morocco</span>
               </p>
             </div>
           </div>
           
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-white">{isArabic ? "روابط سريعة" : isFrench ? "Liens rapides" : "Quick Links"}</h3>
-            <div className="grid grid-cols-2 gap-2">
-              <a href="#" className="text-gray-300 hover:text-white transition-colors">
+            <h3 className="text-lg font-semibold text-white font-sf">{isArabic ? "روابط سريعة" : isFrench ? "Liens rapides" : "Quick Links"}</h3>
+            <div className="grid grid-cols-1 gap-2">
+              <a href="#" className="text-gray-300 hover:text-white transition-colors font-sf">
                 {isArabic ? "الصفحة الرئيسية" : isFrench ? "Accueil" : "Home"}
               </a>
-              <a href="#" className="text-gray-300 hover:text-white transition-colors">
-                {isArabic ? "حول" : isFrench ? "À propos" : "About"}
-              </a>
-              <a href="#" className="text-gray-300 hover:text-white transition-colors">
+              <a href="#" className="text-gray-300 hover:text-white transition-colors font-sf">
                 {isArabic ? "الخدمات" : isFrench ? "Services" : "Services"}
               </a>
-              <a href="#" className="text-gray-300 hover:text-white transition-colors">
-                {isArabic ? "الأطباء" : isFrench ? "Médecins" : "Doctors"}
+              <a href="#" className="text-gray-300 hover:text-white transition-colors font-sf">
+                {isArabic ? "الأطباء 👨‍⚕️" : isFrench ? "Médecins 👨‍⚕️" : "Doctors 👨‍⚕️"}
               </a>
-              <a href="#" className="text-gray-300 hover:text-white transition-colors">
+              <a href="#" className="text-gray-300 hover:text-white transition-colors font-sf">
                 {isArabic ? "المواعيد" : isFrench ? "Rendez-vous" : "Appointments"}
               </a>
-              <a href="#" className="text-gray-300 hover:text-white transition-colors">
-                {isArabic ? "تواصل معنا" : isFrench ? "Contact" : "Contact"}
+              <a href="#" className="text-gray-300 hover:text-white transition-colors font-sf">
+                {isArabic ? "المساعد الذكي 🤖" : isFrench ? "Assistant IA 🤖" : "AI Assistant 🤖"}
               </a>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-white font-sf">{isArabic ? "معلومات عنا" : isFrench ? "À propos de nous" : "About Us"}</h3>
+            <div className="space-y-3">
+              <p className="text-gray-300 text-sm font-sf leading-relaxed">
+                {isArabic 
+                  ? "هذا الموقع هو مشروع تخرج جامعي (PFE) من جامعة ابن طفيل، كنيترة، المغرب. تم تطويره لتحسين جودة الرعاية الصحية باستخدام تقنيات الذكاء الاصطناعي المتقدمة."
+                  : isFrench 
+                  ? "Ce site est un projet de fin d'études (PFE) de l'Université Ibn Tofail, Kénitra, Maroc. Développé pour améliorer la qualité des soins de santé en utilisant des technologies d'IA avancées."
+                  : "This website is a Final Year Project (PFE) from Ibn Tofail University, Kenitra, Morocco. Developed to enhance healthcare quality using advanced AI technologies."
+                }
+              </p>
+              <div className="bg-white/5 p-3 rounded-lg border border-white/10">
+                <p className="text-sm text-gray-400 font-sf">
+                  <span className="text-blue-400">👨‍🏫 {isArabic ? "المشرف الأكاديمي:" : isFrench ? "Superviseur académique:" : "Academic Supervisor:"}</span><br/>
+                  <span className="text-white font-medium">Prof. Mohamed Amnai</span>
+                </p>
+              </div>
             </div>
           </div>
         </div>
         
         <div className="mt-12 pt-8 border-t border-white/10">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-gray-400 font-sf">
               © {new Date().getFullYear()} {isArabic ? "IntelEJ Hospital" : isFrench ? "Hôpital IntelEJ" : "IntelEJ Hospital"}. 
               {isArabic ? " كل الحقوق محفوظة." : isFrench ? " Tous droits réservés." : " All rights reserved."}
             </p>
             <div className="mt-4 md:mt-0">
               <p className="text-center">
-                <span className="px-3 py-1 rounded-full bg-gradient-to-r from-hospital-600/20 to-teal-600/20 backdrop-blur-sm text-white text-sm font-medium">
+                <span className="px-3 py-1 rounded-full bg-gradient-to-r from-hospital-600/20 to-teal-600/20 backdrop-blur-sm text-white text-sm font-medium font-sf">
                   {isArabic ? "تم إنشاؤه بواسطة منير خولاف ومحمد عزري" : 
                    isFrench ? "Créé par Mounir Khaoulaf et Mohamed Azri" : 
                    "Made by Mounir Khaoulaf & Mohamed Azri"}

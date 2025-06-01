@@ -55,9 +55,9 @@ const translations: Translations = {
     fr: "Se déconnecter"
   },
   healthAssistant: {
-    en: "AI Health Assistant",
-    ar: "المساعد الطبي الذكي",
-    fr: "Assistant médical IA"
+    en: "🤖 AI Health Assistant",
+    ar: "🤖 المساعد الطبي الذكي",
+    fr: "🤖 Assistant médical IA"
   },
   overview: {
     en: "Overview",
@@ -130,9 +130,9 @@ const translations: Translations = {
     fr: "Bienvenue au Centre Médical IntelEJ"
   },
   yourHealthIsOurPriority: {
-    en: "Your health is our top priority. Access your medical information and healthcare services securely and privately.",
-    ar: "صحتكم هي أولويتنا العليا. اطلعوا على معلوماتكم الطبية والخدمات الصحية بأمان وخصوصية تامة.",
-    fr: "Votre santé est notre priorité absolue. Accédez à vos informations médicales et services de santé en toute sécurité et confidentialité."
+    en: "Your health is our top priority. Access your medical information and healthcare services securely and privately with our advanced AI technology 🤖✨.",
+    ar: "صحتكم هي أولويتنا العليا. اطلعوا على معلوماتكم الطبية والخدمات الصحية بأمان وخصوصية تامة مع تقنياتنا المتقدمة للذكاء الاصطناعي 🤖✨.",
+    fr: "Votre santé est notre priorité absolue. Accédez à vos informations médicales et services de santé en toute sécurité et confidentialité avec notre technologie IA avancée 🤖✨."
   },
   patientPortal: {
     en: "Patient Portal",
@@ -165,14 +165,14 @@ const translations: Translations = {
     fr: "100% Sécurisé et Privé"
   },
   aiHealthAssistant: {
-    en: "Advanced AI Medical Assistant",
-    ar: "مساعد طبي ذكي متطور",
-    fr: "Assistant médical IA avancé"
+    en: "🧠 Advanced AI Medical Assistant 🤖",
+    ar: "🧠 مساعد طبي ذكي متطور 🤖",
+    fr: "🧠 Assistant médical IA avancé 🤖"
   },
   seamlessExperience: {
-    en: "Seamless Healthcare Experience",
-    ar: "تجربة رعاية صحية متكاملة",
-    fr: "Expérience de soins de santé fluide"
+    en: "✨ Seamless Healthcare Experience",
+    ar: "✨ تجربة رعاية صحية متكاملة",
+    fr: "✨ Expérience de soins de santé fluide"
   },
   contact: {
     en: "Contact Us",
@@ -200,9 +200,9 @@ const translations: Translations = {
     fr: "Aucune prescription récente disponible"
   },
   chatWithAi: {
-    en: "Chat with AI Medical Assistant",
-    ar: "تحدث مع المساعد الطبي الذكي",
-    fr: "Discuter avec l'assistant médical IA"
+    en: "🤖 Chat with AI Medical Assistant 💬",
+    ar: "🤖 تحدث مع المساعد الطبي الذكي 💬",
+    fr: "🤖 Discuter avec l'assistant médical IA 💬"
   },
   intelejHospital: {
     en: "IntelEJ Medical Center",
@@ -220,9 +220,9 @@ const translations: Translations = {
     fr: "UNIVERSITÉ IBN TOFAIL - PROJET DE FIN D'ÉTUDES"
   },
   projectDescription: {
-    en: "Developing professional-grade healthcare management systems to enhance hospital efficiency and patient care quality.",
-    ar: "تطوير أنظمة إدارة الرعاية الصحية على مستوى مهني لتحسين كفاءة المستشفيات وجودة رعاية المرضى.",
-    fr: "Développement de systèmes de gestion de santé de niveau professionnel pour améliorer l'efficacité hospitalière et la qualité des soins aux patients."
+    en: "Developing professional-grade healthcare management systems to enhance hospital efficiency and patient care quality using advanced AI technology 🤖.",
+    ar: "تطوير أنظمة إدارة الرعاية الصحية على مستوى مهني لتحسين كفاءة المستشفيات وجودة رعاية المرضى باستخدام تقنيات الذكاء الاصطناعي المتقدمة 🤖.",
+    fr: "Développement de systèmes de gestion de santé de niveau professionnel pour améliorer l'efficacité hospitalière et la qualité des soins aux patients en utilisant la technologie IA avancée 🤖."
   },
   continue: {
     en: "Continue",
