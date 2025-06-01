@@ -12,22 +12,22 @@ interface Translations {
   };
 }
 
-// Create translations dictionary
+// Create comprehensive translations dictionary
 const translations: Translations = {
   welcome: {
     en: "Welcome",
-    ar: "مرحبًا",
+    ar: "أهلاً وسهلاً",
     fr: "Bienvenue"
   },
   dashboard: {
     en: "Dashboard",
-    ar: "لوحة التحكم",
+    ar: "لوحة المعلومات",
     fr: "Tableau de bord"
   },
   appointments: {
     en: "Appointments",
-    ar: "المواعيد",
-    fr: "Rendez-vous"
+    ar: "المواعيد الطبية",
+    fr: "Rendez-vous médicaux"
   },
   patients: {
     en: "Patients",
@@ -42,22 +42,22 @@ const translations: Translations = {
   login: {
     en: "Login",
     ar: "تسجيل الدخول",
-    fr: "Connexion"
+    fr: "Se connecter"
   },
   register: {
     en: "Register",
-    ar: "تسجيل",
+    ar: "إنشاء حساب جديد",
     fr: "S'inscrire"
   },
   logout: {
     en: "Logout",
     ar: "تسجيل الخروج",
-    fr: "Déconnexion"
+    fr: "Se déconnecter"
   },
   healthAssistant: {
-    en: "Health Assistant",
-    ar: "المساعد الصحي",
-    fr: "Assistant santé"
+    en: "AI Health Assistant",
+    ar: "المساعد الطبي الذكي",
+    fr: "Assistant médical IA"
   },
   overview: {
     en: "Overview",
@@ -65,14 +65,14 @@ const translations: Translations = {
     fr: "Vue d'ensemble"
   },
   name: {
-    en: "Name",
-    ar: "الاسم",
-    fr: "Nom"
+    en: "Full Name",
+    ar: "الاسم الكامل",
+    fr: "Nom complet"
   },
   email: {
-    en: "Email",
-    ar: "البريد الإلكتروني",
-    fr: "E-mail"
+    en: "Email Address",
+    ar: "عنوان البريد الإلكتروني",
+    fr: "Adresse e-mail"
   },
   password: {
     en: "Password",
@@ -81,8 +81,8 @@ const translations: Translations = {
   },
   emergencyHotline: {
     en: "Emergency Hotline",
-    ar: "خط الطوارئ",
-    fr: "Ligne d'urgence"
+    ar: "خط الطوارئ الطبية",
+    fr: "Ligne d'urgence médicale"
   },
   phoneNumber: {
     en: "Phone Number",
@@ -90,34 +90,34 @@ const translations: Translations = {
     fr: "Numéro de téléphone"
   },
   bookAppointment: {
-    en: "Book Appointment",
-    ar: "حجز موعد",
-    fr: "Prendre rendez-vous"
+    en: "Book Medical Appointment",
+    ar: "حجز موعد طبي",
+    fr: "Prendre un rendez-vous médical"
   },
   selectDoctor: {
-    en: "Select Doctor",
-    ar: "اختر الطبيب",
-    fr: "Sélectionner un médecin"
+    en: "Choose Your Doctor",
+    ar: "اختر طبيبك المعالج",
+    fr: "Choisir votre médecin"
   },
   selectDate: {
-    en: "Select Date",
-    ar: "اختر التاريخ",
-    fr: "Sélectionner une date"
+    en: "Select Appointment Date",
+    ar: "اختر تاريخ الموعد",
+    fr: "Sélectionner la date du rendez-vous"
   },
   selectTime: {
-    en: "Select Time",
-    ar: "اختر الوقت",
-    fr: "Sélectionner une heure"
+    en: "Choose Time Slot",
+    ar: "اختر توقيت الموعد",
+    fr: "Choisir l'heure du rendez-vous"
   },
   reason: {
-    en: "Reason",
-    ar: "السبب",
-    fr: "Raison"
+    en: "Reason for Visit",
+    ar: "سبب الزيارة الطبية",
+    fr: "Motif de la consultation"
   },
   submit: {
-    en: "Submit",
-    ar: "إرسال",
-    fr: "Soumettre"
+    en: "Submit Request",
+    ar: "إرسال الطلب",
+    fr: "Soumettre la demande"
   },
   cancel: {
     en: "Cancel",
@@ -125,110 +125,119 @@ const translations: Translations = {
     fr: "Annuler"
   },
   welcomeToIntelejHosp: {
-    en: "Welcome to IntelEJ Hospital",
-    ar: "مرحبًا بكم في IntelEJ Hospital",
-    fr: "Bienvenue à l'Hôpital IntelEJ"
+    en: "Welcome to IntelEJ Medical Center",
+    ar: "مرحباً بكم في المركز الطبي إنتلج",
+    fr: "Bienvenue au Centre Médical IntelEJ"
   },
   yourHealthIsOurPriority: {
-    en: "Your health is our priority. Access your medical information and services securely and locally.",
-    ar: "صحتك هي أولويتنا. الوصول إلى معلوماتك الطبية والخدمات بشكل آمن ومحلي.",
-    fr: "Votre santé est notre priorité. Accédez à vos informations médicales et services de manière sécurisée et locale."
+    en: "Your health is our top priority. Access your medical information and healthcare services securely and privately.",
+    ar: "صحتكم هي أولويتنا العليا. اطلعوا على معلوماتكم الطبية والخدمات الصحية بأمان وخصوصية تامة.",
+    fr: "Votre santé est notre priorité absolue. Accédez à vos informations médicales et services de santé en toute sécurité et confidentialité."
   },
   patientPortal: {
     en: "Patient Portal",
-    ar: "بوابة المريض",
-    fr: "Portail patient"
+    ar: "بوابة المرضى",
+    fr: "Portail des patients"
   },
   doctorPortal: {
-    en: "Doctor Portal",
-    ar: "بوابة الطبيب",
-    fr: "Portail médecin"
+    en: "Medical Staff Portal",
+    ar: "بوابة الكادر الطبي",
+    fr: "Portail du personnel médical"
   },
   patientLogin: {
-    en: "Patient Login",
-    ar: "تسجيل دخول المريض",
-    fr: "Connexion patient"
+    en: "Patient Access",
+    ar: "دخول المرضى",
+    fr: "Accès patients"
   },
   doctorLogin: {
-    en: "Doctor Login",
-    ar: "تسجيل دخول الطبيب",
-    fr: "Connexion médecin"
+    en: "Staff Access",
+    ar: "دخول الكادر الطبي",
+    fr: "Accès personnel médical"
   },
   whyChooseIntelejHosp: {
-    en: "Why Choose IntelEJ Hospital?",
-    ar: "لماذا تختار IntelEJ Hospital؟",
-    fr: "Pourquoi choisir l'Hôpital IntelEJ ?"
+    en: "Why Choose IntelEJ Medical Center?",
+    ar: "لماذا تختار المركز الطبي إنتلج؟",
+    fr: "Pourquoi choisir le Centre Médical IntelEJ ?"
   },
   localAndSecure: {
-    en: "100% Local & Secure",
-    ar: "١٠٠٪ محلي وآمن",
-    fr: "100% Local et Sécurisé"
+    en: "100% Secure & Private",
+    ar: "آمن وخاص بنسبة ١٠٠٪",
+    fr: "100% Sécurisé et Privé"
   },
   aiHealthAssistant: {
-    en: "AI Health Assistant",
-    ar: "مساعد صحي ذكي",
-    fr: "Assistant Santé IA"
+    en: "Advanced AI Medical Assistant",
+    ar: "مساعد طبي ذكي متطور",
+    fr: "Assistant médical IA avancé"
   },
   seamlessExperience: {
-    en: "Seamless Experience",
-    ar: "تجربة سلسة",
-    fr: "Expérience Fluide"
+    en: "Seamless Healthcare Experience",
+    ar: "تجربة رعاية صحية متكاملة",
+    fr: "Expérience de soins de santé fluide"
   },
   contact: {
-    en: "Contact",
+    en: "Contact Us",
     ar: "تواصل معنا",
-    fr: "Contact"
+    fr: "Nous contacter"
   },
   upcomingAppointments: {
-    en: "Upcoming Appointments",
-    ar: "المواعيد القادمة",
-    fr: "Rendez-vous à venir"
+    en: "Upcoming Medical Appointments",
+    ar: "المواعيد الطبية القادمة",
+    fr: "Prochains rendez-vous médicaux"
   },
   recentPrescriptions: {
-    en: "Recent Prescriptions",
-    ar: "الوصفات الطبية الأخيرة",
-    fr: "Prescriptions récentes"
+    en: "Recent Medical Prescriptions",
+    ar: "الوصفات الطبية الحديثة",
+    fr: "Prescriptions médicales récentes"
   },
   noUpcomingAppointments: {
-    en: "No upcoming appointments",
-    ar: "لا توجد مواعيد قادمة",
-    fr: "Aucun rendez-vous à venir"
+    en: "No upcoming appointments scheduled",
+    ar: "لا توجد مواعيد طبية مجدولة",
+    fr: "Aucun rendez-vous programmé"
   },
   noPrescriptions: {
-    en: "No recent prescriptions",
+    en: "No recent prescriptions available",
     ar: "لا توجد وصفات طبية حديثة",
-    fr: "Aucune prescription récente"
+    fr: "Aucune prescription récente disponible"
   },
   chatWithAi: {
-    en: "Chat with Health Assistant",
-    ar: "الدردشة مع المساعد الصحي",
-    fr: "Discuter avec l'Assistant Santé"
+    en: "Chat with AI Medical Assistant",
+    ar: "تحدث مع المساعد الطبي الذكي",
+    fr: "Discuter avec l'assistant médical IA"
   },
-  // New translations for the welcome popup
   intelejHospital: {
-    en: "IntelEJ Hospital",
-    ar: "مستشفى إنتلج",
-    fr: "Hôpital IntelEJ"
+    en: "IntelEJ Medical Center",
+    ar: "المركز الطبي إنتلج",
+    fr: "Centre Médical IntelEJ"
   },
   projectCredits: {
-    en: "PROJECT CREDITS",
-    ar: "الإعتمادات",
-    fr: "CRÉDITS DU PROJET"
+    en: "ACADEMIC PROJECT",
+    ar: "مشروع أكاديمي",
+    fr: "PROJET ACADÉMIQUE"
   },
   forLastYearProject: {
-    en: "FOR THE LAST YEAR PROJECT OF THE UNIVERSITY OF IBN TOFAIL",
-    ar: "لمشروع السنة الأخيرة لجامعة ابن طفيل",
-    fr: "POUR LE PROJET DE DERNIÈRE ANNÉE DE L'UNIVERSITÉ IBN TOFAIL"
+    en: "UNIVERSITY OF IBN TOFAIL - FINAL YEAR PROJECT",
+    ar: "جامعة ابن طفيل - مشروع السنة النهائية",
+    fr: "UNIVERSITÉ IBN TOFAIL - PROJET DE FIN D'ÉTUDES"
   },
   projectDescription: {
-    en: "We Give Our 100% To Make It Pro Class to Help Hospitals To Upgrade Their Quality Of Helping Patients",
-    ar: "نقدم 100٪ من جهودنا لجعله فئة محترفة لمساعدة المستشفيات على ترقية جودة مساعدة المرضى",
-    fr: "Nous donnons 100% pour en faire une classe professionnelle pour aider les hôpitaux à améliorer leur qualité d'aide aux patients"
+    en: "Developing professional-grade healthcare management systems to enhance hospital efficiency and patient care quality.",
+    ar: "تطوير أنظمة إدارة الرعاية الصحية على مستوى مهني لتحسين كفاءة المستشفيات وجودة رعاية المرضى.",
+    fr: "Développement de systèmes de gestion de santé de niveau professionnel pour améliorer l'efficacité hospitalière et la qualité des soins aux patients."
   },
   continue: {
     en: "Continue",
     ar: "متابعة",
     fr: "Continuer"
+  },
+  quranVerse: {
+    en: "And whoever saves a life, it is as if he has saved all of mankind",
+    ar: "وَمَنْ أَحْيَاهَا فَكَأَنَّمَا أَحْيَا النَّاسَ جَمِيعًا",
+    fr: "Et quiconque sauve une vie, c'est comme s'il avait sauvé toute l'humanité"
+  },
+  quranReference: {
+    en: "- Quran 5:32",
+    ar: "- القرآن الكريم ٥:٣٢",
+    fr: "- Coran 5:32"
   }
 };
 

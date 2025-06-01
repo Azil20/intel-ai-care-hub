@@ -6,70 +6,36 @@
 
 @layer base {
   :root {
-    --background: 0 0% 98%;
-    --foreground: 222.2 84% 4.9%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-
-    /* Clean blue accent colors */
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222.2 84% 4.9%;
-
-    --muted: 210 40% 96%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 210 40% 96%;
-    --accent-foreground: 222.2 84% 4.9%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
-
-    --radius: 0.75rem;
-    
-    /* Clean hospital color palette */
-    --hospital-50: 214 100% 97%;
-    --hospital-100: 214 95% 93%;
-    --hospital-200: 213 97% 87%;
-    --hospital-300: 212 96% 78%;
-    --hospital-400: 213 94% 68%;
-    --hospital-500: 217 91% 60%;
-    --hospital-600: 221 83% 53%;
-    --hospital-700: 224 76% 48%;
-    --hospital-800: 226 71% 40%;
-    --hospital-900: 224 64% 33%;
-  }
-
-  .dark {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
+
     --card: 222.2 84% 4.9%;
     --card-foreground: 210 40% 98%;
+
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
+
+    /* Dark theme colors */
     --primary: 217.2 91.2% 59.8%;
     --primary-foreground: 222.2 84% 4.9%;
+
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
+
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
+
     --accent: 217.2 32.6% 17.5%;
     --accent-foreground: 210 40% 98%;
+
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
+
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 224.3 76.3% 48%;
+
+    --radius: 0.75rem;
   }
 }
 
@@ -82,19 +48,19 @@
     font-feature-settings: "rlig" 1, "calt" 1;
     font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-weight: 300;
-    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%);
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
     min-height: 100vh;
   }
 }
 
-/* Clean Header Gradient */
+/* Dark Header Gradient */
 .header-gradient {
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(15, 23, 42, 0.95);
   backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(71, 85, 105, 0.1);
+  border-bottom: 1px solid rgba(71, 85, 105, 0.3);
 }
 
-/* Hospital gradient - Clean blue colors */
+/* Dark theme gradients */
 .hospital-gradient {
   background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 50%, #1e40af 100%);
 }
@@ -103,6 +69,7 @@
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Inter', sans-serif;
   font-weight: 300;
+  color: #f8fafc;
 }
 
 .font-light {
@@ -120,7 +87,7 @@ h1, h2, h3, h4, h5, h6 {
   text-align: right;
 }
 
-/* Arabic Font - Classic style for Quranic text */
+/* Arabic Font - Enhanced for Quranic text */
 html[lang="ar"] body {
   font-family: 'Amiri Quran', 'Scheherazade New', 'Noto Naskh Arabic', sans-serif;
 }
@@ -132,10 +99,37 @@ html[lang="ar"] body {
 .font-arabic-classic {
   font-family: 'Amiri Quran', 'Scheherazade New', serif;
   font-weight: 400;
-  font-size: 1.5rem;
-  line-height: 1.8;
+  font-size: 1.8rem;
+  line-height: 2.2;
   text-align: center;
-  color: #1e293b;
+  color: #e2e8f0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  padding: 1rem;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(29, 78, 216, 0.1) 100%);
+  border-radius: 12px;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+/* Quranic verse styling */
+.quran-verse {
+  font-family: 'Amiri Quran', 'Scheherazade New', serif;
+  font-size: 2rem;
+  line-height: 2.5;
+  text-align: center;
+  color: #e2e8f0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  padding: 2rem;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(29, 78, 216, 0.1) 100%);
+  border-radius: 16px;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  margin: 2rem 0;
+}
+
+.quran-reference {
+  font-size: 1rem;
+  color: #94a3b8;
+  margin-top: 1rem;
+  font-style: italic;
 }
 
 /* French Font */
@@ -143,23 +137,23 @@ html[lang="fr"] body {
   font-family: 'Inter', sans-serif;
 }
 
-/* Clean card styles */
+/* Dark card styles */
 .card {
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(30, 41, 59, 0.8);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(71, 85, 105, 0.1);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(71, 85, 105, 0.3);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   transition: all 0.3s ease;
   border-radius: 16px;
 }
 
 .card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
-  border-color: rgba(59, 130, 246, 0.3);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+  border-color: rgba(59, 130, 246, 0.5);
 }
 
-/* Clean button styles */
+/* Dark button styles */
 .btn-modern {
   background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
   border: none;
@@ -169,50 +163,16 @@ html[lang="fr"] body {
   font-weight: 500;
   font-family: 'Inter', sans-serif;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
 }
 
 .btn-modern:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.6);
   background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
 }
 
-/* Gradient text effects */
-.text-gradient {
-  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  font-weight: 600;
-}
-
-/* Enhanced glass morphism effects */
-.glass-morphism {
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(71, 85, 105, 0.1);
-  border-radius: 20px;
-}
-
-/* Clean glow effects */
-.clean-glow {
-  box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
-}
-
-.clean-border {
-  border: 1px solid rgba(59, 130, 246, 0.3);
-  box-shadow: 0 0 10px rgba(59, 130, 246, 0.1);
-}
-
-/* Modern input styles */
-.input-modern:focus {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-  outline: none;
-}
-
-/* Social login styles */
+/* Enhanced social login styles for dark theme */
 .social-login-container {
   display: flex;
   flex-direction: column;
@@ -224,7 +184,7 @@ html[lang="fr"] body {
   display: flex;
   align-items: center;
   margin: 1rem 0;
-  color: #6b7280;
+  color: #94a3b8;
   font-size: 0.875rem;
 }
 
@@ -233,11 +193,40 @@ html[lang="fr"] body {
   content: '';
   flex: 1;
   height: 1px;
-  background: #e5e7eb;
+  background: #475569;
 }
 
 .social-login-divider span {
   padding: 0 1rem;
+}
+
+.btn-social {
+  background: rgba(51, 65, 85, 0.8);
+  border: 1px solid rgba(71, 85, 105, 0.5);
+  color: #e2e8f0;
+}
+
+.btn-social:hover {
+  background: rgba(71, 85, 105, 0.8);
+  border-color: rgba(59, 130, 246, 0.5);
+}
+
+/* Clean scrollbar styling for dark theme */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #1d4ed8, #1e40af);
 }
 
 /* Remove animations and movement */
@@ -250,38 +239,15 @@ html[lang="fr"] body {
   transform: none !important;
 }
 
-/* Clean section spacing */
-.section-spacing {
-  padding: 4rem 0;
-}
+/* Dark color utilities */
+.bg-clean-primary { background-color: #0f172a; }
+.bg-clean-secondary { background-color: #1e293b; }
+.bg-clean-accent { background-color: #334155; }
 
-/* Improved contrast for readability */
+.text-clean-blue { color: #60a5fa; }
+.text-clean-slate { color: #94a3b8; }
+
+/* Improved contrast for dark theme */
 .text-muted-foreground {
-  color: #64748b !important;
-}
-
-/* Clean color utilities */
-.bg-clean-primary { background-color: #f8fafc; }
-.bg-clean-secondary { background-color: #f1f5f9; }
-.bg-clean-accent { background-color: #e2e8f0; }
-
-.text-clean-blue { color: #3b82f6; }
-.text-clean-slate { color: #64748b; }
-
-/* Clean scrollbar styling */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: #f1f5f9;
-}
-
-::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, #1d4ed8, #1e40af);
+  color: #94a3b8 !important;
 }

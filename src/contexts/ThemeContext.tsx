@@ -1,7 +1,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 
-type ThemeType = "light";
+type ThemeType = "dark";
 
 interface ThemeContextType {
   theme: ThemeType;
@@ -20,20 +20,20 @@ export const useTheme = () => {
 };
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Force light theme only for clean design
-  const [theme] = useState<ThemeType>("light");
+  // Force dark theme only
+  const [theme] = useState<ThemeType>("dark");
 
   useEffect(() => {
-    // Apply light theme to document
+    // Apply dark theme to document
     const root = window.document.documentElement;
     root.classList.remove("light", "dark");
-    root.classList.add("light");
-    localStorage.setItem("theme", "light");
+    root.classList.add("dark");
+    localStorage.setItem("theme", "dark");
     
-    // Set theme color meta tag for mobile browsers
+    // Set dark theme color meta tag for mobile browsers
     const metaThemeColor = document.querySelector("meta[name=theme-color]");
     if (metaThemeColor) {
-      metaThemeColor.setAttribute("content", "#f8fafc");
+      metaThemeColor.setAttribute("content", "#0f172a");
     }
     
     // Apple-specific meta tag for status bar appearance
@@ -41,19 +41,19 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     if (!metaAppleStatusBar) {
       const newMeta = document.createElement("meta");
       newMeta.setAttribute("name", "apple-mobile-web-app-status-bar-style");
-      newMeta.setAttribute("content", "default");
+      newMeta.setAttribute("content", "black-translucent");
       document.head.appendChild(newMeta);
     } else {
-      metaAppleStatusBar.setAttribute("content", "default");
+      metaAppleStatusBar.setAttribute("content", "black-translucent");
     }
   }, []);
 
   const toggleTheme = () => {
-    // Disabled - force light mode only
+    // Disabled - force dark mode only
   };
 
   const setTheme = () => {
-    // Disabled - force light mode only
+    // Disabled - force dark mode only
   };
 
   return (
