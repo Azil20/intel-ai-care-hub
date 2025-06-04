@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -58,10 +57,18 @@ const DoctorDashboard: React.FC = () => {
         
         // Get all users to find patients
         const allUsers = getUsers();
-        const patientUsers = allUsers.filter(u => u.role === 'patient');
+        
+        // Get unique patient IDs who have appointments with this doctor
+        const patientIdsWithAppointments = [...new Set(doctorAppointments.map(apt => apt.patientId))];
+        console.log("Patient IDs with appointments:", patientIdsWithAppointments);
+        
+        // Filter only patients who have appointments with this doctor
+        const patientsWithAppointments = allUsers.filter(u => 
+          u.role === 'patient' && patientIdsWithAppointments.includes(u.id)
+        );
         
         // Create patient data with appointment history
-        const patientsWithData = patientUsers.map(patient => {
+        const patientsWithData = patientsWithAppointments.map(patient => {
           const patientAppointments = doctorAppointments.filter(apt => apt.patientId === patient.id);
           const lastAppointment = patientAppointments
             .filter(apt => apt.status === 'completed')
@@ -78,6 +85,7 @@ const DoctorDashboard: React.FC = () => {
           };
         });
         
+        console.log("Patients with appointments:", patientsWithData);
         setPatients(patientsWithData);
       } catch (error) {
         console.error("Error fetching doctor data:", error);

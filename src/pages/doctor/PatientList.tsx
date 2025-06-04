@@ -1,170 +1,188 @@
 
-import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Search } from "lucide-react";
+import { Search, Phone, Mail, Calendar } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { getAppointmentsByDoctorId, getUsers } from "@/services/localDatabase";
+import { format, parseISO } from "date-fns";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface Patient {
   id: string;
   name: string;
-  age: number;
-  gender: string;
-  condition: string;
-  contact: string;
-  lastVisit: string;
+  email: string;
+  phoneNumber?: string;
+  avatar?: string;
+  lastVisit?: string;
+  appointmentCount: number;
+  upcomingAppointments: number;
 }
 
 const PatientList: React.FC = () => {
+  const { user } = useAuth();
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [filteredPatients, setFilteredPatients] = useState<Patient[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
-  
-  // Mock patient data
-  const patients: Patient[] = [
-    { id: "p1", name: "John Doe", age: 45, gender: "Male", condition: "Hypertension", contact: "555-123-4567", lastVisit: "2025-05-01" },
-    { id: "p2", name: "Jane Smith", age: 35, gender: "Female", condition: "Diabetes Type 2", contact: "555-234-5678", lastVisit: "2025-05-05" },
-    { id: "p3", name: "Robert Johnson", age: 52, gender: "Male", condition: "Arthritis", contact: "555-345-6789", lastVisit: "2025-05-08" },
-    { id: "p4", name: "Emily Wilson", age: 28, gender: "Female", condition: "Asthma", contact: "555-456-7890", lastVisit: "2025-05-10" },
-    { id: "p5", name: "Michael Brown", age: 41, gender: "Male", condition: "Allergies", contact: "555-567-8901", lastVisit: "2025-05-12" },
-    { id: "p6", name: "Sarah Taylor", age: 63, gender: "Female", condition: "Osteoporosis", contact: "555-678-9012", lastVisit: "2025-05-15" },
-    { id: "p7", name: "David Miller", age: 37, gender: "Male", condition: "Anxiety", contact: "555-789-0123", lastVisit: "2025-05-18" },
-    { id: "p8", name: "Lisa Anderson", age: 49, gender: "Female", condition: "Migraines", contact: "555-890-1234", lastVisit: "2025-05-20" },
-  ];
-  
-  const filteredPatients = patients.filter(patient => 
-    patient.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    patient.condition.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-  
-  const handlePatientClick = (patient: Patient) => {
-    setSelectedPatient(patient);
-  };
-  
-  return (
-    <>
-      <Card>
-        <CardHeader>
-          <CardTitle>Patients</CardTitle>
-          <CardDescription>Manage and view your patients' information</CardDescription>
-          <div className="relative">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search patients by name or condition..."
-              className="pl-8"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Age</TableHead>
-                  <TableHead>Gender</TableHead>
-                  <TableHead>Condition</TableHead>
-                  <TableHead>Last Visit</TableHead>
-                  <TableHead>Contact</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredPatients.length > 0 ? (
-                  filteredPatients.map((patient) => (
-                    <TableRow key={patient.id} onClick={() => handlePatientClick(patient)} className="cursor-pointer">
-                      <TableCell className="font-medium">{patient.name}</TableCell>
-                      <TableCell>{patient.age}</TableCell>
-                      <TableCell>{patient.gender}</TableCell>
-                      <TableCell>{patient.condition}</TableCell>
-                      <TableCell>{new Date(patient.lastVisit).toLocaleDateString()}</TableCell>
-                      <TableCell>{patient.contact}</TableCell>
-                      <TableCell className="text-right">
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handlePatientClick(patient);
-                          }}
-                        >
-                          View
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={7} className="text-center py-6">
-                      No patients found
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </div>
-        </CardContent>
-      </Card>
+  const [loading, setLoading] = useState(true);
+  const { language } = useLanguage();
+  const isArabic = language === "ar";
+
+  useEffect(() => {
+    const fetchPatients = async () => {
+      if (!user || user.role !== 'doctor') return;
       
-      <Dialog open={!!selectedPatient} onOpenChange={() => setSelectedPatient(null)}>
-        <DialogContent className="sm:max-w-[600px]">
-          <DialogHeader>
-            <DialogTitle>Patient Information</DialogTitle>
-            <DialogDescription>Details for {selectedPatient?.name}</DialogDescription>
-          </DialogHeader>
+      try {
+        setLoading(true);
+        
+        // Get appointments for this doctor
+        const doctorAppointments = getAppointmentsByDoctorId(user.id);
+        
+        // Get all users
+        const allUsers = getUsers();
+        
+        // Get unique patient IDs who have appointments with this doctor
+        const patientIdsWithAppointments = [...new Set(doctorAppointments.map(apt => apt.patientId))];
+        
+        // Filter only patients who have appointments with this doctor
+        const patientsWithAppointments = allUsers.filter(u => 
+          u.role === 'patient' && patientIdsWithAppointments.includes(u.id)
+        );
+        
+        // Create patient data with appointment statistics
+        const patientsData = patientsWithAppointments.map(patient => {
+          const patientAppointments = doctorAppointments.filter(apt => apt.patientId === patient.id);
+          const lastCompletedAppointment = patientAppointments
+            .filter(apt => apt.status === 'completed')
+            .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
           
-          {selectedPatient && (
-            <div className="grid gap-6">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <h3 className="text-sm font-medium text-gray-500">Full Name</h3>
-                  <p>{selectedPatient.name}</p>
-                </div>
-                <div>
-                  <h3 className="text-sm font-medium text-gray-500">Age</h3>
-                  <p>{selectedPatient.age} years</p>
-                </div>
-                <div>
-                  <h3 className="text-sm font-medium text-gray-500">Gender</h3>
-                  <p>{selectedPatient.gender}</p>
-                </div>
-                <div>
-                  <h3 className="text-sm font-medium text-gray-500">Contact</h3>
-                  <p>{selectedPatient.contact}</p>
-                </div>
-                <div>
-                  <h3 className="text-sm font-medium text-gray-500">Medical Condition</h3>
-                  <p>{selectedPatient.condition}</p>
-                </div>
-                <div>
-                  <h3 className="text-sm font-medium text-gray-500">Last Visit</h3>
-                  <p>{new Date(selectedPatient.lastVisit).toLocaleDateString()}</p>
-                </div>
-              </div>
-              
-              <div>
-                <h3 className="text-sm font-medium text-gray-500 mb-2">Recent Appointments</h3>
-                <div className="border rounded-md p-3 space-y-2">
-                  <div className="flex justify-between items-center border-b pb-2">
-                    <span>{new Date(selectedPatient.lastVisit).toLocaleDateString()}</span>
-                    <span className="text-sm text-gray-500">Regular Checkup</span>
-                  </div>
-                  <div className="flex justify-between items-center border-b pb-2">
-                    <span>{new Date(new Date(selectedPatient.lastVisit).getTime() - 30 * 24 * 60 * 60 * 1000).toLocaleDateString()}</span>
-                    <span className="text-sm text-gray-500">Follow-up</span>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Removed the buttons grid from here */}
+          const upcomingAppointments = patientAppointments.filter(
+            apt => apt.status === 'scheduled' && new Date(apt.date) >= new Date()
+          ).length;
+          
+          return {
+            id: patient.id,
+            name: patient.name,
+            email: patient.email,
+            phoneNumber: patient.phoneNumber,
+            avatar: patient.avatar || "/profile-placeholder.png",
+            lastVisit: lastCompletedAppointment?.date,
+            appointmentCount: patientAppointments.length,
+            upcomingAppointments
+          };
+        });
+        
+        setPatients(patientsData);
+        setFilteredPatients(patientsData);
+      } catch (error) {
+        console.error("Error fetching patients:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPatients();
+  }, [user]);
+
+  useEffect(() => {
+    const filtered = patients.filter(patient =>
+      patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      patient.email.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredPatients(filtered);
+  }, [searchTerm, patients]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[200px]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className={`text-2xl font-bold ${isArabic ? "text-right" : ""}`}>
+          {isArabic ? "قائمة المرضى" : "Patient List"}
+        </h2>
+        <div className="relative w-64">
+          <Search className={`absolute top-3 h-4 w-4 text-muted-foreground ${isArabic ? "right-3" : "left-3"}`} />
+          <Input
+            placeholder={isArabic ? "البحث عن المرضى..." : "Search patients..."}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className={isArabic ? "pr-10 text-right" : "pl-10"}
+          />
+        </div>
+      </div>
+
+      {filteredPatients.length === 0 ? (
+        <Card>
+          <CardContent className="py-8">
+            <div className="text-center">
+              <p className={`text-muted-foreground ${isArabic ? "text-right" : ""}`}>
+                {searchTerm ? 
+                  (isArabic ? "لم يتم العثور على مرضى" : "No patients found") :
+                  (isArabic ? "لا يوجد مرضى مع مواعيد" : "No patients with appointments")
+                }
+              </p>
             </div>
-          )}
-        </DialogContent>
-      </Dialog>
-    </>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid gap-4">
+          {filteredPatients.map((patient) => (
+            <Card key={patient.id} className="hover:shadow-lg transition-shadow">
+              <CardContent className="p-6">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-4">
+                    <Avatar className="h-12 w-12">
+                      <AvatarImage src={patient.avatar} alt={patient.name} />
+                      <AvatarFallback>{patient.name.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <div className={isArabic ? "text-right" : ""}>
+                      <h3 className="font-semibold text-lg">{patient.name}</h3>
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
+                        <Mail className="h-3 w-3" />
+                        <span>{patient.email}</span>
+                      </div>
+                      {patient.phoneNumber && (
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
+                          <Phone className="h-3 w-3" />
+                          <span>{patient.phoneNumber}</span>
+                        </div>
+                      )}
+                      {patient.lastVisit && (
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
+                          <Calendar className="h-3 w-3" />
+                          <span>
+                            {isArabic ? "آخر زيارة: " : "Last visit: "}
+                            {format(parseISO(patient.lastVisit), "PPP")}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className={`flex flex-col gap-2 ${isArabic ? "items-start" : "items-end"}`}>
+                    <Badge variant="outline">
+                      {patient.appointmentCount} {isArabic ? "مواعيد" : "appointments"}
+                    </Badge>
+                    {patient.upcomingAppointments > 0 && (
+                      <Badge variant="default">
+                        {patient.upcomingAppointments} {isArabic ? "قادمة" : "upcoming"}
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+    </div>
   );
 };
 
