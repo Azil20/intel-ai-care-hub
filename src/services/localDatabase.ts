@@ -1,4 +1,3 @@
-
 import { v4 as uuidv4 } from 'uuid';
 
 interface User {
@@ -30,6 +29,17 @@ interface Message {
   content: string;
   isAi: boolean;
   timestamp: Date;
+}
+
+interface Prescription {
+  id: string;
+  patientId: string;
+  doctorId: string;
+  medication: string;
+  dosage: string;
+  frequency: string;
+  date: string;
+  notes?: string;
 }
 
 // Initialize the database
@@ -83,9 +93,34 @@ export const initializeLocalDatabase = async () => {
       }
     ];
 
+    // Create default prescriptions
+    const prescriptions: Prescription[] = [
+      {
+        id: 'pr1',
+        patientId: 'p1',
+        doctorId: 'd1',
+        medication: 'Amoxicillin',
+        dosage: '500mg',
+        frequency: '3x daily',
+        date: '2025-05-01',
+        notes: 'Take with food'
+      },
+      {
+        id: 'pr2',
+        patientId: 'p1',
+        doctorId: 'd1',
+        medication: 'Ibuprofen',
+        dosage: '400mg',
+        frequency: 'As needed',
+        date: '2025-05-01',
+        notes: 'For pain relief'
+      }
+    ];
+
     // Save to local storage
     localStorage.setItem('users', JSON.stringify(users));
     localStorage.setItem('appointments', JSON.stringify(appointments));
+    localStorage.setItem('prescriptions', JSON.stringify(prescriptions));
     localStorage.setItem('messages', JSON.stringify([]));
     localStorage.setItem('db_initialized', 'true');
 
@@ -93,7 +128,35 @@ export const initializeLocalDatabase = async () => {
   } else {
     console.log('Database already initialized');
     
-    // Check if we need to update the appointment structure to include patient names
+    // Check if we need to add prescriptions table
+    if (!localStorage.getItem('prescriptions')) {
+      const prescriptions: Prescription[] = [
+        {
+          id: 'pr1',
+          patientId: 'p1',
+          doctorId: 'd1',
+          medication: 'Amoxicillin',
+          dosage: '500mg',
+          frequency: '3x daily',
+          date: '2025-05-01',
+          notes: 'Take with food'
+        },
+        {
+          id: 'pr2',
+          patientId: 'p1',
+          doctorId: 'd1',
+          medication: 'Ibuprofen',
+          dosage: '400mg',
+          frequency: 'As needed',
+          date: '2025-05-01',
+          notes: 'For pain relief'
+        }
+      ];
+      localStorage.setItem('prescriptions', JSON.stringify(prescriptions));
+      console.log('Added prescriptions table to existing database');
+    }
+    
+    // Check if we need to update the appointment structure to include names
     const appointments = JSON.parse(localStorage.getItem('appointments') || '[]');
     const users = JSON.parse(localStorage.getItem('users') || '[]');
     
@@ -154,10 +217,12 @@ export const createUser = (user: Omit<User, 'id'>): User => {
   const users = getUsers();
   const newUser: User = {
     ...user,
-    id: uuidv4()
+    id: uuidv4(),
+    avatar: user.avatar || '/profile-placeholder.png'
   };
   users.push(newUser);
   localStorage.setItem('users', JSON.stringify(users));
+  console.log('New user created and added to database:', newUser);
   return newUser;
 };
 
@@ -248,6 +313,55 @@ export const deleteAppointment = (id: string): boolean => {
   return false;
 };
 
+// Prescription Management
+export const getPrescriptions = (): Prescription[] => {
+  return JSON.parse(localStorage.getItem('prescriptions') || '[]');
+};
+
+export const getPrescriptionsByPatientId = (patientId: string): Prescription[] => {
+  const prescriptions = getPrescriptions();
+  return prescriptions.filter(prescription => prescription.patientId === patientId);
+};
+
+export const getPrescriptionsByDoctorId = (doctorId: string): Prescription[] => {
+  const prescriptions = getPrescriptions();
+  return prescriptions.filter(prescription => prescription.doctorId === doctorId);
+};
+
+export const createPrescription = (prescription: Omit<Prescription, 'id'>): Prescription => {
+  const prescriptions = getPrescriptions();
+  const newPrescription: Prescription = {
+    ...prescription,
+    id: uuidv4()
+  };
+  prescriptions.push(newPrescription);
+  localStorage.setItem('prescriptions', JSON.stringify(prescriptions));
+  return newPrescription;
+};
+
+export const updatePrescription = (id: string, updates: Partial<Prescription>): Prescription | undefined => {
+  const prescriptions = getPrescriptions();
+  const index = prescriptions.findIndex(prescription => prescription.id === id);
+  
+  if (index !== -1) {
+    prescriptions[index] = { ...prescriptions[index], ...updates };
+    localStorage.setItem('prescriptions', JSON.stringify(prescriptions));
+    return prescriptions[index];
+  }
+  return undefined;
+};
+
+export const deletePrescription = (id: string): boolean => {
+  const prescriptions = getPrescriptions();
+  const filteredPrescriptions = prescriptions.filter(prescription => prescription.id !== id);
+  
+  if (prescriptions.length !== filteredPrescriptions.length) {
+    localStorage.setItem('prescriptions', JSON.stringify(filteredPrescriptions));
+    return true;
+  }
+  return false;
+};
+
 // Message Management
 export const getMessages = (): Message[] => {
   return JSON.parse(localStorage.getItem('messages') || '[]');
@@ -280,11 +394,28 @@ export const deleteAllMessagesForUser = (userId: string): boolean => {
   return false;
 };
 
-// Authentication
+// Authentication - now creates user if doesn't exist
 export const authenticateUser = (email: string, password: string): User | null => {
-  const user = getUserByEmail(email);
-  if (user && user.password === password) {
+  let user = getUserByEmail(email);
+  
+  // If user doesn't exist, create a new one (for dynamic sign-in)
+  if (!user) {
+    console.log('User not found, creating new user for:', email);
+    const newUser = createUser({
+      name: email.split('@')[0], // Use email prefix as default name
+      email,
+      password,
+      role: email.includes('doctor') ? 'doctor' : 'patient', // Simple role detection
+      phoneNumber: undefined,
+      avatar: '/profile-placeholder.png'
+    });
+    return newUser;
+  }
+  
+  // If user exists, check password
+  if (user.password === password) {
     return user;
   }
+  
   return null;
 };

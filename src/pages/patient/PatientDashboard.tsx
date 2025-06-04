@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,7 +8,7 @@ import AiChatAssistant from "./AiChatAssistant";
 import { Calendar, MessageCircle, User } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getAppointmentsByPatientId, getUsers } from "@/services/localDatabase";
+import { getAppointmentsByPatientId, getPrescriptionsByPatientId } from "@/services/localDatabase";
 import { format, parseISO } from "date-fns";
 
 interface Appointment {
@@ -25,10 +24,22 @@ interface Appointment {
   status: 'scheduled' | 'completed' | 'cancelled';
 }
 
+interface Prescription {
+  id: string;
+  patientId: string;
+  doctorId: string;
+  medication: string;
+  dosage: string;
+  frequency: string;
+  date: string;
+  notes?: string;
+}
+
 const PatientDashboard: React.FC = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("overview");
   const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
   const [loading, setLoading] = useState(true);
   const { language } = useLanguage();
   const isArabic = language === "ar";
@@ -53,6 +64,19 @@ const PatientDashboard: React.FC = () => {
         });
         
         setAppointments(upcomingAppointments);
+
+        // Get real prescriptions for this patient
+        console.log("Fetching prescriptions for patient:", user.id);
+        const patientPrescriptions = getPrescriptionsByPatientId(user.id);
+        console.log("Found prescriptions:", patientPrescriptions);
+        
+        // Sort by date (most recent first)
+        const sortedPrescriptions = patientPrescriptions.sort((a, b) => 
+          new Date(b.date).getTime() - new Date(a.date).getTime()
+        );
+        
+        setPrescriptions(sortedPrescriptions);
+        
       } catch (error) {
         console.error("Error fetching patient data:", error);
       } finally {
@@ -63,11 +87,11 @@ const PatientDashboard: React.FC = () => {
     fetchPatientData();
   }, [user]);
 
-  // Refresh appointments when switching back to overview tab
+  // Refresh data when switching back to overview tab
   useEffect(() => {
     if (activeTab === "overview" && user) {
-      const refreshAppointments = () => {
-        console.log("Refreshing appointments for overview");
+      const refreshData = () => {
+        console.log("Refreshing data for overview");
         const patientAppointments = getAppointmentsByPatientId(user.id);
         const upcomingAppointments = patientAppointments.filter(apt => {
           const appointmentDate = parseISO(apt.date);
@@ -75,9 +99,15 @@ const PatientDashboard: React.FC = () => {
           return apt.status === 'scheduled' && appointmentDate >= today;
         });
         setAppointments(upcomingAppointments);
+
+        const patientPrescriptions = getPrescriptionsByPatientId(user.id);
+        const sortedPrescriptions = patientPrescriptions.sort((a, b) => 
+          new Date(b.date).getTime() - new Date(a.date).getTime()
+        );
+        setPrescriptions(sortedPrescriptions);
       };
       
-      refreshAppointments();
+      refreshData();
     }
   }, [activeTab, user]);
 
@@ -85,12 +115,6 @@ const PatientDashboard: React.FC = () => {
     name: user?.name || "Patient",
     avatar: user?.avatar || "/profile-placeholder.png",
   };
-
-  // Mock prescription data (this would come from a real prescription system)
-  const recentPrescriptions = [
-    { id: "1", medication: isArabic ? "أموكسيسيلين" : "Amoxicillin", dosage: "500mg", frequency: isArabic ? "3 مرات يوميًا" : "3x daily", date: "2025-05-01" },
-    { id: "2", medication: isArabic ? "إيبوبروفين" : "Ibuprofen", dosage: "400mg", frequency: isArabic ? "عند الحاجة" : "As needed", date: "2025-05-01" },
-  ];
 
   if (loading) {
     return (
@@ -189,17 +213,28 @@ const PatientDashboard: React.FC = () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    {recentPrescriptions.length > 0 ? (
+                    {prescriptions.length > 0 ? (
                       <ul className="space-y-3">
-                        {recentPrescriptions.map(prescription => (
+                        {prescriptions.slice(0, 3).map(prescription => (
                           <li key={prescription.id} className="p-3 rounded-md border">
-                            <div className={`font-medium ${isArabic ? "text-right" : ""}`}>{prescription.medication}</div>
+                            <div className={`font-medium ${isArabic ? "text-right" : ""}`}>
+                              {isArabic && prescription.medication === "Amoxicillin" ? "أموكسيسيلين" : 
+                               isArabic && prescription.medication === "Ibuprofen" ? "إيبوبروفين" : 
+                               prescription.medication}
+                            </div>
                             <div className={`text-sm ${isArabic ? "text-right" : ""}`}>
-                              {prescription.dosage}, {prescription.frequency}
+                              {prescription.dosage}, {isArabic && prescription.frequency === "3x daily" ? "3 مرات يوميًا" :
+                                                     isArabic && prescription.frequency === "As needed" ? "عند الحاجة" :
+                                                     prescription.frequency}
                             </div>
                             <div className={`text-sm text-gray-500 ${isArabic ? "text-right" : ""}`}>
                               {isArabic ? "وصفت في" : "Prescribed on"} {format(parseISO(prescription.date), "PPP")}
                             </div>
+                            {prescription.notes && (
+                              <div className={`text-xs text-gray-400 ${isArabic ? "text-right" : ""}`}>
+                                {prescription.notes}
+                              </div>
+                            )}
                           </li>
                         ))}
                       </ul>
