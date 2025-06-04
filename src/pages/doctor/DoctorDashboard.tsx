@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/contexts/AuthContext";
@@ -8,24 +8,123 @@ import AppointmentCalendar from "./AppointmentCalendar";
 import { Calendar, User } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { getAppointmentsByDoctorId, getUsers } from "@/services/localDatabase";
+import { format, parseISO, isToday, isTomorrow } from "date-fns";
+
+interface Patient {
+  id: string;
+  name: string;
+  email: string;
+  age?: number;
+  lastVisit?: string;
+  condition?: string;
+  avatar?: string;
+}
+
+interface Appointment {
+  id: string;
+  patientId: string;
+  patientName: string;
+  patientPhoneNumber?: string;
+  doctorId: string;
+  doctorName: string;
+  date: string;
+  time: string;
+  reason?: string;
+  status: 'scheduled' | 'completed' | 'cancelled';
+}
 
 const DoctorDashboard: React.FC = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("overview");
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [loading, setLoading] = useState(true);
   const { language } = useLanguage();
   const isArabic = language === "ar";
 
-  // Mock data for doctor dashboard with Arabic names
-  const dashboardData = {
-    totalPatients: 42,
-    appointmentsToday: 8,
-    appointmentsTomorrow: 6,
-    recentPatients: [
-      { id: "p1", name: isArabic ? "محمد أحمد" : "Mohammed Ahmed", age: 45, lastVisit: "2025-05-01", condition: isArabic ? "ارتفاع ضغط الدم" : "Hypertension", avatar: "/profile-placeholder.png" },
-      { id: "p2", name: isArabic ? "فاطمة علي" : "Fatima Ali", age: 35, lastVisit: "2025-05-05", condition: isArabic ? "السكري النوع 2" : "Diabetes Type 2", avatar: "/profile-placeholder.png" },
-      { id: "p3", name: isArabic ? "عبدالله محمود" : "Abdullah Mahmoud", age: 52, lastVisit: "2025-05-08", condition: isArabic ? "التهاب المفاصل" : "Arthritis", avatar: "/profile-placeholder.png" },
-    ]
-  };
+  useEffect(() => {
+    const fetchDoctorData = async () => {
+      if (!user || user.role !== 'doctor') return;
+      
+      try {
+        setLoading(true);
+        console.log("Fetching appointments for doctor:", user.id);
+        
+        // Get real appointments for this doctor
+        const doctorAppointments = getAppointmentsByDoctorId(user.id);
+        console.log("Found doctor appointments:", doctorAppointments);
+        setAppointments(doctorAppointments);
+        
+        // Get all users to find patients
+        const allUsers = getUsers();
+        const patientUsers = allUsers.filter(u => u.role === 'patient');
+        
+        // Create patient data with appointment history
+        const patientsWithData = patientUsers.map(patient => {
+          const patientAppointments = doctorAppointments.filter(apt => apt.patientId === patient.id);
+          const lastAppointment = patientAppointments
+            .filter(apt => apt.status === 'completed')
+            .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+          
+          return {
+            id: patient.id,
+            name: patient.name,
+            email: patient.email,
+            age: Math.floor(Math.random() * 40) + 25, // Mock age for now
+            lastVisit: lastAppointment?.date,
+            condition: lastAppointment?.reason || (isArabic ? "لا توجد معلومات" : "No information"),
+            avatar: patient.avatar || "/profile-placeholder.png"
+          };
+        });
+        
+        setPatients(patientsWithData);
+      } catch (error) {
+        console.error("Error fetching doctor data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDoctorData();
+  }, [user, isArabic]);
+
+  // Calculate dashboard statistics
+  const totalPatients = patients.length;
+  const appointmentsToday = appointments.filter(apt => 
+    isToday(parseISO(apt.date)) && apt.status === 'scheduled'
+  ).length;
+  const appointmentsTomorrow = appointments.filter(apt => 
+    isTomorrow(parseISO(apt.date)) && apt.status === 'scheduled'
+  ).length;
+
+  // Get recent patients (patients with recent appointments)
+  const recentPatients = patients
+    .filter(patient => patient.lastVisit)
+    .sort((a, b) => {
+      if (!a.lastVisit || !b.lastVisit) return 0;
+      return new Date(b.lastVisit).getTime() - new Date(a.lastVisit).getTime();
+    })
+    .slice(0, 3);
+
+  // Get today's appointments for schedule
+  const todaysAppointments = appointments
+    .filter(apt => isToday(parseISO(apt.date)) && apt.status === 'scheduled')
+    .sort((a, b) => a.time.localeCompare(b.time))
+    .slice(0, 3);
+
+  if (loading) {
+    return (
+      <div className="container mx-auto py-6 px-4">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+            <p>Loading your dashboard...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto py-6 px-4">
@@ -48,19 +147,19 @@ const DoctorDashboard: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-2xl">{dashboardData.totalPatients}</CardTitle>
+                <CardTitle className="text-2xl">{totalPatients}</CardTitle>
                 <CardDescription>{isArabic ? "إجمالي المرضى" : "Total Patients"}</CardDescription>
               </CardHeader>
             </Card>
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-2xl">{dashboardData.appointmentsToday}</CardTitle>
+                <CardTitle className="text-2xl">{appointmentsToday}</CardTitle>
                 <CardDescription>{isArabic ? "مواعيد اليوم" : "Appointments Today"}</CardDescription>
               </CardHeader>
             </Card>
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-2xl">{dashboardData.appointmentsTomorrow}</CardTitle>
+                <CardTitle className="text-2xl">{appointmentsTomorrow}</CardTitle>
                 <CardDescription>{isArabic ? "مواعيد الغد" : "Appointments Tomorrow"}</CardDescription>
               </CardHeader>
             </Card>
@@ -72,36 +171,44 @@ const DoctorDashboard: React.FC = () => {
               <CardDescription>{isArabic ? "مرضاك الذين تمت مشاهدتهم مؤخرًا" : "Your recently seen patients"}</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b">
-                      <th className={`text-left py-3 px-2 ${isArabic ? "text-right" : ""}`}>{isArabic ? "الاسم" : "Name"}</th>
-                      <th className={`text-left py-3 px-2 ${isArabic ? "text-right" : ""}`}>{isArabic ? "العمر" : "Age"}</th>
-                      <th className={`text-left py-3 px-2 ${isArabic ? "text-right" : ""}`}>{isArabic ? "آخر زيارة" : "Last Visit"}</th>
-                      <th className={`text-left py-3 px-2 ${isArabic ? "text-right" : ""}`}>{isArabic ? "الحالة" : "Condition"}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {dashboardData.recentPatients.map((patient) => (
-                      <tr key={patient.id} className="border-b hover:bg-muted/50 cursor-pointer">
-                        <td className={`py-3 px-2 font-medium ${isArabic ? "text-right" : ""}`}>
-                          <div className="flex items-center gap-2">
-                            <Avatar className="h-8 w-8">
-                              <AvatarImage src={patient.avatar} alt={patient.name} />
-                              <AvatarFallback>{patient.name.charAt(0)}</AvatarFallback>
-                            </Avatar>
-                            <span>{patient.name}</span>
-                          </div>
-                        </td>
-                        <td className={`py-3 px-2 ${isArabic ? "text-right" : ""}`}>{patient.age}</td>
-                        <td className={`py-3 px-2 ${isArabic ? "text-right" : ""}`}>{new Date(patient.lastVisit).toLocaleDateString(isArabic ? 'ar-SA' : undefined)}</td>
-                        <td className={`py-3 px-2 ${isArabic ? "text-right" : ""}`}>{patient.condition}</td>
+              {recentPatients.length > 0 ? (
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b">
+                        <th className={`text-left py-3 px-2 ${isArabic ? "text-right" : ""}`}>{isArabic ? "الاسم" : "Name"}</th>
+                        <th className={`text-left py-3 px-2 ${isArabic ? "text-right" : ""}`}>{isArabic ? "العمر" : "Age"}</th>
+                        <th className={`text-left py-3 px-2 ${isArabic ? "text-right" : ""}`}>{isArabic ? "آخر زيارة" : "Last Visit"}</th>
+                        <th className={`text-left py-3 px-2 ${isArabic ? "text-right" : ""}`}>{isArabic ? "الحالة" : "Condition"}</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody>
+                      {recentPatients.map((patient) => (
+                        <tr key={patient.id} className="border-b hover:bg-muted/50 cursor-pointer">
+                          <td className={`py-3 px-2 font-medium ${isArabic ? "text-right" : ""}`}>
+                            <div className="flex items-center gap-2">
+                              <Avatar className="h-8 w-8">
+                                <AvatarImage src={patient.avatar} alt={patient.name} />
+                                <AvatarFallback>{patient.name.charAt(0)}</AvatarFallback>
+                              </Avatar>
+                              <span>{patient.name}</span>
+                            </div>
+                          </td>
+                          <td className={`py-3 px-2 ${isArabic ? "text-right" : ""}`}>{patient.age}</td>
+                          <td className={`py-3 px-2 ${isArabic ? "text-right" : ""}`}>
+                            {patient.lastVisit ? format(parseISO(patient.lastVisit), "PPP") : "N/A"}
+                          </td>
+                          <td className={`py-3 px-2 ${isArabic ? "text-right" : ""}`}>{patient.condition}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <p className={`text-muted-foreground ${isArabic ? "text-right" : ""}`}>
+                  {isArabic ? "لا توجد مواعيد حديثة" : "No recent patient visits"}
+                </p>
+              )}
             </CardContent>
           </Card>
           
@@ -111,29 +218,23 @@ const DoctorDashboard: React.FC = () => {
               <CardDescription>{isArabic ? "مواعيدك لهذا اليوم" : "Your appointments for today"}</CardDescription>
             </CardHeader>
             <CardContent className={isArabic ? "text-right" : ""}>
-              <ol className={`relative border-l border-gray-200 ${isArabic ? "mr-3 border-r border-l-0" : "ml-3"}`}>
-                <li className={`mb-6 ${isArabic ? "mr-6" : "ml-6"}`}>
-                  <span className={`absolute flex items-center justify-center w-6 h-6 bg-teal-100 rounded-full ${isArabic ? "-right-3" : "-left-3"} ring-8 ring-white`}>
-                    <span className="text-teal-500 text-sm">9AM</span>
-                  </span>
-                  <h3 className="flex items-center mb-1 text-lg font-semibold">{isArabic ? "محمد أحمد" : "Mohammed Ahmed"}</h3>
-                  <p className="mb-2 text-sm text-gray-500">{isArabic ? "فحص منتظم - مراقبة ضغط الدم" : "Regular Checkup - Blood Pressure Monitoring"}</p>
-                </li>
-                <li className={`mb-6 ${isArabic ? "mr-6" : "ml-6"}`}>
-                  <span className={`absolute flex items-center justify-center w-6 h-6 bg-teal-100 rounded-full ${isArabic ? "-right-3" : "-left-3"} ring-8 ring-white`}>
-                    <span className="text-teal-500 text-sm">10AM</span>
-                  </span>
-                  <h3 className="flex items-center mb-1 text-lg font-semibold">{isArabic ? "سارة عبدالله" : "Sarah Abdullah"}</h3>
-                  <p className="mb-2 text-sm text-gray-500">{isArabic ? "متابعة - ما بعد الجراحة" : "Follow-up - Post Surgery"}</p>
-                </li>
-                <li className={`mb-6 ${isArabic ? "mr-6" : "ml-6"}`}>
-                  <span className={`absolute flex items-center justify-center w-6 h-6 bg-teal-100 rounded-full ${isArabic ? "-right-3" : "-left-3"} ring-8 ring-white`}>
-                    <span className="text-teal-500 text-sm">11AM</span>
-                  </span>
-                  <h3 className="flex items-center mb-1 text-lg font-semibold">{isArabic ? "خالد محمد" : "Khalid Mohammed"}</h3>
-                  <p className="mb-2 text-sm text-gray-500">{isArabic ? "مريض جديد - استشارة أولية" : "New Patient - Initial Consultation"}</p>
-                </li>
-              </ol>
+              {todaysAppointments.length > 0 ? (
+                <ol className={`relative border-l border-gray-200 ${isArabic ? "mr-3 border-r border-l-0" : "ml-3"}`}>
+                  {todaysAppointments.map((appointment, index) => (
+                    <li key={appointment.id} className={`mb-6 ${isArabic ? "mr-6" : "ml-6"}`}>
+                      <span className={`absolute flex items-center justify-center w-6 h-6 bg-teal-100 rounded-full ${isArabic ? "-right-3" : "-left-3"} ring-8 ring-white`}>
+                        <span className="text-teal-500 text-xs">{appointment.time}</span>
+                      </span>
+                      <h3 className="flex items-center mb-1 text-lg font-semibold">{appointment.patientName}</h3>
+                      <p className="mb-2 text-sm text-gray-500">{appointment.reason || (isArabic ? "لا يوجد سبب محدد" : "No reason provided")}</p>
+                    </li>
+                  ))}
+                </ol>
+              ) : (
+                <p className={`text-muted-foreground ${isArabic ? "text-right" : ""}`}>
+                  {isArabic ? "لا توجد مواعيد اليوم" : "No appointments scheduled for today"}
+                </p>
+              )}
             </CardContent>
           </Card>
         </TabsContent>

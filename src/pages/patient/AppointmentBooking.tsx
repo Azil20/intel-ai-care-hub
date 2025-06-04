@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -29,6 +30,7 @@ const AppointmentBooking = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [selectedTime, setSelectedTime] = useState<string | undefined>(undefined);
   const [reason, setReason] = useState<string>("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [availableTimes, setAvailableTimes] = useState<string[]>([
     "09:00", "10:00", "11:00", "14:00", "15:00", "16:00"
   ]);
@@ -38,8 +40,10 @@ const AppointmentBooking = () => {
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
+        console.log("Fetching doctors for appointment booking");
         const allUsers = getUsers();
         const doctorUsers = allUsers.filter((user) => user.role === "doctor");
+        console.log("Found doctors:", doctorUsers);
         setDoctors(doctorUsers);
       } catch (error) {
         console.error("Error fetching doctors:", error);
@@ -52,7 +56,14 @@ const AppointmentBooking = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!user) return;
+    if (!user) {
+      toast({
+        title: "Error",
+        description: "User not authenticated",
+        variant: "destructive",
+      });
+      return;
+    }
 
     if (!selectedDoctor || !selectedDate || !selectedTime || !reason) {
       toast({
@@ -64,6 +75,16 @@ const AppointmentBooking = () => {
     }
 
     try {
+      setIsSubmitting(true);
+      console.log("Creating appointment with data:", {
+        patientId: user.id,
+        doctorId: selectedDoctor,
+        date: format(selectedDate, "yyyy-MM-dd"),
+        time: selectedTime,
+        reason,
+        status: "scheduled",
+      });
+
       const appointment = createAppointment({
         patientId: user.id,
         doctorId: selectedDoctor,
@@ -73,9 +94,11 @@ const AppointmentBooking = () => {
         status: "scheduled",
       });
 
+      console.log("Appointment created successfully:", appointment);
+
       toast({
         title: "Success",
-        description: "Appointment booked successfully",
+        description: "Appointment booked successfully! You can view it in your overview.",
       });
 
       // Reset form
@@ -83,13 +106,19 @@ const AppointmentBooking = () => {
       setSelectedDate(undefined);
       setSelectedTime(undefined);
       setReason("");
+
+      // Trigger a custom event to refresh the parent dashboard
+      window.dispatchEvent(new CustomEvent('appointmentBooked'));
+      
     } catch (error) {
       console.error("Error booking appointment:", error);
       toast({
         title: "Error",
-        description: "Failed to book appointment",
+        description: "Failed to book appointment. Please try again.",
         variant: "destructive",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -106,7 +135,7 @@ const AppointmentBooking = () => {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="doctor">Select Doctor</Label>
-            <Select onValueChange={setSelectedDoctor}>
+            <Select onValueChange={setSelectedDoctor} value={selectedDoctor}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select a doctor" />
               </SelectTrigger>
@@ -153,7 +182,7 @@ const AppointmentBooking = () => {
 
           <div className="space-y-2">
             <Label htmlFor="time">Select Time</Label>
-            <Select onValueChange={setSelectedTime}>
+            <Select onValueChange={setSelectedTime} value={selectedTime}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select a time" />
               </SelectTrigger>
@@ -175,8 +204,12 @@ const AppointmentBooking = () => {
             />
           </div>
 
-          <Button type="submit" className="w-full bg-hospital-500 hover:bg-hospital-600">
-            Book Appointment
+          <Button 
+            type="submit" 
+            className="w-full bg-hospital-500 hover:bg-hospital-600"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Booking..." : "Book Appointment"}
           </Button>
         </form>
       </Card>

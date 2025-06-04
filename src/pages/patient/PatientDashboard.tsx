@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -9,40 +9,101 @@ import AiChatAssistant from "./AiChatAssistant";
 import { Calendar, MessageCircle, User } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { getAppointmentsByPatientId, getUsers } from "@/services/localDatabase";
+import { format, parseISO } from "date-fns";
+
+interface Appointment {
+  id: string;
+  patientId: string;
+  patientName: string;
+  patientPhoneNumber?: string;
+  doctorId: string;
+  doctorName: string;
+  date: string;
+  time: string;
+  reason?: string;
+  status: 'scheduled' | 'completed' | 'cancelled';
+}
 
 const PatientDashboard: React.FC = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("overview");
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [loading, setLoading] = useState(true);
   const { language } = useLanguage();
   const isArabic = language === "ar";
 
-  // Mock patient data
+  useEffect(() => {
+    const fetchPatientData = async () => {
+      if (!user) return;
+      
+      try {
+        setLoading(true);
+        console.log("Fetching appointments for patient:", user.id);
+        
+        // Get real appointments for this patient
+        const patientAppointments = getAppointmentsByPatientId(user.id);
+        console.log("Found appointments:", patientAppointments);
+        
+        // Filter for upcoming appointments (scheduled status and future dates)
+        const upcomingAppointments = patientAppointments.filter(apt => {
+          const appointmentDate = parseISO(apt.date);
+          const today = new Date();
+          return apt.status === 'scheduled' && appointmentDate >= today;
+        });
+        
+        setAppointments(upcomingAppointments);
+      } catch (error) {
+        console.error("Error fetching patient data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPatientData();
+  }, [user]);
+
+  // Refresh appointments when switching back to overview tab
+  useEffect(() => {
+    if (activeTab === "overview" && user) {
+      const refreshAppointments = () => {
+        console.log("Refreshing appointments for overview");
+        const patientAppointments = getAppointmentsByPatientId(user.id);
+        const upcomingAppointments = patientAppointments.filter(apt => {
+          const appointmentDate = parseISO(apt.date);
+          const today = new Date();
+          return apt.status === 'scheduled' && appointmentDate >= today;
+        });
+        setAppointments(upcomingAppointments);
+      };
+      
+      refreshAppointments();
+    }
+  }, [activeTab, user]);
+
   const patientData = {
     name: user?.name || "Patient",
-    avatar: "/profile-placeholder.png",
-    upcomingAppointments: [
-      { 
-        id: "1", 
-        doctorName: isArabic ? "د. سارة سميث" : "Dr. Sarah Smith", 
-        doctorAvatar: "/profile-placeholder.png",
-        date: "2025-05-20", 
-        time: "10:00 AM", 
-        reason: isArabic ? "فحص منتظم" : "Regular Checkup" 
-      },
-      { 
-        id: "2", 
-        doctorName: isArabic ? "د. روبرت جونسون" : "Dr. Robert Johnson", 
-        doctorAvatar: "/profile-placeholder.png",
-        date: "2025-05-25", 
-        time: "2:30 PM", 
-        reason: isArabic ? "متابعة" : "Follow-up" 
-      },
-    ],
-    recentPrescriptions: [
-      { id: "1", medication: isArabic ? "أموكسيسيلين" : "Amoxicillin", dosage: "500mg", frequency: isArabic ? "3 مرات يوميًا" : "3x daily", date: "2025-05-01" },
-      { id: "2", medication: isArabic ? "إيبوبروفين" : "Ibuprofen", dosage: "400mg", frequency: isArabic ? "عند الحاجة" : "As needed", date: "2025-05-01" },
-    ]
+    avatar: user?.avatar || "/profile-placeholder.png",
   };
+
+  // Mock prescription data (this would come from a real prescription system)
+  const recentPrescriptions = [
+    { id: "1", medication: isArabic ? "أموكسيسيلين" : "Amoxicillin", dosage: "500mg", frequency: isArabic ? "3 مرات يوميًا" : "3x daily", date: "2025-05-01" },
+    { id: "2", medication: isArabic ? "إيبوبروفين" : "Ibuprofen", dosage: "400mg", frequency: isArabic ? "عند الحاجة" : "As needed", date: "2025-05-01" },
+  ];
+
+  if (loading) {
+    return (
+      <div className="container mx-auto py-6 px-4">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+            <p>Loading your dashboard...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto py-6 px-4">
@@ -88,13 +149,12 @@ const PatientDashboard: React.FC = () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    {patientData.upcomingAppointments.length > 0 ? (
+                    {appointments.length > 0 ? (
                       <ul className="space-y-3">
-                        {patientData.upcomingAppointments.map(appointment => (
+                        {appointments.map(appointment => (
                           <li key={appointment.id} className="p-3 rounded-md border">
                             <div className={`flex items-center gap-2 font-medium ${isArabic ? "flex-row-reverse justify-end" : ""}`}>
                               <Avatar className="h-8 w-8">
-                                <AvatarImage src={appointment.doctorAvatar} alt={appointment.doctorName} />
                                 <AvatarFallback>{appointment.doctorName.charAt(0)}</AvatarFallback>
                               </Avatar>
                               <div className={isArabic ? "text-right" : ""}>
@@ -102,9 +162,9 @@ const PatientDashboard: React.FC = () => {
                               </div>
                             </div>
                             <div className={`text-sm text-gray-500 ${isArabic ? "text-right" : ""}`}>
-                              {new Date(appointment.date).toLocaleDateString(isArabic ? 'ar-SA' : undefined)} {isArabic ? "الساعة" : "at"} {appointment.time}
+                              {format(parseISO(appointment.date), "PPP")} {isArabic ? "الساعة" : "at"} {appointment.time}
                             </div>
-                            <div className={`text-sm ${isArabic ? "text-right" : ""}`}>{appointment.reason}</div>
+                            <div className={`text-sm ${isArabic ? "text-right" : ""}`}>{appointment.reason || "No reason provided"}</div>
                           </li>
                         ))}
                       </ul>
@@ -129,16 +189,16 @@ const PatientDashboard: React.FC = () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    {patientData.recentPrescriptions.length > 0 ? (
+                    {recentPrescriptions.length > 0 ? (
                       <ul className="space-y-3">
-                        {patientData.recentPrescriptions.map(prescription => (
+                        {recentPrescriptions.map(prescription => (
                           <li key={prescription.id} className="p-3 rounded-md border">
                             <div className={`font-medium ${isArabic ? "text-right" : ""}`}>{prescription.medication}</div>
                             <div className={`text-sm ${isArabic ? "text-right" : ""}`}>
                               {prescription.dosage}, {prescription.frequency}
                             </div>
                             <div className={`text-sm text-gray-500 ${isArabic ? "text-right" : ""}`}>
-                              {isArabic ? "وصفت في" : "Prescribed on"} {new Date(prescription.date).toLocaleDateString(isArabic ? 'ar-SA' : undefined)}
+                              {isArabic ? "وصفت في" : "Prescribed on"} {format(parseISO(prescription.date), "PPP")}
                             </div>
                           </li>
                         ))}
