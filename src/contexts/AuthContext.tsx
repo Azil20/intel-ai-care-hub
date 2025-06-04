@@ -1,24 +1,14 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { authenticateUser, createUser, getUserByEmail, getUsers, updateUser } from "@/services/localDatabase";
-
-// Define User type since it's not exported from localDatabase
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: 'patient' | 'doctor';
-  phoneNumber?: string;
-  avatar?: string;
-}
-
-type UserRole = "patient" | "doctor" | null;
+import { supabase } from "@/integrations/supabase/client";
+import type { User, Session } from "@supabase/supabase-js";
 
 interface AuthContextType {
   user: User | null;
-  login: (email: string, password: string, role: UserRole) => Promise<void>;
-  logout: () => void;
-  register: (name: string, email: string, password: string, role: UserRole) => Promise<void>;
+  session: Session | null;
+  login: (email: string, password: string, role?: string) => Promise<void>;
+  logout: () => Promise<void>;
+  register: (name: string, email: string, password: string, role: string) => Promise<void>;
   isLoading: boolean;
 }
 
@@ -34,35 +24,53 @@ export const useAuth = () => {
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Check for saved user on mount
   useEffect(() => {
-    const savedUser = localStorage.getItem("user");
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
-    setIsLoading(false);
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        setIsLoading(false);
+      }
+    );
+
+    // Check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      setIsLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
-  const login = async (email: string, password: string, role: UserRole): Promise<void> => {
+  const login = async (email: string, password: string, role?: string): Promise<void> => {
     setIsLoading(true);
     
     try {
-      const loggedInUser = await authenticateUser(email, password);
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
       
-      if (!loggedInUser) {
-        throw new Error("Invalid email or password");
+      if (error) throw error;
+
+      // Check if user has the required role
+      if (role && data.user) {
+        const { data: userData, error: userError } = await supabase
+          .from('users')
+          .select('role')
+          .eq('id', data.user.id)
+          .single();
+        
+        if (userError || !userData || userData.role !== role) {
+          await supabase.auth.signOut();
+          throw new Error(`Invalid credentials for ${role} account`);
+        }
       }
-      
-      // Verify the role matches if one was specified
-      if (role && loggedInUser.role !== role) {
-        setIsLoading(false);
-        throw new Error(`Invalid credentials for ${role} account`);
-      }
-      
-      setUser(loggedInUser);
-      localStorage.setItem("user", JSON.stringify(loggedInUser));
     } catch (error) {
       console.error("Login error:", error);
       throw error;
@@ -71,27 +79,38 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const register = async (name: string, email: string, password: string, role: UserRole): Promise<void> => {
-    if (!role) throw new Error("Role is required");
-    
+  const register = async (name: string, email: string, password: string, role: string): Promise<void> => {
     setIsLoading(true);
     
     try {
-      // Check if user already exists
-      const existingUser = getUserByEmail(email);
-      if (existingUser) {
-        throw new Error("User with this email already exists");
-      }
-      
-      const newUser = createUser({ 
-        name, 
-        email, 
-        password, 
-        role: role as 'patient' | 'doctor'
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/`,
+          data: {
+            name,
+            role
+          }
+        }
       });
       
-      setUser(newUser);
-      localStorage.setItem("user", JSON.stringify(newUser));
+      if (error) throw error;
+
+      // Insert user data into users table
+      if (data.user) {
+        const { error: insertError } = await supabase
+          .from('users')
+          .insert({
+            id: data.user.id,
+            name,
+            email,
+            role: role as 'patient' | 'doctor',
+            avatar: '/profile-placeholder.png'
+          });
+        
+        if (insertError) throw insertError;
+      }
     } catch (error) {
       console.error("Registration error:", error);
       throw error;
@@ -100,13 +119,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem("user");
+  const logout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) throw error;
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, register, isLoading }}>
+    <AuthContext.Provider value={{ user, session, login, logout, register, isLoading }}>
       {children}
     </AuthContext.Provider>
   );

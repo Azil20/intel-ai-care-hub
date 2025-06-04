@@ -1,12 +1,12 @@
 
 import React, { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Search, Phone, Mail, Calendar } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { getAppointmentsByDoctorId, getUsers } from "@/services/localDatabase";
+import { supabase } from "@/integrations/supabase/client";
 import { format, parseISO } from "date-fns";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -14,7 +14,7 @@ interface Patient {
   id: string;
   name: string;
   email: string;
-  phoneNumber?: string;
+  phone_number?: string;
   avatar?: string;
   lastVisit?: string;
   appointmentCount: number;
@@ -32,50 +32,58 @@ const PatientList: React.FC = () => {
 
   useEffect(() => {
     const fetchPatients = async () => {
-      if (!user || user.role !== 'doctor') return;
+      if (!user) return;
       
       try {
         setLoading(true);
         
         // Get appointments for this doctor
-        const doctorAppointments = getAppointmentsByDoctorId(user.id);
-        
-        // Get all users
-        const allUsers = getUsers();
+        const { data: doctorAppointments, error: appointmentsError } = await supabase
+          .from('appointments')
+          .select('*')
+          .eq('doctor_id', user.id);
+
+        if (appointmentsError) throw appointmentsError;
         
         // Get unique patient IDs who have appointments with this doctor
-        const patientIdsWithAppointments = [...new Set(doctorAppointments.map(apt => apt.patientId))];
+        const patientIdsWithAppointments = [...new Set((doctorAppointments || []).map(apt => apt.patient_id))];
         
-        // Filter only patients who have appointments with this doctor
-        const patientsWithAppointments = allUsers.filter(u => 
-          u.role === 'patient' && patientIdsWithAppointments.includes(u.id)
-        );
-        
-        // Create patient data with appointment statistics
-        const patientsData = patientsWithAppointments.map(patient => {
-          const patientAppointments = doctorAppointments.filter(apt => apt.patientId === patient.id);
-          const lastCompletedAppointment = patientAppointments
-            .filter(apt => apt.status === 'completed')
-            .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+        if (patientIdsWithAppointments.length > 0) {
+          // Filter only patients who have appointments with this doctor
+          const { data: patientsWithAppointments, error: patientsError } = await supabase
+            .from('users')
+            .select('*')
+            .in('id', patientIdsWithAppointments)
+            .eq('role', 'patient');
+
+          if (patientsError) throw patientsError;
           
-          const upcomingAppointments = patientAppointments.filter(
-            apt => apt.status === 'scheduled' && new Date(apt.date) >= new Date()
-          ).length;
+          // Create patient data with appointment statistics
+          const patientsData = (patientsWithAppointments || []).map(patient => {
+            const patientAppointments = (doctorAppointments || []).filter(apt => apt.patient_id === patient.id);
+            const lastCompletedAppointment = patientAppointments
+              .filter(apt => apt.status === 'completed')
+              .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+            
+            const upcomingAppointments = patientAppointments.filter(
+              apt => apt.status === 'scheduled' && new Date(apt.date) >= new Date()
+            ).length;
+            
+            return {
+              id: patient.id,
+              name: patient.name,
+              email: patient.email,
+              phone_number: patient.phone_number,
+              avatar: patient.avatar || "/profile-placeholder.png",
+              lastVisit: lastCompletedAppointment?.date,
+              appointmentCount: patientAppointments.length,
+              upcomingAppointments
+            };
+          });
           
-          return {
-            id: patient.id,
-            name: patient.name,
-            email: patient.email,
-            phoneNumber: patient.phoneNumber,
-            avatar: patient.avatar || "/profile-placeholder.png",
-            lastVisit: lastCompletedAppointment?.date,
-            appointmentCount: patientAppointments.length,
-            upcomingAppointments
-          };
-        });
-        
-        setPatients(patientsData);
-        setFilteredPatients(patientsData);
+          setPatients(patientsData);
+          setFilteredPatients(patientsData);
+        }
       } catch (error) {
         console.error("Error fetching patients:", error);
       } finally {
@@ -149,10 +157,10 @@ const PatientList: React.FC = () => {
                         <Mail className="h-3 w-3" />
                         <span>{patient.email}</span>
                       </div>
-                      {patient.phoneNumber && (
+                      {patient.phone_number && (
                         <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
                           <Phone className="h-3 w-3" />
-                          <span>{patient.phoneNumber}</span>
+                          <span>{patient.phone_number}</span>
                         </div>
                       )}
                       {patient.lastVisit && (

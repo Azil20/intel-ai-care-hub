@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -7,7 +8,7 @@ import AppointmentCalendar from "./AppointmentCalendar";
 import { Calendar, User } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getAppointmentsByDoctorId, getUsers } from "@/services/localDatabase";
+import { supabase } from "@/integrations/supabase/client";
 import { format, parseISO, isToday, isTomorrow } from "date-fns";
 
 interface Patient {
@@ -22,11 +23,11 @@ interface Patient {
 
 interface Appointment {
   id: string;
-  patientId: string;
-  patientName: string;
-  patientPhoneNumber?: string;
-  doctorId: string;
-  doctorName: string;
+  patient_id: string;
+  patient_name: string;
+  patient_phone_number?: string;
+  doctor_id: string;
+  doctor_name: string;
   date: string;
   time: string;
   reason?: string;
@@ -44,49 +45,58 @@ const DoctorDashboard: React.FC = () => {
 
   useEffect(() => {
     const fetchDoctorData = async () => {
-      if (!user || user.role !== 'doctor') return;
+      if (!user) return;
       
       try {
         setLoading(true);
         console.log("Fetching appointments for doctor:", user.id);
         
-        // Get real appointments for this doctor
-        const doctorAppointments = getAppointmentsByDoctorId(user.id);
-        console.log("Found doctor appointments:", doctorAppointments);
-        setAppointments(doctorAppointments);
+        // Get appointments for this doctor
+        const { data: doctorAppointments, error: appointmentsError } = await supabase
+          .from('appointments')
+          .select('*')
+          .eq('doctor_id', user.id);
+
+        if (appointmentsError) throw appointmentsError;
         
-        // Get all users to find patients
-        const allUsers = getUsers();
+        console.log("Found doctor appointments:", doctorAppointments);
+        setAppointments(doctorAppointments || []);
         
         // Get unique patient IDs who have appointments with this doctor
-        const patientIdsWithAppointments = [...new Set(doctorAppointments.map(apt => apt.patientId))];
-        console.log("Patient IDs with appointments:", patientIdsWithAppointments);
+        const patientIds = [...new Set((doctorAppointments || []).map(apt => apt.patient_id))];
+        console.log("Patient IDs with appointments:", patientIds);
         
-        // Filter only patients who have appointments with this doctor
-        const patientsWithAppointments = allUsers.filter(u => 
-          u.role === 'patient' && patientIdsWithAppointments.includes(u.id)
-        );
-        
-        // Create patient data with appointment history
-        const patientsWithData = patientsWithAppointments.map(patient => {
-          const patientAppointments = doctorAppointments.filter(apt => apt.patientId === patient.id);
-          const lastAppointment = patientAppointments
-            .filter(apt => apt.status === 'completed')
-            .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+        if (patientIds.length > 0) {
+          // Get patient data
+          const { data: patientsData, error: patientsError } = await supabase
+            .from('users')
+            .select('*')
+            .in('id', patientIds)
+            .eq('role', 'patient');
+
+          if (patientsError) throw patientsError;
+
+          // Create patient data with appointment history
+          const patientsWithData = (patientsData || []).map(patient => {
+            const patientAppointments = (doctorAppointments || []).filter(apt => apt.patient_id === patient.id);
+            const lastAppointment = patientAppointments
+              .filter(apt => apt.status === 'completed')
+              .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+            
+            return {
+              id: patient.id,
+              name: patient.name,
+              email: patient.email,
+              age: Math.floor(Math.random() * 40) + 25, // Mock age for now
+              lastVisit: lastAppointment?.date,
+              condition: lastAppointment?.reason || (isArabic ? "لا توجد معلومات" : "No information"),
+              avatar: patient.avatar || "/profile-placeholder.png"
+            };
+          });
           
-          return {
-            id: patient.id,
-            name: patient.name,
-            email: patient.email,
-            age: Math.floor(Math.random() * 40) + 25, // Mock age for now
-            lastVisit: lastAppointment?.date,
-            condition: lastAppointment?.reason || (isArabic ? "لا توجد معلومات" : "No information"),
-            avatar: patient.avatar || "/profile-placeholder.png"
-          };
-        });
-        
-        console.log("Patients with appointments:", patientsWithData);
-        setPatients(patientsWithData);
+          console.log("Patients with appointments:", patientsWithData);
+          setPatients(patientsWithData);
+        }
       } catch (error) {
         console.error("Error fetching doctor data:", error);
       } finally {
@@ -233,7 +243,7 @@ const DoctorDashboard: React.FC = () => {
                       <span className={`absolute flex items-center justify-center w-6 h-6 bg-teal-100 rounded-full ${isArabic ? "-right-3" : "-left-3"} ring-8 ring-white`}>
                         <span className="text-teal-500 text-xs">{appointment.time}</span>
                       </span>
-                      <h3 className="flex items-center mb-1 text-lg font-semibold">{appointment.patientName}</h3>
+                      <h3 className="flex items-center mb-1 text-lg font-semibold">{appointment.patient_name}</h3>
                       <p className="mb-2 text-sm text-gray-500">{appointment.reason || (isArabic ? "لا يوجد سبب محدد" : "No reason provided")}</p>
                     </li>
                   ))}
