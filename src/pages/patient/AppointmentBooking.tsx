@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -53,7 +52,20 @@ const AppointmentBooking = () => {
         }
 
         console.log("Found doctors:", doctorUsers);
-        setDoctors(doctorUsers || []);
+        
+        // Filter and map to ensure type safety
+        const doctorsWithCorrectType: Doctor[] = (doctorUsers || [])
+          .filter(user => user.role === 'doctor')
+          .map(user => ({
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            role: 'doctor' as const,
+            phone_number: user.phone_number || undefined,
+            avatar: user.avatar || undefined
+          }));
+        
+        setDoctors(doctorsWithCorrectType);
       } catch (error) {
         console.error("Error fetching doctors:", error);
       }
