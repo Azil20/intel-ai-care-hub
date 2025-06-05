@@ -7,25 +7,25 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { createAppointment, getUsers } from "@/services/localDatabase";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
-interface User {
+interface Doctor {
   id: string;
   name: string;
   email: string;
-  role: 'patient' | 'doctor';
-  phoneNumber?: string;
+  role: 'doctor';
+  phone_number?: string;
   avatar?: string;
 }
 
 const AppointmentBooking = () => {
-  const [doctors, setDoctors] = useState<User[]>([]);
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [selectedDoctor, setSelectedDoctor] = useState<string | undefined>(undefined);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [selectedTime, setSelectedTime] = useState<string | undefined>(undefined);
@@ -41,10 +41,19 @@ const AppointmentBooking = () => {
     const fetchDoctors = async () => {
       try {
         console.log("Fetching doctors for appointment booking");
-        const allUsers = getUsers();
-        const doctorUsers = allUsers.filter((user) => user.role === "doctor");
+        
+        const { data: doctorUsers, error } = await supabase
+          .from('users')
+          .select('*')
+          .eq('role', 'doctor');
+
+        if (error) {
+          console.error("Error fetching doctors:", error);
+          return;
+        }
+
         console.log("Found doctors:", doctorUsers);
-        setDoctors(doctorUsers);
+        setDoctors(doctorUsers || []);
       } catch (error) {
         console.error("Error fetching doctors:", error);
       }
@@ -76,23 +85,49 @@ const AppointmentBooking = () => {
 
     try {
       setIsSubmitting(true);
+      
+      // Get user and doctor names
+      const { data: userData } = await supabase
+        .from('users')
+        .select('name, phone_number')
+        .eq('id', user.id)
+        .single();
+
+      const { data: doctorData } = await supabase
+        .from('users')
+        .select('name')
+        .eq('id', selectedDoctor)
+        .single();
+
       console.log("Creating appointment with data:", {
-        patientId: user.id,
-        doctorId: selectedDoctor,
+        patient_id: user.id,
+        patient_name: userData?.name || 'Unknown Patient',
+        patient_phone_number: userData?.phone_number,
+        doctor_id: selectedDoctor,
+        doctor_name: doctorData?.name || 'Unknown Doctor',
         date: format(selectedDate, "yyyy-MM-dd"),
         time: selectedTime,
         reason,
         status: "scheduled",
       });
 
-      const appointment = createAppointment({
-        patientId: user.id,
-        doctorId: selectedDoctor,
-        date: format(selectedDate, "yyyy-MM-dd"),
-        time: selectedTime,
-        reason,
-        status: "scheduled",
-      });
+      const { data: appointment, error } = await supabase
+        .from('appointments')
+        .insert({
+          patient_id: user.id,
+          patient_name: userData?.name || 'Unknown Patient',
+          patient_phone_number: userData?.phone_number,
+          doctor_id: selectedDoctor,
+          doctor_name: doctorData?.name || 'Unknown Doctor',
+          date: format(selectedDate, "yyyy-MM-dd"),
+          time: selectedTime,
+          reason,
+          status: "scheduled",
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
 
       console.log("Appointment created successfully:", appointment);
 

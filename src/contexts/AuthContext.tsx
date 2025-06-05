@@ -105,6 +105,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             id: data.user.id,
             name,
             email,
+            password: '', // Don't store actual password
             role: role as 'patient' | 'doctor',
             avatar: '/profile-placeholder.png'
           });
