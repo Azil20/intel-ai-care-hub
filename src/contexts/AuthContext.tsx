@@ -56,7 +56,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         password,
       });
       
-      if (error) throw error;
+      if (error) {
+        // Handle specific email confirmation error
+        if (error.message.includes('Email not confirmed')) {
+          throw new Error('Please check your email and click the confirmation link before signing in. If you cannot find the email, check your spam folder.');
+        }
+        throw error;
+      }
 
       // Check if user has the required role
       if (role && data.user) {
@@ -111,6 +117,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           });
         
         if (insertError) throw insertError;
+      }
+
+      // If user is created but not confirmed, let them know
+      if (data.user && !data.session) {
+        throw new Error('Registration successful! Please check your email and click the confirmation link to complete your account setup.');
       }
     } catch (error) {
       console.error("Registration error:", error);
