@@ -83,6 +83,7 @@ const PatientDashboard: React.FC = () => {
 
         if (appointmentsError) {
           console.error("Error fetching appointments:", appointmentsError);
+          setAppointments([]);
         } else {
           console.log("Found appointments:", patientAppointments);
           
@@ -104,6 +105,7 @@ const PatientDashboard: React.FC = () => {
 
         if (prescriptionsError) {
           console.error("Error fetching prescriptions:", prescriptionsError);
+          setPrescriptions([]);
         } else {
           console.log("Found prescriptions:", patientPrescriptions);
           
@@ -131,27 +133,31 @@ const PatientDashboard: React.FC = () => {
       const refreshData = async () => {
         console.log("Refreshing data for overview");
         
-        const { data: patientAppointments } = await supabase
-          .from('appointments')
-          .select('*')
-          .eq('patient_id', user.id);
+        try {
+          const { data: patientAppointments } = await supabase
+            .from('appointments')
+            .select('*')
+            .eq('patient_id', user.id);
 
-        const upcomingAppointments = (patientAppointments || []).filter(apt => {
-          const appointmentDate = parseISO(apt.date);
-          const today = new Date();
-          return apt.status === 'scheduled' && appointmentDate >= today;
-        });
-        setAppointments(upcomingAppointments);
+          const upcomingAppointments = (patientAppointments || []).filter(apt => {
+            const appointmentDate = parseISO(apt.date);
+            const today = new Date();
+            return apt.status === 'scheduled' && appointmentDate >= today;
+          });
+          setAppointments(upcomingAppointments);
 
-        const { data: patientPrescriptions } = await supabase
-          .from('prescriptions')
-          .select('*')
-          .eq('patient_id', user.id);
+          const { data: patientPrescriptions } = await supabase
+            .from('prescriptions')
+            .select('*')
+            .eq('patient_id', user.id);
 
-        const sortedPrescriptions = (patientPrescriptions || []).sort((a, b) => 
-          new Date(b.date).getTime() - new Date(a.date).getTime()
-        );
-        setPrescriptions(sortedPrescriptions);
+          const sortedPrescriptions = (patientPrescriptions || []).sort((a, b) => 
+            new Date(b.date).getTime() - new Date(a.date).getTime()
+          );
+          setPrescriptions(sortedPrescriptions);
+        } catch (error) {
+          console.error("Error refreshing data:", error);
+        }
       };
       
       refreshData();

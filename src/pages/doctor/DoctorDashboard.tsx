@@ -57,10 +57,13 @@ const DoctorDashboard: React.FC = () => {
           .select('*')
           .eq('doctor_id', user.id);
 
-        if (appointmentsError) throw appointmentsError;
-        
-        console.log("Found doctor appointments:", doctorAppointments);
-        setAppointments(doctorAppointments || []);
+        if (appointmentsError) {
+          console.error("Error fetching appointments:", appointmentsError);
+          setAppointments([]);
+        } else {
+          console.log("Found doctor appointments:", doctorAppointments);
+          setAppointments(doctorAppointments || []);
+        }
         
         // Get unique patient IDs who have appointments with this doctor
         const patientIds = [...new Set((doctorAppointments || []).map(apt => apt.patient_id))];
@@ -74,28 +77,31 @@ const DoctorDashboard: React.FC = () => {
             .in('id', patientIds)
             .eq('role', 'patient');
 
-          if (patientsError) throw patientsError;
-
-          // Create patient data with appointment history
-          const patientsWithData = (patientsData || []).map(patient => {
-            const patientAppointments = (doctorAppointments || []).filter(apt => apt.patient_id === patient.id);
-            const lastAppointment = patientAppointments
-              .filter(apt => apt.status === 'completed')
-              .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+          if (patientsError) {
+            console.error("Error fetching patients:", patientsError);
+            setPatients([]);
+          } else {
+            // Create patient data with appointment history
+            const patientsWithData = (patientsData || []).map(patient => {
+              const patientAppointments = (doctorAppointments || []).filter(apt => apt.patient_id === patient.id);
+              const lastAppointment = patientAppointments
+                .filter(apt => apt.status === 'completed')
+                .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+              
+              return {
+                id: patient.id,
+                name: patient.name,
+                email: patient.email,
+                age: Math.floor(Math.random() * 40) + 25, // Mock age for now
+                lastVisit: lastAppointment?.date,
+                condition: lastAppointment?.reason || (isArabic ? "لا توجد معلومات" : "No information"),
+                avatar: patient.avatar || "/profile-placeholder.png"
+              };
+            });
             
-            return {
-              id: patient.id,
-              name: patient.name,
-              email: patient.email,
-              age: Math.floor(Math.random() * 40) + 25, // Mock age for now
-              lastVisit: lastAppointment?.date,
-              condition: lastAppointment?.reason || (isArabic ? "لا توجد معلومات" : "No information"),
-              avatar: patient.avatar || "/profile-placeholder.png"
-            };
-          });
-          
-          console.log("Patients with appointments:", patientsWithData);
-          setPatients(patientsWithData);
+            console.log("Patients with appointments:", patientsWithData);
+            setPatients(patientsWithData);
+          }
         }
       } catch (error) {
         console.error("Error fetching doctor data:", error);
@@ -238,7 +244,7 @@ const DoctorDashboard: React.FC = () => {
             <CardContent className={isArabic ? "text-right" : ""}>
               {todaysAppointments.length > 0 ? (
                 <ol className={`relative border-l border-gray-200 ${isArabic ? "mr-3 border-r border-l-0" : "ml-3"}`}>
-                  {todaysAppointments.map((appointment, index) => (
+                  {todaysAppointments.map((appointment) => (
                     <li key={appointment.id} className={`mb-6 ${isArabic ? "mr-6" : "ml-6"}`}>
                       <span className={`absolute flex items-center justify-center w-6 h-6 bg-teal-100 rounded-full ${isArabic ? "-right-3" : "-left-3"} ring-8 ring-white`}>
                         <span className="text-teal-500 text-xs">{appointment.time}</span>

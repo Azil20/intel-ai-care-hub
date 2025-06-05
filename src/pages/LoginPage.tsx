@@ -8,8 +8,6 @@ import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Mail } from "lucide-react";
 import SocialLogin from "@/components/SocialLogin";
 
 const LoginPage: React.FC = () => {
@@ -20,7 +18,6 @@ const LoginPage: React.FC = () => {
   
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<"login" | "register">("login");
-  const [showEmailConfirmAlert, setShowEmailConfirmAlert] = useState(false);
   
   // Login form state
   const [loginEmail, setLoginEmail] = useState("");
@@ -45,7 +42,6 @@ const LoginPage: React.FC = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setShowEmailConfirmAlert(false);
     
     try {
       // Validate role
@@ -68,16 +64,10 @@ const LoginPage: React.FC = () => {
       });
     } catch (error) {
       console.error(error);
-      const errorMessage = error instanceof Error ? error.message : "Invalid email or password";
-      
-      // Show special alert for email confirmation errors
-      if (errorMessage.includes('confirmation link')) {
-        setShowEmailConfirmAlert(true);
-      }
       
       toast({
         title: "Login Failed",
-        description: errorMessage,
+        description: error instanceof Error ? error.message : "Invalid email or password",
         variant: "destructive",
       });
     } finally {
@@ -88,7 +78,6 @@ const LoginPage: React.FC = () => {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setShowEmailConfirmAlert(false);
     
     try {
       // Validate role
@@ -103,7 +92,7 @@ const LoginPage: React.FC = () => {
       
       await register(registerName, registerEmail, registerPassword, role as "patient" | "doctor");
       
-      // If we get here, registration was successful and user is logged in
+      // Redirect to appropriate dashboard
       if (role === "patient") {
         navigate("/patient-dashboard");
       } else {
@@ -116,22 +105,12 @@ const LoginPage: React.FC = () => {
       });
     } catch (error) {
       console.error(error);
-      const errorMessage = error instanceof Error ? error.message : "Registration failed";
       
-      // Show special handling for email confirmation
-      if (errorMessage.includes('confirmation link')) {
-        setShowEmailConfirmAlert(true);
-        toast({
-          title: "Registration Successful!",
-          description: "Please check your email to confirm your account.",
-        });
-      } else {
-        toast({
-          title: "Registration Failed",
-          description: errorMessage,
-          variant: "destructive",
-        });
-      }
+      toast({
+        title: "Registration Failed",
+        description: error instanceof Error ? error.message : "Registration failed",
+        variant: "destructive",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -155,16 +134,6 @@ const LoginPage: React.FC = () => {
             Access your {role === "patient" ? "patient" : "doctor"} account
           </p>
         </div>
-
-        {showEmailConfirmAlert && (
-          <Alert className="mb-6 border-blue-500 bg-blue-50 text-blue-900">
-            <Mail className="h-4 w-4" />
-            <AlertDescription>
-              Please check your email and click the confirmation link to activate your account. 
-              Don't forget to check your spam folder if you don't see the email.
-            </AlertDescription>
-          </Alert>
-        )}
 
         <Tabs 
           defaultValue="login" 
