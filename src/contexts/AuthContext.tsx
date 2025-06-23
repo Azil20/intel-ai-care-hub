@@ -1,11 +1,10 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import type { User, Session } from "@supabase/supabase-js";
+import { apiService, type User } from "@/services/apiService";
 
 interface AuthContextType {
   user: User | null;
-  session: Session | null;
+  session: any | null;
   login: (email: string, password: string, role?: string) => Promise<void>;
   logout: () => Promise<void>;
   register: (name: string, email: string, password: string, role: string) => Promise<void>;
@@ -24,53 +23,45 @@ export const useAuth = () => {
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
+  const [session, setSession] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
+    // Check for existing session on app load
+    const checkAuth = async () => {
+      try {
+        const response = await apiService.getCurrentUser();
+        if (response.success && response.data) {
+          setUser(response.data);
+          setSession({ user: response.data });
+        }
+      } catch (error) {
+        console.error("Auth check error:", error);
+      } finally {
         setIsLoading(false);
       }
-    );
+    };
 
-    // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setIsLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
+    checkAuth();
   }, []);
 
   const login = async (email: string, password: string, role?: string): Promise<void> => {
     setIsLoading(true);
     
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      const response = await apiService.login(email, password, role || '');
       
-      if (error) throw error;
+      if (!response.success || !response.data) {
+        throw new Error(response.error || `Invalid credentials for ${role} account`);
+      }
 
       // Check if user has the required role
-      if (role && data.user) {
-        const { data: userData, error: userError } = await supabase
-          .from('users')
-          .select('role')
-          .eq('id', data.user.id)
-          .single();
-        
-        if (userError || !userData || userData.role !== role) {
-          await supabase.auth.signOut();
-          throw new Error(`Invalid credentials for ${role} account`);
-        }
+      if (role && response.data.role !== role) {
+        throw new Error(`Invalid credentials for ${role} account`);
       }
+
+      setUser(response.data);
+      setSession({ user: response.data });
     } catch (error) {
       console.error("Login error:", error);
       throw error;
@@ -83,35 +74,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(true);
     
     try {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/`,
-          data: {
-            name,
-            role
-          }
-        }
-      });
+      const response = await apiService.register(name, email, password, role);
       
-      if (error) throw error;
-
-      // Insert user data into users table
-      if (data.user) {
-        const { error: insertError } = await supabase
-          .from('users')
-          .insert({
-            id: data.user.id,
-            name,
-            email,
-            password: '', // Don't store actual password
-            role: role as 'patient' | 'doctor',
-            avatar: '/profile-placeholder.png'
-          });
-        
-        if (insertError) throw insertError;
+      if (!response.success || !response.data) {
+        throw new Error(response.error || 'Registration failed');
       }
+
+      setUser(response.data);
+      setSession({ user: response.data });
     } catch (error) {
       console.error("Registration error:", error);
       throw error;
@@ -121,8 +91,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const logout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
+    try {
+      await apiService.logout();
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      setUser(null);
+      setSession(null);
+    }
   };
 
   return (

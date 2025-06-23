@@ -25,8 +25,6 @@ import { useToast } from "@/hooks/use-toast";
 import LanguageSwitcher from "./LanguageSwitcher";
 import SocialLogin from "./SocialLogin";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 
 const Header: React.FC = () => {
   const { user, logout, register } = useAuth();
@@ -34,24 +32,6 @@ const Header: React.FC = () => {
   const navigate = useNavigate();
   const [isRegisterOpen, setIsRegisterOpen] = React.useState(false);
   const { t, language } = useLanguage();
-
-  // Fetch user data from the users table
-  const { data: userData } = useQuery({
-    queryKey: ['user-data', user?.id],
-    queryFn: async () => {
-      if (!user?.id) return null;
-      
-      const { data, error } = await supabase
-        .from('users')
-        .select('name')
-        .eq('id', user.id)
-        .single();
-      
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!user?.id,
-  });
 
   // Direction class for RTL/LTR
   const dirClass = language === "ar" ? "rtl text-right" : "ltr text-left";
@@ -142,7 +122,7 @@ const Header: React.FC = () => {
                 <Button variant="ghost" className="relative glass-morphism hover:clean-border text-white">
                   <User className="h-5 w-5 mr-2 text-clean-blue" />
                   <span className="hidden md:inline font-sf text-white">
-                    {userData?.name || user.email}
+                    {user.name || user.email}
                   </span>
                 </Button>
               </DropdownMenuTrigger>

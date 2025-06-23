@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Search, Phone, Mail, Calendar } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
+import { apiService, type Appointment, type User } from "@/services/apiService";
 import { format, parseISO } from "date-fns";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -38,51 +38,55 @@ const PatientList: React.FC = () => {
         setLoading(true);
         
         // Get appointments for this doctor
-        const { data: doctorAppointments, error: appointmentsError } = await supabase
-          .from('appointments')
-          .select('*')
-          .eq('doctor_id', user.id);
+        const appointmentsResponse = await apiService.getAppointments(user.id, 'doctor');
+        if (!appointmentsResponse.success || !appointmentsResponse.data) {
+          throw new Error(appointmentsResponse.error || 'Failed to fetch appointments');
+        }
 
-        if (appointmentsError) throw appointmentsError;
+        const doctorAppointments = appointmentsResponse.data;
         
         // Get unique patient IDs who have appointments with this doctor
-        const patientIdsWithAppointments = [...new Set((doctorAppointments || []).map(apt => apt.patient_id))];
+        const patientIdsWithAppointments = [...new Set(doctorAppointments.map(apt => apt.patient_id))];
         
         if (patientIdsWithAppointments.length > 0) {
-          // Filter only patients who have appointments with this doctor
-          const { data: patientsWithAppointments, error: patientsError } = await supabase
-            .from('users')
-            .select('*')
-            .in('id', patientIdsWithAppointments)
-            .eq('role', 'patient');
-
-          if (patientsError) throw patientsError;
+          // Get patient data for each patient ID
+          const patientsData = await Promise.all(
+            patientIdsWithAppointments.map(async (patientId) => {
+              try {
+                const userResponse = await apiService.getUserById(patientId);
+                if (userResponse.success && userResponse.data) {
+                  const patient = userResponse.data;
+                  const patientAppointments = doctorAppointments.filter(apt => apt.patient_id === patient.id);
+                  const lastCompletedAppointment = patientAppointments
+                    .filter(apt => apt.status === 'completed')
+                    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+                  
+                  const upcomingAppointments = patientAppointments.filter(
+                    apt => apt.status === 'scheduled' && new Date(apt.date) >= new Date()
+                  ).length;
+                  
+                  return {
+                    id: patient.id,
+                    name: patient.name,
+                    email: patient.email,
+                    phone_number: patient.phone_number,
+                    avatar: patient.avatar || "/profile-placeholder.png",
+                    lastVisit: lastCompletedAppointment?.date,
+                    appointmentCount: patientAppointments.length,
+                    upcomingAppointments
+                  };
+                }
+                return null;
+              } catch (error) {
+                console.error(`Error fetching patient ${patientId}:`, error);
+                return null;
+              }
+            })
+          );
           
-          // Create patient data with appointment statistics
-          const patientsData = (patientsWithAppointments || []).map(patient => {
-            const patientAppointments = (doctorAppointments || []).filter(apt => apt.patient_id === patient.id);
-            const lastCompletedAppointment = patientAppointments
-              .filter(apt => apt.status === 'completed')
-              .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
-            
-            const upcomingAppointments = patientAppointments.filter(
-              apt => apt.status === 'scheduled' && new Date(apt.date) >= new Date()
-            ).length;
-            
-            return {
-              id: patient.id,
-              name: patient.name,
-              email: patient.email,
-              phone_number: patient.phone_number,
-              avatar: patient.avatar || "/profile-placeholder.png",
-              lastVisit: lastCompletedAppointment?.date,
-              appointmentCount: patientAppointments.length,
-              upcomingAppointments
-            };
-          });
-          
-          setPatients(patientsData);
-          setFilteredPatients(patientsData);
+          const validPatients = patientsData.filter(Boolean) as Patient[];
+          setPatients(validPatients);
+          setFilteredPatients(validPatients);
         }
       } catch (error) {
         console.error("Error fetching patients:", error);

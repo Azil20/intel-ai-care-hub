@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -8,7 +7,7 @@ import AppointmentCalendar from "./AppointmentCalendar";
 import { Calendar, User } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { supabase } from "@/integrations/supabase/client";
+import { apiService, type Appointment, type User as UserType } from "@/services/apiService";
 import { format, parseISO, isToday, isTomorrow } from "date-fns";
 
 interface Patient {
@@ -19,19 +18,6 @@ interface Patient {
   lastVisit?: string;
   condition?: string;
   avatar?: string;
-}
-
-interface Appointment {
-  id: string;
-  patient_id: string;
-  patient_name: string;
-  patient_phone_number?: string;
-  doctor_id: string;
-  doctor_name: string;
-  date: string;
-  time: string;
-  reason?: string;
-  status: 'scheduled' | 'completed' | 'cancelled';
 }
 
 const DoctorDashboard: React.FC = () => {
@@ -52,56 +38,53 @@ const DoctorDashboard: React.FC = () => {
         console.log("Fetching appointments for doctor:", user.id);
         
         // Get appointments for this doctor
-        const { data: doctorAppointments, error: appointmentsError } = await supabase
-          .from('appointments')
-          .select('*')
-          .eq('doctor_id', user.id);
-
-        if (appointmentsError) {
-          console.error("Error fetching appointments:", appointmentsError);
-          setAppointments([]);
-        } else {
-          console.log("Found doctor appointments:", doctorAppointments);
-          setAppointments(doctorAppointments || []);
-        }
-        
-        // Get unique patient IDs who have appointments with this doctor
-        const patientIds = [...new Set((doctorAppointments || []).map(apt => apt.patient_id))];
-        console.log("Patient IDs with appointments:", patientIds);
-        
-        if (patientIds.length > 0) {
-          // Get patient data
-          const { data: patientsData, error: patientsError } = await supabase
-            .from('users')
-            .select('*')
-            .in('id', patientIds)
-            .eq('role', 'patient');
-
-          if (patientsError) {
-            console.error("Error fetching patients:", patientsError);
-            setPatients([]);
-          } else {
+        const appointmentsResponse = await apiService.getAppointments(user.id, 'doctor');
+        if (appointmentsResponse.success && appointmentsResponse.data) {
+          console.log("Found doctor appointments:", appointmentsResponse.data);
+          setAppointments(appointmentsResponse.data);
+          
+          // Get unique patient IDs who have appointments with this doctor
+          const patientIds = [...new Set(appointmentsResponse.data.map(apt => apt.patient_id))];
+          console.log("Patient IDs with appointments:", patientIds);
+          
+          if (patientIds.length > 0) {
             // Create patient data with appointment history
-            const patientsWithData = (patientsData || []).map(patient => {
-              const patientAppointments = (doctorAppointments || []).filter(apt => apt.patient_id === patient.id);
-              const lastAppointment = patientAppointments
-                .filter(apt => apt.status === 'completed')
-                .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
-              
-              return {
-                id: patient.id,
-                name: patient.name,
-                email: patient.email,
-                age: Math.floor(Math.random() * 40) + 25, // Mock age for now
-                lastVisit: lastAppointment?.date,
-                condition: lastAppointment?.reason || (isArabic ? "لا توجد معلومات" : "No information"),
-                avatar: patient.avatar || "/profile-placeholder.png"
-              };
-            });
+            const patientsWithData = await Promise.all(
+              patientIds.map(async (patientId) => {
+                try {
+                  const userResponse = await apiService.getUserById(patientId);
+                  if (userResponse.success && userResponse.data) {
+                    const patient = userResponse.data;
+                    const patientAppointments = appointmentsResponse.data.filter(apt => apt.patient_id === patientId);
+                    const lastAppointment = patientAppointments
+                      .filter(apt => apt.status === 'completed')
+                      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+                    
+                    return {
+                      id: patient.id,
+                      name: patient.name,
+                      email: patient.email,
+                      age: Math.floor(Math.random() * 40) + 25, // Mock age for now
+                      lastVisit: lastAppointment?.date,
+                      condition: lastAppointment?.reason || (isArabic ? "لا توجد معلومات" : "No information"),
+                      avatar: patient.avatar || "/profile-placeholder.png"
+                    };
+                  }
+                  return null;
+                } catch (error) {
+                  console.error(`Error fetching patient ${patientId}:`, error);
+                  return null;
+                }
+              })
+            );
             
-            console.log("Patients with appointments:", patientsWithData);
-            setPatients(patientsWithData);
+            const validPatients = patientsWithData.filter(Boolean) as Patient[];
+            console.log("Patients with appointments:", validPatients);
+            setPatients(validPatients);
           }
+        } else {
+          console.error("Error fetching appointments:", appointmentsResponse.error);
+          setAppointments([]);
         }
       } catch (error) {
         console.error("Error fetching doctor data:", error);

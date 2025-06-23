@@ -9,44 +9,14 @@ import AiChatAssistant from "./AiChatAssistant";
 import { Calendar, MessageCircle, User } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { supabase } from "@/integrations/supabase/client";
+import { apiService, type Appointment, type Prescription } from "@/services/apiService";
 import { format, parseISO } from "date-fns";
-
-interface Appointment {
-  id: string;
-  patient_id: string;
-  patient_name: string;
-  patient_phone_number?: string;
-  doctor_id: string;
-  doctor_name: string;
-  date: string;
-  time: string;
-  reason?: string;
-  status: 'scheduled' | 'completed' | 'cancelled';
-}
-
-interface Prescription {
-  id: string;
-  patient_id: string;
-  doctor_id: string;
-  medication: string;
-  dosage: string;
-  frequency: string;
-  date: string;
-  notes?: string;
-}
-
-interface UserProfile {
-  name: string;
-  avatar?: string;
-}
 
 const PatientDashboard: React.FC = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("overview");
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
-  const [userProfile, setUserProfile] = useState<UserProfile>({ name: "Patient" });
   const [loading, setLoading] = useState(true);
   const { language } = useLanguage();
   const isArabic = language === "ar";
@@ -59,62 +29,34 @@ const PatientDashboard: React.FC = () => {
         setLoading(true);
         console.log("Fetching data for patient:", user.id);
         
-        // Get user profile data
-        const { data: userData, error: userError } = await supabase
-          .from('users')
-          .select('name, avatar')
-          .eq('id', user.id)
-          .single();
-
-        if (userError) {
-          console.error("Error fetching user data:", userError);
-        } else if (userData) {
-          setUserProfile({
-            name: userData.name || "Patient",
-            avatar: userData.avatar || "/profile-placeholder.png"
-          });
-        }
-        
         // Get appointments for this patient
-        const { data: patientAppointments, error: appointmentsError } = await supabase
-          .from('appointments')
-          .select('*')
-          .eq('patient_id', user.id);
-
-        if (appointmentsError) {
-          console.error("Error fetching appointments:", appointmentsError);
-          setAppointments([]);
-        } else {
-          console.log("Found appointments:", patientAppointments);
-          
+        const appointmentsResponse = await apiService.getAppointments(user.id, 'patient');
+        if (appointmentsResponse.success && appointmentsResponse.data) {
           // Filter for upcoming appointments (scheduled status and future dates)
-          const upcomingAppointments = (patientAppointments || []).filter(apt => {
+          const upcomingAppointments = appointmentsResponse.data.filter(apt => {
             const appointmentDate = parseISO(apt.date);
             const today = new Date();
             return apt.status === 'scheduled' && appointmentDate >= today;
           });
           
           setAppointments(upcomingAppointments);
+        } else {
+          console.error("Error fetching appointments:", appointmentsResponse.error);
+          setAppointments([]);
         }
 
         // Get prescriptions for this patient
-        const { data: patientPrescriptions, error: prescriptionsError } = await supabase
-          .from('prescriptions')
-          .select('*')
-          .eq('patient_id', user.id);
-
-        if (prescriptionsError) {
-          console.error("Error fetching prescriptions:", prescriptionsError);
-          setPrescriptions([]);
-        } else {
-          console.log("Found prescriptions:", patientPrescriptions);
-          
+        const prescriptionsResponse = await apiService.getPrescriptions(user.id);
+        if (prescriptionsResponse.success && prescriptionsResponse.data) {
           // Sort by date (most recent first)
-          const sortedPrescriptions = (patientPrescriptions || []).sort((a, b) => 
+          const sortedPrescriptions = prescriptionsResponse.data.sort((a, b) => 
             new Date(b.date).getTime() - new Date(a.date).getTime()
           );
           
           setPrescriptions(sortedPrescriptions);
+        } else {
+          console.error("Error fetching prescriptions:", prescriptionsResponse.error);
+          setPrescriptions([]);
         }
         
       } catch (error) {
@@ -134,27 +76,23 @@ const PatientDashboard: React.FC = () => {
         console.log("Refreshing data for overview");
         
         try {
-          const { data: patientAppointments } = await supabase
-            .from('appointments')
-            .select('*')
-            .eq('patient_id', user.id);
+          const appointmentsResponse = await apiService.getAppointments(user.id, 'patient');
+          if (appointmentsResponse.success && appointmentsResponse.data) {
+            const upcomingAppointments = appointmentsResponse.data.filter(apt => {
+              const appointmentDate = parseISO(apt.date);
+              const today = new Date();
+              return apt.status === 'scheduled' && appointmentDate >= today;
+            });
+            setAppointments(upcomingAppointments);
+          }
 
-          const upcomingAppointments = (patientAppointments || []).filter(apt => {
-            const appointmentDate = parseISO(apt.date);
-            const today = new Date();
-            return apt.status === 'scheduled' && appointmentDate >= today;
-          });
-          setAppointments(upcomingAppointments);
-
-          const { data: patientPrescriptions } = await supabase
-            .from('prescriptions')
-            .select('*')
-            .eq('patient_id', user.id);
-
-          const sortedPrescriptions = (patientPrescriptions || []).sort((a, b) => 
-            new Date(b.date).getTime() - new Date(a.date).getTime()
-          );
-          setPrescriptions(sortedPrescriptions);
+          const prescriptionsResponse = await apiService.getPrescriptions(user.id);
+          if (prescriptionsResponse.success && prescriptionsResponse.data) {
+            const sortedPrescriptions = prescriptionsResponse.data.sort((a, b) => 
+              new Date(b.date).getTime() - new Date(a.date).getTime()
+            );
+            setPrescriptions(sortedPrescriptions);
+          }
         } catch (error) {
           console.error("Error refreshing data:", error);
         }
@@ -181,8 +119,8 @@ const PatientDashboard: React.FC = () => {
     <div className="container mx-auto py-6 px-4">
       <div className={`flex items-center gap-4 mb-8 ${isArabic ? "flex-row-reverse" : ""}`}>
         <Avatar className="h-16 w-16 border-2 border-primary">
-          <AvatarImage src={userProfile.avatar} alt={userProfile.name} />
-          <AvatarFallback>{userProfile.name.charAt(0)}</AvatarFallback>
+          <AvatarImage src={user?.avatar} alt={user?.name} />
+          <AvatarFallback>{user?.name?.charAt(0)}</AvatarFallback>
         </Avatar>
         <h1 className={`text-3xl font-bold ${isArabic ? "font-arabic" : ""}`}>
           {isArabic ? "لوحة تحكم المريض" : "Patient Dashboard"}
@@ -206,7 +144,7 @@ const PatientDashboard: React.FC = () => {
           <Card>
             <CardHeader>
               <CardTitle className={isArabic ? "text-right font-arabic" : ""}>
-                {isArabic ? `مرحبًا، ${userProfile.name}` : `Welcome, ${userProfile.name}`}
+                {isArabic ? `مرحبًا، ${user?.name}` : `Welcome, ${user?.name}`}
               </CardTitle>
               <CardDescription className={isArabic ? "text-right font-arabic" : ""}>
                 {isArabic ? "إليك ملخص لمعلوماتك الصحية" : "Here's a summary of your health information"}
